@@ -1,0 +1,35 @@
+.comingSoonNotice {
+  background-color: #ffffff;
+  border: 1px dashed #dbe6fb;
+  border-radius: 14px;
+  padding: 50px 24px;
+  text-align: center;
+  max-width: 480px;
+  margin: 40px auto;
+}
+
+.comingSoonNoticeIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(20, 34, 71, 0.1);
+  color: #142247;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.comingSoonNoticeTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1c1c1c;
+  margin-bottom: 8px;
+}
+
+.comingSoonNoticeText {
+  font-size: 13px;
+  color: #98a1b3;
+  line-height: 1.6;
+}
