@@ -1,27 +1,19 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import PortalLanding from './components/common/Auth/PortalLanding.jsx'
-import TeacherLayout from './components/teacher/layout/TeacherLayout.jsx'
-import TeacherDashboard from './components/teacher/dashboard/TeacherDashboard.jsx'
-import TeacherCalendar from './components/teacher/pages/TeacherCalendar.jsx'
-import TeacherAttendance from './components/teacher/pages/TeacherAttendance.jsx'
-import TeacherProfile from './components/teacher/pages/TeacherProfile.jsx'
-import CourseDetailPlaceholder from './components/teacher/pages/CourseDetailPlaceholder.jsx'
+import { Routes, Route } from 'react-router-dom'
+import Landing from './Pages/Landing.jsx'
+import StudentPortal from './components/Student/Layout/StudentPortal.jsx'
+import TeacherPortal from './components/Teacher/Layout/TeacherPortal.jsx'
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<PortalLanding />} />
+      {/* Shared entry gateway - login / create account for both roles */}
+      <Route path="/" element={<Landing />} />
 
-      <Route path="/teacher" element={<TeacherLayout />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<TeacherDashboard />} />
-        <Route path="calendar" element={<TeacherCalendar />} />
-        <Route path="attendance" element={<TeacherAttendance />} />
-        <Route path="profile" element={<TeacherProfile />} />
-        <Route path="course/:courseId" element={<CourseDetailPlaceholder />} />
-      </Route>
+      {/* Everything under /student/* lives inside the Student folder only */}
+      <Route path="/student/*" element={<StudentPortal />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Everything under /teacher/* lives inside the Teacher folder only */}
+      <Route path="/teacher/*" element={<TeacherPortal />} />
     </Routes>
   )
 }
