@@ -1,93 +1,82 @@
 import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import TitanLogoMark from '../../common/Auth/TitanLogoMark.jsx'
-import TeacherAvatarPlaceholder from '../images/TeacherAvatarPlaceholder.jsx'
-import LogoutPopup from '../popups/LogoutPopup.jsx'
-import './TeacherSidebar.css'
+import { NavLink } from 'react-router-dom'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faGaugeHigh, faCalendarDays, faCalendarCheck, faBars,
+  faUserCircle, faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons'
+import titanLogo from '../../Media/images/titan-logo.png'
+import Avatar from '../../Media/Avatar.jsx'
+import { teacherInfo } from '../data/teacherData.js'
 
 const navItems = [
-  { to: '/teacher/dashboard', label: 'Dashboard', icon: 'fa-solid fa-table-columns' },
-  { to: '/teacher/calendar', label: 'Calendar', icon: 'fa-solid fa-calendar-days' },
-  { to: '/teacher/attendance', label: 'Attendance', icon: 'fa-solid fa-clipboard-check' },
+  { to: '/teacher/dashboard', label: 'Dashboard', icon: faGaugeHigh },
+  { to: '/teacher/calendar', label: 'Calendar', icon: faCalendarDays },
+  { to: '/teacher/attendance', label: 'Attendance', icon: faCalendarCheck },
 ]
 
-function TeacherSidebar({ isCollapsed, onToggleCollapse }) {
-  const navigate = useNavigate()
-  const [showProfileMenu, setShowProfileMenu] = useState(false)
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false)
-
-  function handleProfileClick() {
-    setShowProfileMenu(false)
-    navigate('/teacher/profile')
-  }
-
-  function handleLogoutClick() {
-    setShowProfileMenu(false)
-    setShowLogoutPopup(true)
-  }
-
-  function handleLogoutFinish() {
-    setShowLogoutPopup(false)
-    navigate('/')
-  }
+function TeacherSidebar({ onLogoutClick }) {
+  const [collapsed, setCollapsed] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <div className={isCollapsed ? 'teacherSidebar teacherSidebarCollapsed' : 'teacherSidebar'}>
-      <button
-        type="button"
-        className="teacherSidebarFoldBtn"
-        onClick={onToggleCollapse}
-        aria-label="Toggle sidebar"
-      >
-        <i className="fa-solid fa-bars"></i>
-      </button>
-
-      <div className="teacherSidebarLogoArea">
-        <TitanLogoMark size={isCollapsed ? 30 : 44} variant="icon" />
-        {!isCollapsed && <span className="teacherSidebarLogoText">Titan Portal</span>}
+    <aside className={`teacher-sidebar ${collapsed ? 'teacher-sidebar-collapsed' : ''}`}>
+      <div className="teacher-sidebar-top">
+        <button
+          type="button"
+          className="teacher-sidebar-fold-btn"
+          onClick={() => setCollapsed(!collapsed)}
+          aria-label="Toggle sidebar"
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <img src={titanLogo} alt="Titan" className="teacher-sidebar-logo" />
       </div>
 
-      <nav className="teacherSidebarNav">
+      <nav className="teacher-sidebar-nav">
         {navItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              isActive ? 'teacherSidebarNavItem teacherSidebarNavItemActive' : 'teacherSidebarNavItem'
+              `teacher-sidebar-nav-item ${isActive ? 'teacher-sidebar-nav-item-active' : ''}`
             }
           >
-            <i className={item.icon}></i>
-            {!isCollapsed && <span className="teacherSidebarNavLabel">{item.label}</span>}
+            <FontAwesomeIcon icon={item.icon} className="teacher-sidebar-nav-icon" />
+            <span className="teacher-sidebar-nav-label">{item.label}</span>
           </NavLink>
         ))}
       </nav>
 
-      <div className="teacherSidebarProfileArea">
-        <button
-          type="button"
-          className="teacherSidebarProfileBtn"
-          onClick={() => setShowProfileMenu((v) => !v)}
-        >
-          <TeacherAvatarPlaceholder size={isCollapsed ? 32 : 38} />
-          {!isCollapsed && <span className="teacherSidebarProfileName">Sir Yasir Ali (SUK)</span>}
+      <div className="teacher-sidebar-profile-wrap">
+        <button type="button" className="teacher-sidebar-profile" onClick={() => setMenuOpen(!menuOpen)}>
+          <Avatar name={teacherInfo.name} photoUrl={teacherInfo.photo} className="teacher-sidebar-avatar" />
+          <span className="teacher-sidebar-name">{teacherInfo.name}</span>
         </button>
 
-        {showProfileMenu && (
-          <div className="teacherSidebarProfileMenu">
-            <button type="button" className="teacherSidebarProfileMenuItem" onClick={handleProfileClick}>
-              <i className="fa-solid fa-id-badge"></i>
-              <span>Profile</span>
-            </button>
-            <button type="button" className="teacherSidebarProfileMenuItem" onClick={handleLogoutClick}>
-              <i className="fa-solid fa-right-from-bracket"></i>
-              <span>Logout</span>
+        {menuOpen && (
+          <div className="teacher-sidebar-menu">
+            <NavLink
+              to="/teacher/profile"
+              className="teacher-sidebar-menu-item"
+              onClick={() => setMenuOpen(false)}
+            >
+              <FontAwesomeIcon icon={faUserCircle} /> Profile
+            </NavLink>
+            <button
+              type="button"
+              className="teacher-sidebar-menu-item"
+              onClick={() => {
+                setMenuOpen(false)
+                onLogoutClick()
+              }}
+            >
+              <FontAwesomeIcon icon={faRightFromBracket} /> Logout
             </button>
           </div>
         )}
       </div>
-
-      {showLogoutPopup && <LogoutPopup onFinish={handleLogoutFinish} />}
-    </div>
+    </aside>
   )
 }
 

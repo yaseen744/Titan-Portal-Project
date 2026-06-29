@@ -1,56 +1,16 @@
-# Titan Portal
+# React + Vite
 
-Frontend-only React app (Vite + React Router + React-Bootstrap + Font Awesome).
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## What's built so far (Phase 1)
+Currently, two official plugins are available:
 
-- Shared landing page at `/` — Student Login / Create + Teacher Login,
-  with the "waiting" loading popup, forgot-password popup, and the
-  Student ↔ Teacher switch.
-- Full **Teacher Dashboard** at `/teacher/dashboard`:
-  - Foldable sidebar (Dashboard / Calendar / Attendance + profile/logout)
-  - 4 stat cards + weekly schedule highlight
-  - "Active Courses" 2x2 grid (4 batches) with progress bars, clickable
-    into a course (placeholder for now)
-- Placeholder ("coming next") pages for Calendar, Attendance, Profile,
-  and Course Detail — wired into routing so the URLs already work,
-  content will be filled in during the next phase.
-- Student portal folder is intentionally empty for now — built next.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Folder structure
+## React Compiler
 
-```
-src/
-  components/
-    common/Auth/      -> shared landing page, login forms, popups
-    teacher/           -> everything teacher-only (layout, dashboard, pages, popups, images)
-    student/           -> reserved for the student portal (next phase)
-  App.jsx              -> all routes
-  App.css              -> global resets only
-```
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-Each component has its own external .css file (no Bootstrap root
-override, no grouped selectors) per the project rules.
+## Expanding the ESLint configuration
 
-## Run it locally
-
-```bash
-npm install
-npm run dev
-```
-
-Then open the printed http://localhost:5173 URL. Click "Login as
-Teacher" on the landing page, fill in anything, wait for the loading
-popup, and you'll land on the Teacher Dashboard.
-
-## Notes / things to swap later
-
-- Real Titan logo is now in `components/common/Auth/images/` — full
-  crest (`titan-logo.png`, used on the landing page) and a cropped
-  shield-only icon (`titan-shield-icon.png`, used in the small sidebar
-  spot) so the institute name text isn't squeezed at icon size.
-- Brand colors sampled directly from the logo: navy `#142247`
-  (primary — buttons, active states) and gold `#CFA561` (small accent
-  touches — sidebar active-item border, course batch badge border).
-- Teacher avatar is still a generic placeholder illustration — swap
-  with a real photo whenever you have one.
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
