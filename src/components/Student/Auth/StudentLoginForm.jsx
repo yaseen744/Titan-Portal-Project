@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faIdCard, faLock, faEye, faEyeSlash, faRightToBracket, faChalkboardUser } from '@fortawesome/free-solid-svg-icons'
+import { faIdCard, faLock, faEye, faEyeSlash, faRightToBracket, faChalkboardUser, faUserShield } from '@fortawesome/free-solid-svg-icons'
 
-function StudentLoginForm({ onSubmit, onSwitchToTeacher }) {
+function StudentLoginForm({ onSubmit, onSwitchToTeacher, onSwitchToAdmin }) {
   const [cnic, setCnic] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -74,6 +74,10 @@ function StudentLoginForm({ onSubmit, onSwitchToTeacher }) {
 
       <button type="button" className="auth-btn-secondary" onClick={onSwitchToTeacher}>
         <FontAwesomeIcon icon={faChalkboardUser} /> Login as Teacher
+      </button>
+
+      <button type="button" className="auth-btn-secondary" onClick={onSwitchToAdmin}>
+        <FontAwesomeIcon icon={faUserShield} /> Login as Admin
       </button>
     </form>
   )
