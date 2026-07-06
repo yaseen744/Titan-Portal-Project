@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faIdCard, faLock, faEye, faEyeSlash, faRightToBracket, faChalkboardUser, faUserShield } from '@fortawesome/free-solid-svg-icons'
+import { faEnvelope, faLock, faEye, faEyeSlash, faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 
-function StudentLoginForm({ onSubmit, onSwitchToTeacher, onSwitchToAdmin }) {
-  const [cnic, setCnic] = useState('')
+function SubAdminLoginForm({ onSubmit, onForgotPassword }) {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
@@ -11,12 +11,12 @@ function StudentLoginForm({ onSubmit, onSwitchToTeacher, onSwitchToAdmin }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     const newErrors = {}
-    if (!cnic.trim()) newErrors.cnic = 'CNIC is required'
+    if (!email.trim()) newErrors.email = 'Email is required'
     if (!password.trim()) newErrors.password = 'Password is required'
     setErrors(newErrors)
 
     if (Object.keys(newErrors).length === 0) {
-      onSubmit({ cnic, password })
+      onSubmit({ email, password })
     }
   }
 
@@ -24,35 +24,35 @@ function StudentLoginForm({ onSubmit, onSwitchToTeacher, onSwitchToAdmin }) {
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <h3 className="auth-form-heading">Login</h3>
       <p className="auth-form-subtext">
-        Kindly provide the CNIC number and password used during SMIT course registration.
+        Kindly provide the email and password assigned to your admin account.
       </p>
 
       <div className="auth-input-group">
-        <label className="auth-input-label" htmlFor="student-cnic">
-          CNIC <span className="auth-required-star">*</span>
+        <label className="auth-input-label" htmlFor="subadmin-email">
+          Email <span className="auth-required-star">*</span>
         </label>
-        <div className={`auth-input-wrap ${errors.cnic ? 'auth-input-wrap-error' : ''}`}>
-          <FontAwesomeIcon icon={faIdCard} className="auth-input-icon" />
+        <div className={`auth-input-wrap ${errors.email ? 'auth-input-wrap-error' : ''}`}>
+          <FontAwesomeIcon icon={faEnvelope} className="auth-input-icon" />
           <input
-            id="student-cnic"
-            type="text"
+            id="subadmin-email"
+            type="email"
             className="auth-input"
-            placeholder="42101-1234567-1"
-            value={cnic}
-            onChange={(e) => setCnic(e.target.value)}
+            placeholder="admin@titan.edu.pk"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        {errors.cnic && <span className="auth-error-text">{errors.cnic}</span>}
+        {errors.email && <span className="auth-error-text">{errors.email}</span>}
       </div>
 
       <div className="auth-input-group">
-        <label className="auth-input-label" htmlFor="student-password">
+        <label className="auth-input-label" htmlFor="subadmin-password">
           Password <span className="auth-required-star">*</span>
         </label>
         <div className={`auth-input-wrap ${errors.password ? 'auth-input-wrap-error' : ''}`}>
           <FontAwesomeIcon icon={faLock} className="auth-input-icon" />
           <input
-            id="student-password"
+            id="subadmin-password"
             type={showPassword ? 'text' : 'password'}
             className="auth-input"
             placeholder="Enter your password"
@@ -72,15 +72,11 @@ function StudentLoginForm({ onSubmit, onSwitchToTeacher, onSwitchToAdmin }) {
         <FontAwesomeIcon icon={faRightToBracket} /> Login
       </button>
 
-      <button type="button" className="auth-btn-secondary" onClick={onSwitchToTeacher}>
-        <FontAwesomeIcon icon={faChalkboardUser} /> Login as Teacher
-      </button>
-
-      <button type="button" className="auth-btn-secondary" onClick={onSwitchToAdmin}>
-        <FontAwesomeIcon icon={faUserShield} /> Login as Admin
+      <button type="button" className="auth-link-btn" onClick={onForgotPassword}>
+        Forgot Password?
       </button>
     </form>
   )
 }
 
-export default StudentLoginForm
+export default SubAdminLoginForm

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRightToBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  faRightToBracket, faUserPlus, faUserTie, faUserShield, faArrowLeft, faClock,
+} from '@fortawesome/free-solid-svg-icons'
 
 import titanLogo from '../components/Media/images/titan-logo.png'
 import WaitingPopup from '../components/Media/WaitingPopup.jsx'
@@ -10,19 +12,26 @@ import ForgotPasswordPopup from '../components/Media/ForgotPasswordPopup.jsx'
 import StudentLoginForm from '../components/Student/Auth/StudentLoginForm.jsx'
 import StudentCreateForm from '../components/Student/Auth/StudentCreateForm.jsx'
 import TeacherLoginForm from '../components/Teacher/Auth/TeacherLoginForm.jsx'
+import SubAdminLoginForm from '../components/Admin/SubAdmin/Auth/SubAdminLoginForm.jsx'
 
 function Landing() {
   const navigate = useNavigate()
 
-  // 'student' or 'teacher'
+  // 'student' | 'teacher' | 'admin'
   const [role, setRole] = useState('student')
   // 'login' or 'create' - only relevant while role === 'student'
   const [mode, setMode] = useState('login')
+  // 'subadmin' | 'superadmin' | null (role picker shown when null)
+  const [adminType, setAdminType] = useState(null)
 
   const [showWaiting, setShowWaiting] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [showSuperAdminNotice, setShowSuperAdminNotice] = useState(false)
 
-  const portalHeading = role === 'teacher' ? 'Trainer Portal' : 'Student Portal'
+  const portalHeading =
+    role === 'teacher' ? 'Trainer Portal' :
+    role === 'admin' ? 'Admin Panel' :
+    'Student Portal'
 
   // Called once any form is validly submitted - shows the waiting popup,
   // and once the progress bar finishes, routes into the right portal.
@@ -34,6 +43,8 @@ function Landing() {
     setShowWaiting(false)
     if (role === 'teacher') {
       navigate('/teacher/dashboard')
+    } else if (role === 'admin' && adminType === 'subadmin') {
+      navigate('/admin/subadmin/dashboard')
     } else {
       navigate('/student/landing')
     }
@@ -47,6 +58,12 @@ function Landing() {
   const switchToStudent = () => {
     setRole('student')
     setMode('login')
+    setAdminType(null)
+  }
+
+  const switchToAdmin = () => {
+    setRole('admin')
+    setAdminType(null)
   }
 
   return (
@@ -82,7 +99,11 @@ function Landing() {
 
         <div className="auth-card">
           {role === 'student' && mode === 'login' && (
-            <StudentLoginForm onSubmit={handleFormSubmit} onSwitchToTeacher={switchToTeacher} />
+            <StudentLoginForm
+              onSubmit={handleFormSubmit}
+              onSwitchToTeacher={switchToTeacher}
+              onSwitchToAdmin={switchToAdmin}
+            />
           )}
 
           {role === 'student' && mode === 'create' && (
@@ -96,17 +117,78 @@ function Landing() {
               onForgotPassword={() => setShowForgotPassword(true)}
             />
           )}
+
+          {role === 'admin' && adminType === null && (
+            <div className="auth-form">
+              <h3 className="auth-form-heading">Choose Admin Type</h3>
+              <p className="auth-form-subtext">
+                Select which kind of admin account you'd like to log in with.
+              </p>
+
+              <button type="button" className="admin-type-card" onClick={() => setAdminType('subadmin')}>
+                <FontAwesomeIcon icon={faUserTie} className="admin-type-icon" />
+                <span className="admin-type-text">
+                  <span className="admin-type-title">Sub Admin</span>
+                  <span className="admin-type-desc">Campus staff — students, attendance, trainers &amp; more</span>
+                </span>
+              </button>
+
+              <button type="button" className="admin-type-card admin-type-card-disabled" onClick={() => setShowSuperAdminNotice(true)}>
+                <FontAwesomeIcon icon={faUserShield} className="admin-type-icon" />
+                <span className="admin-type-text">
+                  <span className="admin-type-title">
+                    Super Admin <span className="admin-type-soon-badge"><FontAwesomeIcon icon={faClock} /> Coming Soon</span>
+                  </span>
+                  <span className="admin-type-desc">Full control across every campus</span>
+                </span>
+              </button>
+
+              <button type="button" className="auth-link-btn" onClick={switchToStudent}>
+                <FontAwesomeIcon icon={faArrowLeft} /> Back to Student Login
+              </button>
+            </div>
+          )}
+
+          {role === 'admin' && adminType === 'subadmin' && (
+            <>
+              <SubAdminLoginForm
+                onSubmit={handleFormSubmit}
+                onForgotPassword={() => setShowForgotPassword(true)}
+              />
+              <button type="button" className="auth-link-btn" onClick={() => setAdminType(null)}>
+                <FontAwesomeIcon icon={faArrowLeft} /> Back
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       <WaitingPopup
         show={showWaiting}
-        label={role === 'teacher' ? 'Logging you in...' : 'Waiting...'}
+        label={role === 'student' && mode === 'login' ? 'Waiting...' : 'Logging you in...'}
         durationMs={5000}
         onComplete={handleWaitingComplete}
       />
 
       <ForgotPasswordPopup show={showForgotPassword} onClose={() => setShowForgotPassword(false)} />
+
+      {showSuperAdminNotice && (
+        <div className="generic-popup-overlay">
+          <div className="generic-popup-card">
+            <div className="generic-popup-icon-wrap">
+              <FontAwesomeIcon icon={faUserShield} className="generic-popup-icon" />
+            </div>
+            <h3 className="generic-popup-title">Super Admin — Coming Soon</h3>
+            <p className="generic-popup-text">
+              The Super Admin panel is being built next. For now, please continue with Sub Admin
+              or go back to Student / Teacher login.
+            </p>
+            <button className="generic-popup-btn" onClick={() => setShowSuperAdminNotice(false)}>
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
