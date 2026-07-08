@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faRightToBracket, faUserPlus, faUserTie, faUserShield, faArrowLeft, faClock,
+  faRightToBracket, faUserPlus, faUserTie, faUserShield, faArrowLeft,
 } from '@fortawesome/free-solid-svg-icons'
 
 import titanLogo from '../components/Media/images/titan-logo.png'
@@ -13,6 +13,7 @@ import StudentLoginForm from '../components/Student/Auth/StudentLoginForm.jsx'
 import StudentCreateForm from '../components/Student/Auth/StudentCreateForm.jsx'
 import TeacherLoginForm from '../components/Teacher/Auth/TeacherLoginForm.jsx'
 import SubAdminLoginForm from '../components/Admin/SubAdmin/Auth/SubAdminLoginForm.jsx'
+import SuperAdminLoginForm from '../components/Admin/SuperAdmin/Auth/SuperAdminLoginForm.jsx'
 
 function Landing() {
   const navigate = useNavigate()
@@ -26,7 +27,6 @@ function Landing() {
 
   const [showWaiting, setShowWaiting] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  const [showSuperAdminNotice, setShowSuperAdminNotice] = useState(false)
 
   const portalHeading =
     role === 'teacher' ? 'Trainer Portal' :
@@ -45,6 +45,8 @@ function Landing() {
       navigate('/teacher/dashboard')
     } else if (role === 'admin' && adminType === 'subadmin') {
       navigate('/admin/subadmin/dashboard')
+    } else if (role === 'admin' && adminType === 'superadmin') {
+      navigate('/admin/superadmin/dashboard')
     } else {
       navigate('/student/landing')
     }
@@ -133,13 +135,11 @@ function Landing() {
                 </span>
               </button>
 
-              <button type="button" className="admin-type-card admin-type-card-disabled" onClick={() => setShowSuperAdminNotice(true)}>
+              <button type="button" className="admin-type-card" onClick={() => setAdminType('superadmin')}>
                 <FontAwesomeIcon icon={faUserShield} className="admin-type-icon" />
                 <span className="admin-type-text">
-                  <span className="admin-type-title">
-                    Super Admin <span className="admin-type-soon-badge"><FontAwesomeIcon icon={faClock} /> Coming Soon</span>
-                  </span>
-                  <span className="admin-type-desc">Full control across every campus</span>
+                  <span className="admin-type-title">Super Admin</span>
+                  <span className="admin-type-desc">Full control across every city &amp; campus</span>
                 </span>
               </button>
 
@@ -160,6 +160,18 @@ function Landing() {
               </button>
             </>
           )}
+
+          {role === 'admin' && adminType === 'superadmin' && (
+            <>
+              <SuperAdminLoginForm
+                onSubmit={handleFormSubmit}
+                onForgotPassword={() => setShowForgotPassword(true)}
+              />
+              <button type="button" className="auth-link-btn" onClick={() => setAdminType(null)}>
+                <FontAwesomeIcon icon={faArrowLeft} /> Back
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -171,24 +183,6 @@ function Landing() {
       />
 
       <ForgotPasswordPopup show={showForgotPassword} onClose={() => setShowForgotPassword(false)} />
-
-      {showSuperAdminNotice && (
-        <div className="generic-popup-overlay">
-          <div className="generic-popup-card">
-            <div className="generic-popup-icon-wrap">
-              <FontAwesomeIcon icon={faUserShield} className="generic-popup-icon" />
-            </div>
-            <h3 className="generic-popup-title">Super Admin — Coming Soon</h3>
-            <p className="generic-popup-text">
-              The Super Admin panel is being built next. For now, please continue with Sub Admin
-              or go back to Student / Teacher login.
-            </p>
-            <button className="generic-popup-btn" onClick={() => setShowSuperAdminNotice(false)}>
-              Got it
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

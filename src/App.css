@@ -6010,3 +6010,1266 @@
     align-items: flex-start;
   }
 }
+
+
+/* =========================================================
+   SUPER ADMIN — duplicated from Sub Admin for identical visuals
+   (same animation / transition / box-shadow / hover / colors)
+   ========================================================= */
+
+
+
+/* =========================================================
+   SUPER ADMIN SIDEBAR / SHELL / TOPBAR
+   ========================================================= */
+
+.superadmin-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+
+
+.superadmin-shell-main {
+  flex: 1;
+  min-width: 0;
+  background-color: #ffffff;
+}
+
+
+
+.superadmin-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background-color: #ffffff;
+  border-right: 1px solid rgba(27, 42, 77, 0.10);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 14px;
+  transition: width 0.25s ease;
+  overflow-y: auto;
+}
+
+
+
+.superadmin-sidebar-collapsed {
+  width: 76px;
+}
+
+
+
+.superadmin-sidebar-collapsed .superadmin-nav-label,
+.superadmin-sidebar-collapsed .superadmin-nav-children,
+.superadmin-sidebar-collapsed .superadmin-nav-chevron,
+.superadmin-sidebar-collapsed .superadmin-sidebar-name {
+  display: none;
+}
+
+
+
+.superadmin-sidebar-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  justify-content: center;
+}
+
+
+
+.superadmin-sidebar-fold-btn {
+  cursor: default;
+  border: none;
+  background-color: rgba(27, 42, 77, 0.06);
+  color: #1B2A4D;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+
+
+.superadmin-sidebar-fold-btn:hover {
+  background-color: rgba(27, 42, 77, 0.12);
+}
+
+
+
+.superadmin-sidebar-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  object-position: center 35%;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+
+
+.superadmin-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+
+
+.superadmin-nav-item {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: #1B2A4D;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+
+
+.superadmin-nav-item:hover {
+  background-color: rgba(27, 42, 77, 0.06);
+}
+
+
+
+.superadmin-nav-item-active {
+  background-color: rgba(27, 42, 77, 0.09);
+  border: 1px solid rgba(27, 42, 77, 0.14);
+}
+
+
+
+.superadmin-nav-icon {
+  width: 15px;
+  opacity: 0.85;
+}
+
+
+
+.superadmin-nav-group-btn {
+  justify-content: flex-start;
+}
+
+
+
+.superadmin-nav-chevron {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: #6B7280;
+  transition: transform 0.25s ease;
+}
+
+
+
+.superadmin-nav-chevron-open {
+  transform: rotate(180deg);
+}
+
+
+
+.superadmin-nav-children {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-left: 30px;
+  margin-bottom: 4px;
+  animation: titanFadeIn 0.2s ease both;
+}
+
+
+
+.superadmin-nav-children-deep {
+  padding-left: 14px;
+}
+
+
+
+.superadmin-nav-subitem {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #4B5566;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+
+
+.superadmin-nav-subitem:hover {
+  background-color: rgba(27, 42, 77, 0.06);
+}
+
+
+
+.superadmin-nav-subitem-active {
+  background-color: rgba(201, 162, 39, 0.14);
+  color: #1B2A4D;
+}
+
+
+
+.superadmin-sidebar-profile-wrap {
+  position: relative;
+  margin-top: 14px;
+  border-top: 1px solid rgba(27, 42, 77, 0.10);
+  padding-top: 14px;
+}
+
+
+
+.superadmin-sidebar-profile {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 6px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+
+
+.superadmin-sidebar-profile:hover {
+  background-color: rgba(27, 42, 77, 0.06);
+}
+
+
+
+.superadmin-sidebar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+}
+
+
+
+.superadmin-sidebar-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1B2A4D;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+.superadmin-sidebar-menu {
+  position: absolute;
+  bottom: 64px;
+  left: 6px;
+  background-color: #ffffff;
+  border: 1px solid rgba(27, 42, 77, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(27, 42, 77, 0.18);
+  padding: 6px;
+  width: 170px;
+  z-index: 50;
+  animation: titanCardIn 0.2s ease both;
+}
+
+
+
+.superadmin-sidebar-menu-item {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1B2A4D;
+  transition: background-color 0.2s ease;
+}
+
+
+
+.superadmin-sidebar-menu-item:hover {
+  background-color: rgba(27, 42, 77, 0.07);
+}
+
+
+
+.superadmin-page {
+  padding: 26px 30px 50px 30px;
+}
+
+
+
+.superadmin-topbar {
+  margin-bottom: 24px;
+}
+
+
+
+.superadmin-topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6B7280;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+
+
+.superadmin-topbar-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6B7280;
+}
+
+
+
+.superadmin-topbar-breadcrumb-item:last-child {
+  color: #1B2A4D;
+}
+
+
+
+.superadmin-topbar-breadcrumb-sep {
+  font-size: 0.65rem;
+  opacity: 0.6;
+}
+
+
+
+/* =========================================================
+   SUPER ADMIN DASHBOARD
+   ========================================================= */
+
+.superadmin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+
+
+.superadmin-stat-card {
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 12px 26px rgba(27, 42, 77, 0.08);
+  transition: all 0.25s ease;
+}
+
+
+
+.superadmin-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 34px rgba(27, 42, 77, 0.14);
+}
+
+
+
+.superadmin-stat-icon {
+  color: #C9A227;
+  font-size: 1.15rem;
+}
+
+
+
+.superadmin-stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1B2A4D;
+}
+
+
+
+.superadmin-stat-label {
+  font-size: 0.76rem;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+
+
+.superadmin-charts-row {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+
+
+.superadmin-chart-box {
+  flex: 1;
+  min-width: 320px;
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 12px 26px rgba(27, 42, 77, 0.08);
+}
+
+
+
+.superadmin-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+
+
+.superadmin-chart-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1B2A4D;
+  margin: 0;
+}
+
+
+
+.superadmin-sort-btn {
+  cursor: default;
+  border: 1px solid rgba(27, 42, 77, 0.16);
+  background-color: rgba(27, 42, 77, 0.05);
+  color: #1B2A4D;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s ease;
+}
+
+
+
+.superadmin-sort-btn:hover {
+  background-color: rgba(27, 42, 77, 0.10);
+}
+
+
+
+.superadmin-toolbar-btn {
+  cursor: default;
+  border: 1px solid rgba(27, 42, 77, 0.16);
+  background-color: #ffffff;
+  color: #1B2A4D;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 18px rgba(27, 42, 77, 0.06);
+}
+
+
+
+.superadmin-toolbar-btn:hover {
+  background-color: rgba(27, 42, 77, 0.06);
+}
+
+
+
+.superadmin-toolbar-btn-primary {
+  background-color: #1B2A4D;
+  color: #ffffff;
+  border-color: #1B2A4D;
+  margin-left: auto;
+}
+
+
+
+.superadmin-toolbar-btn-primary:hover {
+  background-color: #11192E;
+}
+
+
+
+/* =========================================================
+   SUPER ADMIN PROFILE
+   ========================================================= */
+
+.superadmin-profile-card {
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 26px;
+  box-shadow: 0 16px 36px rgba(27, 42, 77, 0.10);
+  max-width: 760px;
+}
+
+
+
+.superadmin-profile-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+
+
+.superadmin-profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+
+
+.superadmin-profile-name {
+  color: #1B2A4D;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+
+
+
+.superadmin-profile-role-badge {
+  background-color: rgba(33, 150, 243, 0.12);
+  color: #1565C0;
+  border: 1px solid rgba(33, 150, 243, 0.30);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+
+
+.superadmin-profile-logout {
+  margin-left: auto;
+}
+
+
+
+.superadmin-profile-info-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #2B2F38;
+  padding: 16px 0;
+  border-top: 1px solid rgba(27, 42, 77, 0.08);
+  border-bottom: 1px solid rgba(27, 42, 77, 0.08);
+  margin-bottom: 18px;
+}
+
+
+
+.superadmin-profile-info-row p {
+  margin: 0;
+}
+
+
+
+.superadmin-change-password-btn {
+  margin-bottom: 10px;
+}
+
+
+/* =========================================================
+   SUPER ADMIN RESPONSIVE (mobile)
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .superadmin-shell {
+    flex-direction: column;
+  }
+
+  .superadmin-sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid rgba(27, 42, 77, 0.10);
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .superadmin-sidebar-collapsed {
+    width: 100%;
+  }
+
+  .superadmin-sidebar-top {
+    order: 2;
+    flex: 1;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  .superadmin-sidebar-fold-btn {
+    display: none;
+  }
+
+  .superadmin-sidebar-profile-wrap {
+    order: 1;
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .superadmin-sidebar-name {
+    display: none;
+  }
+
+  .superadmin-sidebar-nav {
+    order: 3;
+    flex-basis: 100%;
+    margin-top: 10px;
+  }
+
+  .superadmin-page {
+    padding: 18px 16px 40px 16px;
+  }
+
+  .superadmin-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .superadmin-charts-row {
+    flex-direction: column;
+  }
+
+  .students-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .students-search-wrap {
+    max-width: 100%;
+  }
+
+  .superadmin-toolbar-btn-primary {
+    margin-left: 0;
+  }
+
+  .students-table-box {
+    overflow-x: auto;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-grid-full {
+    grid-column: span 1;
+  }
+
+  .student-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-form-grid-full {
+    grid-column: span 1;
+  }
+
+  .student-detail-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-detail-empty-note {
+    grid-column: span 1;
+  }
+
+  .student-courses-head {
+    grid-template-columns: 1fr !important;
+  }
+
+  .voucher-table-head,
+  .voucher-table-row {
+    min-width: 580px;
+  }
+
+  .slots-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trainers-row-head,
+  .trainers-row {
+    grid-template-columns: 0.5fr 1.4fr 1fr;
+  }
+
+  .trainers-row-head span:nth-child(3),
+  .trainers-row span:nth-child(3),
+  .trainers-row-head span:nth-child(5),
+  .trainers-row span:nth-child(5) {
+    display: none;
+  }
+
+  .trainer-attendance-row-head,
+  .trainer-attendance-row {
+    grid-template-columns: 0.5fr 1.6fr 1fr;
+  }
+
+  .trainer-attendance-row-head span:nth-child(4),
+  .trainer-attendance-row span:nth-child(4) {
+    display: none;
+  }
+
+  .superadmin-profile-info-row {
+    grid-template-columns: 1fr;
+  }
+
+  .superadmin-profile-logout {
+    margin-left: 0;
+  }
+
+  .permission-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* =========================================================
+   SUPER ADMIN — exclusive UI (crown badge, nav divider,
+   permission matrix, campus cards, sub admin cards)
+   ========================================================= */
+
+.superadmin-sidebar-logo-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.superadmin-sidebar-crown-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #C9A227;
+  color: #1B2A4D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  border: 2px solid #1B2A4D;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.superadmin-nav-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 4px 6px;
+}
+
+.superadmin-nav-divider-label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #C9A227;
+  white-space: nowrap;
+}
+
+.superadmin-nav-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: rgba(201, 162, 39, 0.35);
+}
+
+.superadmin-profile-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: rgba(201, 162, 39, 0.14);
+  color: #9C7A0E;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+}
+
+/* --- Sub Admin management cards --- */
+
+.superadmin-subadmin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.superadmin-subadmin-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(27, 42, 77, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.superadmin-subadmin-card:hover {
+  box-shadow: 0 10px 24px rgba(27, 42, 77, 0.12);
+  transform: translateY(-2px);
+}
+
+.superadmin-subadmin-card-suspended {
+  opacity: 0.72;
+}
+
+.superadmin-subadmin-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.superadmin-subadmin-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.superadmin-subadmin-card-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.superadmin-subadmin-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1B2A4D;
+}
+
+.superadmin-subadmin-email {
+  font-size: 0.76rem;
+  color: #6b7280;
+  word-break: break-all;
+}
+
+.superadmin-subadmin-status-chip {
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.superadmin-subadmin-status-active {
+  background-color: rgba(34, 139, 87, 0.12);
+  color: #1a7f4e;
+}
+
+.superadmin-subadmin-status-suspended {
+  background-color: rgba(198, 40, 40, 0.10);
+  color: #c62828;
+}
+
+.superadmin-subadmin-card-body {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(27, 42, 77, 0.12);
+}
+
+.superadmin-subadmin-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: rgba(27, 42, 77, 0.06);
+  color: #1B2A4D;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.superadmin-subadmin-campus-line {
+  margin: 8px 0 4px;
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.superadmin-subadmin-perm-line {
+  margin: 0;
+  font-size: 0.76rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.superadmin-subadmin-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.superadmin-subadmin-action-btn {
+  flex: 1;
+  justify-content: center;
+}
+
+.superadmin-subadmin-suspend-btn {
+  background-color: #ffffff;
+  color: #c62828;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+}
+
+.superadmin-subadmin-suspend-btn:hover {
+  background-color: rgba(198, 40, 40, 0.06);
+}
+
+.superadmin-subadmin-activate-btn {
+  background-color: #ffffff;
+  color: #1a7f4e;
+  border: 1px solid rgba(26, 127, 78, 0.3);
+}
+
+.superadmin-subadmin-activate-btn:hover {
+  background-color: rgba(26, 127, 78, 0.06);
+}
+
+/* --- Add / Edit Sub Admin popup — role chips + permission matrix --- */
+
+.subadmin-popup-card {
+  max-width: 720px;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.subadmin-role-heading {
+  margin-top: 22px;
+}
+
+.subadmin-role-hint {
+  margin: 6px 0 16px;
+  font-size: 0.76rem;
+  color: #6b7280;
+}
+
+.subadmin-role-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.subadmin-role-chip {
+  cursor: default;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 42, 77, 0.18);
+  background-color: #ffffff;
+  color: #1B2A4D;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.subadmin-role-chip:hover {
+  background-color: rgba(27, 42, 77, 0.06);
+}
+
+.subadmin-role-chip-active {
+  background-color: #1B2A4D;
+  color: #ffffff;
+  border-color: #1B2A4D;
+}
+
+.subadmin-permission-matrix {
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.subadmin-permission-matrix-head {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 64px);
+  align-items: center;
+  padding: 10px 14px;
+  background-color: rgba(27, 42, 77, 0.04);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+
+.subadmin-permission-matrix-action-head {
+  text-align: center;
+}
+
+.subadmin-permission-matrix-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(4, 64px);
+  align-items: center;
+  padding: 8px 14px;
+  border-top: 1px solid rgba(27, 42, 77, 0.07);
+  transition: background-color 0.2s ease;
+}
+
+.subadmin-permission-matrix-row:hover {
+  background-color: rgba(201, 162, 39, 0.05);
+}
+
+.subadmin-permission-matrix-row-enabled {
+  background-color: rgba(34, 139, 87, 0.04);
+}
+
+.subadmin-permission-matrix-label {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1B2A4D;
+}
+
+.subadmin-permission-toggle {
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  background-color: rgba(27, 42, 77, 0.18);
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+.subadmin-permission-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.subadmin-permission-toggle-on {
+  background-color: #1a7f4e;
+}
+
+.subadmin-permission-toggle-on::after {
+  transform: translateX(14px);
+}
+
+.subadmin-permission-matrix-cell {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(27, 42, 77, 0.22);
+}
+
+.subadmin-permission-matrix-cell-on {
+  color: #1a7f4e;
+}
+
+.subadmin-toolbar-btn {
+  cursor: default;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(27, 42, 77, 0.16);
+  background-color: #ffffff;
+  color: #1B2A4D;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subadmin-toolbar-btn:hover {
+  background-color: rgba(27, 42, 77, 0.05);
+}
+
+.subadmin-toolbar-btn-primary {
+  background-color: #1B2A4D;
+  color: #ffffff;
+  border-color: #1B2A4D;
+}
+
+.subadmin-toolbar-btn-primary:hover {
+  background-color: #14213d;
+  box-shadow: 0 8px 18px rgba(27, 42, 77, 0.25);
+}
+
+/* --- Campuses page --- */
+
+.superadmin-campus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.superadmin-campus-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(27, 42, 77, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.superadmin-campus-card:hover {
+  box-shadow: 0 10px 24px rgba(27, 42, 77, 0.12);
+  transform: translateY(-2px);
+}
+
+.superadmin-campus-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.superadmin-campus-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background-color: rgba(201, 162, 39, 0.14);
+  color: #9C7A0E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.superadmin-campus-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1B2A4D;
+}
+
+.superadmin-campus-city {
+  font-size: 0.76rem;
+  color: #6b7280;
+}
+
+.superadmin-campus-courses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.superadmin-campus-course-chip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: rgba(27, 42, 77, 0.06);
+  color: #1B2A4D;
+}
+
+.superadmin-campus-stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(27, 42, 77, 0.12);
+}
+
+.superadmin-campus-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+/* --- shared danger button variant --- */
+
+.generic-popup-btn-danger {
+  cursor: default;
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: none;
+  background-color: #c62828;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.generic-popup-btn-danger:hover {
+  background-color: #a81f1f;
+  box-shadow: 0 8px 18px rgba(198, 40, 40, 0.25);
+}
+
+@media (max-width: 768px) {
+  .superadmin-subadmin-grid,
+  .superadmin-campus-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subadmin-permission-matrix-head,
+  .subadmin-permission-matrix-row {
+    grid-template-columns: 1fr repeat(4, 44px);
+    font-size: 0.68rem;
+  }
+}
