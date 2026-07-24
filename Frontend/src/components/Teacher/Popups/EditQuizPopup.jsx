@@ -1,13 +1,29 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import api from '../../../api/axios.js'
 
-function EditQuizPopup({ quiz, onClose }) {
+function EditQuizPopup({ quiz, onClose, onSaved }) {
   const [name, setName] = useState(quiz?.name || '')
-  const [questions, setQuestions] = useState(quiz?.questions || 0)
   const [dueDate, setDueDate] = useState(quiz?.dueDate || '')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   if (!quiz) return null
+
+  const handleSave = async () => {
+    setError('')
+    setSaving(true)
+    try {
+      await api.put(`/teacher/quizzes/${quiz.id}`, { name, dueDate })
+      if (onSaved) onSaved()
+      onClose()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not save changes. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="generic-popup-overlay">
@@ -29,27 +45,19 @@ function EditQuizPopup({ quiz, onClose }) {
         </div>
 
         <div className="auth-input-group">
-          <label className="auth-input-label">Number of Questions</label>
+          <label className="auth-input-label">Due Date</label>
           <div className="auth-input-wrap">
-            <input
-              type="number"
-              className="auth-input"
-              value={questions}
-              onChange={(e) => setQuestions(e.target.value)}
-            />
+            <input type="date" className="auth-input" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
           </div>
         </div>
 
-        <div className="auth-input-group">
-          <label className="auth-input-label">Due Date</label>
-          <div className="auth-input-wrap">
-            <input className="auth-input" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-          </div>
-        </div>
+        {error && <p className="auth-error-text">{error}</p>}
 
         <div className="feedback-confirm-btn-row">
           <button className="generic-popup-btn-outline" onClick={onClose}>Back</button>
-          <button className="generic-popup-btn" onClick={onClose}>Save</button>
+          <button className="generic-popup-btn" disabled={saving} onClick={handleSave}>
+            {saving ? 'Saving...' : 'Save'}
+          </button>
         </div>
       </div>
     </div>

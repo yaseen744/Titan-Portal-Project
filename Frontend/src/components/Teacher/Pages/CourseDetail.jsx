@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -6,12 +6,12 @@ import {
   faFileLines, faFileCircleQuestion, faChartLine,
 } from '@fortawesome/free-solid-svg-icons'
 import TeacherTopbar from '../Layout/TeacherTopbar.jsx'
-import { courses } from '../data/teacherData.js'
 import CourseStudentsTab from './CourseStudentsTab.jsx'
 import CourseAttendanceTab from './CourseAttendanceTab.jsx'
 import CourseAssignmentsTab from './CourseAssignmentsTab.jsx'
 import CourseQuizzesTab from './CourseQuizzesTab.jsx'
 import CourseProgressTab from './CourseProgressTab.jsx'
+import api from '../../../api/axios.js'
 
 const tabs = [
   { id: 'students', label: 'Students', icon: faUserGroup },
@@ -22,12 +22,49 @@ const tabs = [
 ]
 
 function CourseDetail() {
-  const { courseId } = useParams()
-  const course = useMemo(() => courses.find((c) => c.id === courseId), [courseId])
+  const { courseId } = useParams() // this is actually the batchId
+  const [course, setCourse] = useState(null)
+  const [students, setStudents] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('students')
   const [search, setSearch] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
   const [filter, setFilter] = useState('All')
+
+  useEffect(() => {
+    api.get(`/teacher/courses/${courseId}`)
+      .then(({ data }) => {
+        setCourse({
+          id: data.course._id,
+          batchId: data.course._id,
+          courseId: data.course.courseId,
+          title: data.course.courseName,
+          batchLabel: data.course.batchNumber,
+          campus: data.course.campus,
+          city: data.course.city,
+        })
+        setStudents(
+          (data.students || []).map((s) => ({
+            id: s._id,
+            name: s.name,
+            roll: s.rollNumber,
+            photo: s.profilePic,
+            email: s.email,
+            status: s.enrollmentStatus === 'dropped' ? 'Dropped' : 'Enrolled',
+          }))
+        )
+      })
+      .catch((err) => console.error('Could not load course detail', err))
+      .finally(() => setLoading(false))
+  }, [courseId])
+
+  if (loading) {
+    return (
+      <div className="teacher-page">
+        <p>Loading course...</p>
+      </div>
+    )
+  }
 
   if (!course) {
     return (
@@ -36,6 +73,12 @@ function CourseDetail() {
       </div>
     )
   }
+
+  const filteredStudents = students.filter(
+    (s) =>
+      s.name.toLowerCase().includes(search.toLowerCase()) &&
+      (filter === 'All' || (filter === 'Enrolled' && s.status === 'Enrolled'))
+  )
 
   return (
     <div className="teacher-page">
@@ -92,7 +135,7 @@ function CourseDetail() {
         ))}
       </div>
 
-      {activeTab === 'students' && <CourseStudentsTab course={course} search={search} />}
+      {activeTab === 'students' && <CourseStudentsTab course={course} students={filteredStudents} />}
       {activeTab === 'attendance' && <CourseAttendanceTab course={course} />}
       {activeTab === 'assignments' && <CourseAssignmentsTab course={course} />}
       {activeTab === 'quizzes' && <CourseQuizzesTab course={course} />}

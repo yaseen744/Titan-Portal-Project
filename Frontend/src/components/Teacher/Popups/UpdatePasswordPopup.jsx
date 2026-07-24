@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faLock, faCircleCheck } from '@fortawesome/free-solid-svg-icons'
+import api from '../../../api/axios.js'
 
 function UpdatePasswordPopup({ show, onClose }) {
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   if (!show) return null
 
@@ -15,10 +18,24 @@ function UpdatePasswordPopup({ show, onClose }) {
     setNewPassword('')
     setConfirmPassword('')
     setSaved(false)
+    setError('')
     onClose()
   }
 
-  const canApply = oldPassword && newPassword && confirmPassword
+  const canApply = oldPassword && newPassword && confirmPassword && newPassword === confirmPassword
+
+  const handleApply = async () => {
+    setError('')
+    setSaving(true)
+    try {
+      await api.put('/teacher/password', { oldPassword, newPassword })
+      setSaved(true)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not update password. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (saved) {
     return (
@@ -27,11 +44,9 @@ function UpdatePasswordPopup({ show, onClose }) {
           <div className="generic-popup-icon-wrap">
             <FontAwesomeIcon icon={faCircleCheck} className="generic-popup-icon" />
           </div>
-          <h3 className="generic-popup-title">Save Changes</h3>
+          <h3 className="generic-popup-title">Password Updated</h3>
           <p className="generic-popup-text">
-            Your password change request has been recorded. Since there's no database connected
-            yet, this won't actually update your login — but this is exactly how it'll work once
-            the backend is in place.
+            Your password has been changed successfully. Use your new password next time you log in.
           </p>
           <button className="generic-popup-btn" onClick={handleClose}>Okay</button>
         </div>
@@ -70,9 +85,13 @@ function UpdatePasswordPopup({ show, onClose }) {
           </div>
         </div>
 
+        {error && <p className="auth-error-text">{error}</p>}
+
         <div className="feedback-confirm-btn-row">
           <button className="generic-popup-btn-outline" onClick={handleClose}>Back</button>
-          <button className="generic-popup-btn" disabled={!canApply} onClick={() => setSaved(true)}>Apply</button>
+          <button className="generic-popup-btn" disabled={!canApply || saving} onClick={handleApply}>
+            {saving ? 'Applying...' : 'Apply'}
+          </button>
         </div>
       </div>
     </div>

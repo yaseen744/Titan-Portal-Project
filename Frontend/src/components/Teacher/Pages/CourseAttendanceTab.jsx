@@ -1,25 +1,41 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserGroup, faUserCheck, faUserClock, faUserXmark } from '@fortawesome/free-solid-svg-icons'
-import { getStudentsForCourse, getCourseAttendanceForDate } from '../data/teacherData.js'
+import api from '../../../api/axios.js'
 
 function statusClass(status) {
-  if (status === 'Present') return 'attendance-status-present'
-  if (status === 'Leave') return 'attendance-status-leave'
+  if (status === 'present') return 'attendance-status-present'
+  if (status === 'leave') return 'attendance-status-leave'
   return 'attendance-status-absent'
 }
 
+function statusLabel(status) {
+  if (status === 'present') return 'Present'
+  if (status === 'leave') return 'Leave'
+  return 'Absent'
+}
+
 function CourseAttendanceTab({ course }) {
-  const [selectedDate, setSelectedDate] = useState('2026-06-17')
-  const students = useMemo(() => getStudentsForCourse(course), [course])
+  const today = new Date().toISOString().slice(0, 10)
+  const [selectedDate, setSelectedDate] = useState(today)
+  const [records, setRecords] = useState([])
+  const [stats, setStats] = useState({ total: 0, present: 0, absent: 0, leave: 0 })
 
-  const dayOfMonth = new Date(selectedDate).getDate()
-  const records = useMemo(() => getCourseAttendanceForDate(students, dayOfMonth), [students, dayOfMonth])
-
-  const total = records.length
-  const present = records.filter((r) => r.status === 'Present').length
-  const leave = records.filter((r) => r.status === 'Leave').length
-  const absent = records.filter((r) => r.status === 'Absent').length
+  useEffect(() => {
+    api.get('/teacher/attendance', { params: { batchId: course.batchId, date: selectedDate } })
+      .then(({ data }) => {
+        setStats({ total: data.total, present: data.present, absent: data.absent, leave: data.leave })
+        setRecords(
+          (data.students || []).map((s) => ({
+            id: s.studentId,
+            name: s.name,
+            roll: s.rollNumber,
+            status: s.status,
+          }))
+        )
+      })
+      .catch((err) => console.error('Could not load attendance', err))
+  }, [course.batchId, selectedDate])
 
   return (
     <div className="course-tab-box">
@@ -37,22 +53,22 @@ function CourseAttendanceTab({ course }) {
       <div className="attendance-stat-row">
         <div className="attendance-stat-box">
           <FontAwesomeIcon icon={faUserGroup} className="attendance-stat-icon" />
-          <span className="attendance-stat-value">{total}</span>
+          <span className="attendance-stat-value">{stats.total}</span>
           <span className="attendance-stat-label">Total Students</span>
         </div>
         <div className="attendance-stat-box">
           <FontAwesomeIcon icon={faUserCheck} className="attendance-stat-icon" />
-          <span className="attendance-stat-value">{present}</span>
+          <span className="attendance-stat-value">{stats.present}</span>
           <span className="attendance-stat-label">Present</span>
         </div>
         <div className="attendance-stat-box">
           <FontAwesomeIcon icon={faUserClock} className="attendance-stat-icon" />
-          <span className="attendance-stat-value">{leave}</span>
+          <span className="attendance-stat-value">{stats.leave}</span>
           <span className="attendance-stat-label">Leave</span>
         </div>
         <div className="attendance-stat-box">
           <FontAwesomeIcon icon={faUserXmark} className="attendance-stat-icon" />
-          <span className="attendance-stat-value">{absent}</span>
+          <span className="attendance-stat-value">{stats.absent}</span>
           <span className="attendance-stat-label">Absent</span>
         </div>
       </div>
@@ -67,7 +83,7 @@ function CourseAttendanceTab({ course }) {
         <div key={r.id} className="student-row course-attendance-row">
           <span className="student-row-name">{r.name}</span>
           <span>{r.roll}</span>
-          <span className={`attendance-status-chip ${statusClass(r.status)}`}>{r.status}</span>
+          <span className={`attendance-status-chip ${statusClass(r.status)}`}>{statusLabel(r.status)}</span>
         </div>
       ))}
     </div>

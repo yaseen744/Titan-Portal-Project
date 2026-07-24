@@ -1,24 +1,19 @@
 import { useState, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
-import { getStudentsForCourse } from '../data/teacherData.js'
 import StudentDetailPopup from '../Popups/StudentDetailPopup.jsx'
 import Avatar from '../../Media/Avatar.jsx'
 
 const PAGE_SIZE = 8
 
-function CourseStudentsTab({ course, search }) {
-  const allStudents = useMemo(() => getStudentsForCourse(course), [course])
-  const filtered = useMemo(
-    () => allStudents.filter((s) => s.name.toLowerCase().includes(search.toLowerCase())),
-    [allStudents, search]
-  )
+function CourseStudentsTab({ course, students }) {
+  const allStudents = students || []
   const [page, setPage] = useState(1)
   const [viewing, setViewing] = useState(null)
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const totalPages = Math.max(1, Math.ceil(allStudents.length / PAGE_SIZE))
   const start = (page - 1) * PAGE_SIZE
-  const pageItems = filtered.slice(start, start + PAGE_SIZE)
+  const pageItems = allStudents.slice(start, start + PAGE_SIZE)
 
   return (
     <div className="course-tab-box">
@@ -46,7 +41,7 @@ function CourseStudentsTab({ course, search }) {
 
       <div className="assignment-pagination-row">
         <span className="assignment-pagination-text">
-          Showing {start + 1}-{Math.min(start + PAGE_SIZE, filtered.length)} of {filtered.length} records
+          Showing {start + 1}-{Math.min(start + PAGE_SIZE, allStudents.length)} of {allStudents.length} records
         </span>
         <div className="assignment-pagination-btns">
           <button type="button" className="assignment-page-btn" disabled={page === 1} onClick={() => setPage(page - 1)}>
