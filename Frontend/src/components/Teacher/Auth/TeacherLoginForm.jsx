@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEnvelope, faLock, faEye, faEyeSlash, faRightToBracket, faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 
-function TeacherLoginForm({ onSubmit, onSwitchToStudent, onForgotPassword }) {
+function TeacherLoginForm({ onSubmit, onSwitchToStudent, onForgotPassword, apiError, loading }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -68,8 +68,10 @@ function TeacherLoginForm({ onSubmit, onSwitchToStudent, onForgotPassword }) {
         {errors.password && <span className="auth-error-text">{errors.password}</span>}
       </div>
 
-      <button type="submit" className="auth-btn-primary">
-        <FontAwesomeIcon icon={faRightToBracket} /> Login
+      {apiError && <span className="auth-error-text">{apiError}</span>}
+
+      <button type="submit" className="auth-btn-primary" disabled={loading}>
+        <FontAwesomeIcon icon={faRightToBracket} /> {loading ? 'Logging in...' : 'Login'}
       </button>
 
       <button type="button" className="auth-link-btn" onClick={onForgotPassword}>

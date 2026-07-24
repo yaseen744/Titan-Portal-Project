@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import titanLogo from '../../Media/images/titan-logo.png'
 import Avatar from '../../Media/Avatar.jsx'
-import { teacherInfo } from '../data/teacherData.js'
+import { getTeacher } from '../../../api/session.js'
 
 const navItems = [
   { to: '/teacher/dashboard', label: 'Dashboard', icon: faGaugeHigh },
@@ -18,6 +18,7 @@ const navItems = [
 function TeacherSidebar({ onLogoutClick }) {
   const [collapsed, setCollapsed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const teacherInfo = getTeacher() || { name: '', profilePic: '' }
 
   return (
     <aside className={`teacher-sidebar ${collapsed ? 'teacher-sidebar-collapsed' : ''}`}>
@@ -50,7 +51,7 @@ function TeacherSidebar({ onLogoutClick }) {
 
       <div className="teacher-sidebar-profile-wrap">
         <button type="button" className="teacher-sidebar-profile" onClick={() => setMenuOpen(!menuOpen)}>
-          <Avatar name={teacherInfo.name} photoUrl={teacherInfo.photo} className="teacher-sidebar-avatar" />
+          <Avatar name={teacherInfo.name} photoUrl={teacherInfo.profilePic} className="teacher-sidebar-avatar" />
           <span className="teacher-sidebar-name">{teacherInfo.name}</span>
         </button>
 

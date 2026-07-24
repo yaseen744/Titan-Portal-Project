@@ -1,14 +1,34 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faEye } from '@fortawesome/free-solid-svg-icons'
-import { getAssignmentsForCourse } from '../data/teacherData.js'
 import NewAssignmentPopup from '../Popups/NewAssignmentPopup.jsx'
 import ViewSubmissionsPopup from '../Popups/ViewSubmissionsPopup.jsx'
+import api from '../../../api/axios.js'
 
 function CourseAssignmentsTab({ course }) {
-  const assignments = useMemo(() => getAssignmentsForCourse(course), [course])
+  const [assignments, setAssignments] = useState([])
   const [showNew, setShowNew] = useState(false)
-  const [viewing, setViewing] = useState(null) // { assignment, index }
+  const [viewing, setViewing] = useState(null) // assignment object
+
+  const loadAssignments = () => {
+    api.get('/teacher/assignments', { params: { batchId: course.batchId } })
+      .then(({ data }) => {
+        setAssignments(
+          (data.assignments || []).map((a) => ({
+            id: a._id,
+            name: a.name,
+            type: a.type,
+            dueDate: a.dueDate ? new Date(a.dueDate).toLocaleDateString() : '',
+          }))
+        )
+      })
+      .catch((err) => console.error('Could not load assignments', err))
+  }
+
+  useEffect(() => {
+    loadAssignments()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course.batchId])
 
   return (
     <div className="course-tab-box">
@@ -28,7 +48,7 @@ function CourseAssignmentsTab({ course }) {
         <span>Action</span>
       </div>
 
-      {assignments.map((a, idx) => (
+      {assignments.map((a) => (
         <div key={a.id} className="teacher-assignment-list-row">
           <span className="assignment-row-name">{a.name}</span>
           <span className="assignment-row-course">Submit via GitHub / project link</span>
@@ -38,7 +58,7 @@ function CourseAssignmentsTab({ course }) {
             <FontAwesomeIcon
               icon={faEye}
               className="assignment-action-icon"
-              onClick={() => setViewing({ assignment: a, index: idx })}
+              onClick={() => setViewing(a)}
               title="View Submissions"
             />
           </span>
@@ -46,12 +66,16 @@ function CourseAssignmentsTab({ course }) {
         </div>
       ))}
 
-      <NewAssignmentPopup show={showNew} onClose={() => setShowNew(false)} />
+      <NewAssignmentPopup
+        show={showNew}
+        onClose={() => setShowNew(false)}
+        course={course}
+        onCreated={loadAssignments}
+      />
 
       {viewing && (
         <ViewSubmissionsPopup
-          assignment={viewing.assignment}
-          assignmentIndex={viewing.index}
+          assignment={viewing}
           course={course}
           onClose={() => setViewing(null)}
         />

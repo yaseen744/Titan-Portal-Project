@@ -2,6 +2,7 @@
 // in localStorage, so a page refresh doesn't log the student out.
 
 const KEY = 'titan_student_session'
+const TEACHER_KEY = 'titan_teacher_session'
 
 export function saveSession(token, student) {
   localStorage.setItem(KEY, JSON.stringify({ token, student }))
@@ -14,6 +15,39 @@ export function getSession() {
 
 export function getToken() {
   return getSession()?.token || null
+}
+
+// ---------------- Teacher session (separate from student) ----------------
+export function saveTeacherSession(token, teacher) {
+  localStorage.setItem(TEACHER_KEY, JSON.stringify({ token, teacher }))
+}
+
+export function getTeacherSession() {
+  const raw = localStorage.getItem(TEACHER_KEY)
+  return raw ? JSON.parse(raw) : null
+}
+
+export function getTeacherToken() {
+  return getTeacherSession()?.token || null
+}
+
+export function getTeacher() {
+  return getTeacherSession()?.teacher || null
+}
+
+export function updateTeacherFields(partial) {
+  const session = getTeacherSession()
+  if (!session) return
+  const merged = { ...session.teacher, ...partial }
+  saveTeacherSession(session.token, merged)
+}
+
+export function clearTeacherSession() {
+  localStorage.removeItem(TEACHER_KEY)
+}
+
+export function isTeacherLoggedIn() {
+  return !!getTeacherToken()
 }
 
 export function getStudent() {

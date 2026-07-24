@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -11,14 +11,26 @@ import UpdatePasswordPopup from '../Popups/UpdatePasswordPopup.jsx'
 import WaitingPopup from '../../Media/WaitingPopup.jsx'
 import Avatar from '../../Media/Avatar.jsx'
 import titanLogo from '../../Media/images/titan-logo.png'
-import { teacherInfo as initialInfo } from '../data/teacherData.js'
+import api from '../../../api/axios.js'
+import { getTeacher, updateTeacherFields, clearTeacherSession } from '../../../api/session.js'
 
 function TeacherProfile() {
   const navigate = useNavigate()
-  const [info, setInfo] = useState(initialInfo)
+  const [info, setInfo] = useState(getTeacher() || {})
   const [showEdit, setShowEdit] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showLogout, setShowLogout] = useState(false)
+
+  useEffect(() => {
+    api.get('/teacher/dashboard')
+      .then(({ data }) => {
+        if (data.teacher) {
+          updateTeacherFields(data.teacher)
+          setInfo(getTeacher())
+        }
+      })
+      .catch((err) => console.error('Could not load profile', err))
+  }, [])
 
   return (
     <div className="teacher-page profile-page-bg">
@@ -30,7 +42,7 @@ function TeacherProfile() {
           <img src={titanLogo} alt="Titan" className="profile-banner-logo" />
         </div>
 
-        <Avatar name={info.name} photoUrl={info.photo} className="profile-photo" />
+        <Avatar name={info.name} photoUrl={info.profilePic} className="profile-photo" />
 
         <div className="profile-action-btns">
           <button type="button" className="profile-edit-btn" onClick={() => setShowEdit(true)}>
@@ -91,7 +103,19 @@ function TeacherProfile() {
         show={showEdit}
         info={info}
         onClose={() => setShowEdit(false)}
-        onSave={(newInfo) => setInfo(newInfo)}
+        onSave={(newInfo) => {
+          setInfo(newInfo)
+          api.put('/teacher/profile', {
+            name: newInfo.name,
+            email: newInfo.email,
+            phone: newInfo.phone,
+            bio: newInfo.bio,
+            hourlyRate: newInfo.hourlyRate,
+            socialLinks: newInfo.socialLinks,
+          })
+            .then(({ data }) => updateTeacherFields(data.teacher))
+            .catch((err) => console.error('Could not save profile', err))
+        }}
       />
 
       <UpdatePasswordPopup show={showPassword} onClose={() => setShowPassword(false)} />
@@ -100,7 +124,10 @@ function TeacherProfile() {
         show={showLogout}
         label="Logging out..."
         durationMs={5000}
-        onComplete={() => navigate('/')}
+        onComplete={() => {
+          clearTeacherSession()
+          navigate('/')
+        }}
       />
     </div>
   )

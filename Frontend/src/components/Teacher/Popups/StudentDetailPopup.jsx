@@ -1,18 +1,26 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faUserGraduate } from '@fortawesome/free-solid-svg-icons'
-import {
-  getAssignmentsForCourse, studentAssignmentStatus, getQuizzesForCourse, studentQuizResult,
-} from '../data/teacherData.js'
+import api from '../../../api/axios.js'
 
 const tabs = ['Attendance', 'Assignments', 'Quizzes']
 
 function StudentDetailPopup({ student, course, onClose }) {
   const [tab, setTab] = useState('Attendance')
+  const [detail, setDetail] = useState(null)
+
+  useEffect(() => {
+    if (!student) return
+    api.get(`/teacher/students/${student.id}`)
+      .then(({ data }) => setDetail(data))
+      .catch((err) => console.error('Could not load student detail', err))
+  }, [student])
+
   if (!student) return null
 
-  const assignments = getAssignmentsForCourse(course)
-  const quizzes = getQuizzesForCourse(course)
+  const attendancePercent = detail?.attendancePercent || 0
+  const assignments = detail?.assignmentStatus || []
+  const quizzes = detail?.quizStatus || []
 
   return (
     <div className="generic-popup-overlay">
@@ -45,23 +53,27 @@ function StudentDetailPopup({ student, course, onClose }) {
           <div className="student-detail-section">
             <div className="attendance-overview-track">
               <div
-                className={`attendance-overview-fill ${student.attendancePercent >= 70 ? 'attendance-overview-fill-good' : 'attendance-overview-fill-bad'}`}
-                style={{ width: `${student.attendancePercent}%` }}
+                className={`attendance-overview-fill ${attendancePercent >= 70 ? 'attendance-overview-fill-good' : 'attendance-overview-fill-bad'}`}
+                style={{ width: `${attendancePercent}%` }}
               ></div>
             </div>
-            <p className="student-detail-percent-label">{student.attendancePercent}% Present</p>
+            <p className="student-detail-percent-label">{attendancePercent}% Present</p>
           </div>
         )}
 
         {tab === 'Assignments' && (
           <div className="student-detail-section">
-            {assignments.map((a, idx) => {
-              const status = studentAssignmentStatus(student.index, idx)
+            {assignments.map((a) => {
+              const label = a.status === 'not submitted' ? 'Not Submitted'
+                : a.status === 'approved' ? 'Approved'
+                : a.status === 'disapproved' ? 'Not Approved'
+                : a.status === 'late' ? 'Late'
+                : 'Submitted'
               return (
-                <div key={a.id} className="student-detail-row">
+                <div key={a.assignmentId} className="student-detail-row">
                   <span>{a.name}</span>
-                  <span className={`assignment-status-chip assignment-status-${status.replace(/\s+/g, '-').toLowerCase()}`}>
-                    {status}
+                  <span className={`assignment-status-chip assignment-status-${label.replace(/\s+/g, '-').toLowerCase()}`}>
+                    {label}
                   </span>
                 </div>
               )
@@ -71,17 +83,14 @@ function StudentDetailPopup({ student, course, onClose }) {
 
         {tab === 'Quizzes' && (
           <div className="student-detail-section">
-            {quizzes.map((q) => {
-              const result = studentQuizResult(student.index, q)
-              return (
-                <div key={q.id} className="student-detail-row">
-                  <span>{q.name}</span>
-                  <span className={`quiz-status-chip ${result.statusLabel === 'Pass' ? 'quiz-status-passed' : 'quiz-status-failed'}`}>
-                    {result.score} ({result.percentage}%)
-                  </span>
-                </div>
-              )
-            })}
+            {quizzes.map((q) => (
+              <div key={q.quizId} className="student-detail-row">
+                <span>{q.name}</span>
+                <span className={`quiz-status-chip ${q.passed ? 'quiz-status-passed' : 'quiz-status-failed'}`}>
+                  {q.percentage}%
+                </span>
+              </div>
+            ))}
           </div>
         )}
 
