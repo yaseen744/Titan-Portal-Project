@@ -1,12 +1,15 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faFileCirclePlus, faCircleCheck } from '@fortawesome/free-solid-svg-icons'
+import api from '../../../api/axios.js'
 
-function NewAssignmentPopup({ show, onClose }) {
+function NewAssignmentPopup({ show, onClose, course, onCreated }) {
   const [name, setName] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [description, setDescription] = useState('')
   const [created, setCreated] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   if (!show) return null
 
@@ -17,7 +20,27 @@ function NewAssignmentPopup({ show, onClose }) {
     setDueDate('')
     setDescription('')
     setCreated(false)
+    setError('')
     onClose()
+  }
+
+  const handleCreate = async () => {
+    setError('')
+    setSaving(true)
+    try {
+      await api.post('/teacher/assignments', {
+        batchId: course.batchId,
+        name,
+        description,
+        dueDate,
+      })
+      setCreated(true)
+      if (onCreated) onCreated()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not create assignment. Please try again.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (created) {
@@ -29,8 +52,7 @@ function NewAssignmentPopup({ show, onClose }) {
           </div>
           <h3 className="generic-popup-title">Created!</h3>
           <p className="generic-popup-text">
-            Your assignment has been created. (This is a frontend demo - it won't actually be
-            saved until the database is connected.)
+            Your assignment has been created and is now visible to your students.
           </p>
           <div className="feedback-confirm-btn-row">
             <button className="generic-popup-btn-outline" onClick={handleClose}>Back</button>
@@ -78,9 +100,13 @@ function NewAssignmentPopup({ show, onClose }) {
           ></textarea>
         </div>
 
+        {error && <p className="auth-error-text">{error}</p>}
+
         <div className="feedback-confirm-btn-row">
           <button className="generic-popup-btn-outline" onClick={handleClose}>Back</button>
-          <button className="generic-popup-btn" disabled={!canCreate} onClick={() => setCreated(true)}>Create</button>
+          <button className="generic-popup-btn" disabled={!canCreate || saving} onClick={handleCreate}>
+            {saving ? 'Creating...' : 'Create'}
+          </button>
         </div>
       </div>
     </div>

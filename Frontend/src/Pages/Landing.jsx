@@ -15,7 +15,7 @@ import TeacherLoginForm from '../components/Teacher/Auth/TeacherLoginForm.jsx'
 import SubAdminLoginForm from '../components/Admin/SubAdmin/Auth/SubAdminLoginForm.jsx'
 import SuperAdminLoginForm from '../components/Admin/SuperAdmin/Auth/SuperAdminLoginForm.jsx'
 import api from '../api/axios.js'
-import { saveSession } from '../api/session.js'
+import { saveSession, saveTeacherSession } from '../api/session.js'
 
 function Landing() {
   const navigate = useNavigate()
@@ -72,6 +72,21 @@ function Landing() {
   // keep the original mock behaviour (just shows the waiting popup).
   const handleFormSubmit = () => {
     setShowWaiting(true)
+  }
+
+  // Called once the Teacher Login form is validly filled in. Hits the real backend.
+  const handleTeacherLogin = async ({ email, password }) => {
+    setAuthError('')
+    setAuthLoading(true)
+    try {
+      const { data } = await api.post('/teacher/login', { email, password })
+      saveTeacherSession(data.token, data.teacher)
+      setShowWaiting(true)
+    } catch (err) {
+      setAuthError(err.response?.data?.message || 'Login failed. Please try again.')
+    } finally {
+      setAuthLoading(false)
+    }
   }
 
   const handleWaitingComplete = () => {
@@ -155,8 +170,10 @@ function Landing() {
 
           {role === 'teacher' && (
             <TeacherLoginForm
-              onSubmit={handleFormSubmit}
+              onSubmit={handleTeacherLogin}
               onSwitchToStudent={switchToStudent}
+              apiError={authError}
+              loading={authLoading}
               onForgotPassword={() => setShowForgotPassword(true)}
             />
           )}

@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import TeacherTopbar from '../Layout/TeacherTopbar.jsx'
-import { getCalendarEventsForMonth } from '../data/teacherData.js'
 import { monthName } from '../../Media/dateUtils.js'
+import api from '../../../api/axios.js'
 
 const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const CHIP_THEMES = ['green', 'blue', 'red', 'silver']
 
 function buildGrid(year, monthIndex) {
   const firstDay = new Date(year, monthIndex, 1).getDay()
@@ -18,17 +19,34 @@ function buildGrid(year, monthIndex) {
 }
 
 function Calendar() {
-  const [year, setYear] = useState(2026)
-  const [monthIndex, setMonthIndex] = useState(5) // June 2026
+  const now = new Date()
+  const [year, setYear] = useState(now.getFullYear())
+  const [monthIndex, setMonthIndex] = useState(now.getMonth())
+  const [courses, setCourses] = useState([])
 
-  const minDate = { year: 2025, month: 9 } // Oct 2025
-  const maxDate = { year: 2026, month: 5 } // Jun 2026
+  useEffect(() => {
+    api.get('/teacher/courses')
+      .then(({ data }) => setCourses(data.courses || []))
+      .catch((err) => console.error('Could not load courses for calendar', err))
+  }, [])
 
   const cells = buildGrid(year, monthIndex)
-  const events = getCalendarEventsForMonth(year, monthIndex)
+
+  // Build events per day-of-month based on each batch's scheduled weekdays
+  const events = {}
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate()
+  courses.forEach((c, idx) => {
+    const theme = CHIP_THEMES[idx % CHIP_THEMES.length]
+    for (let d = 1; d <= daysInMonth; d++) {
+      const weekday = weekdayLabels[new Date(year, monthIndex, d).getDay()]
+      if ((c.days || []).includes(weekday)) {
+        if (!events[d]) events[d] = []
+        events[d].push({ title: `${c.courseName} (${c.batchNumber})`, colorTheme: theme })
+      }
+    }
+  })
 
   const goPrev = () => {
-    if (year === minDate.year && monthIndex === minDate.month) return
     if (monthIndex === 0) {
       setMonthIndex(11)
       setYear(year - 1)
@@ -38,7 +56,6 @@ function Calendar() {
   }
 
   const goNext = () => {
-    if (year === maxDate.year && monthIndex === maxDate.month) return
     if (monthIndex === 11) {
       setMonthIndex(0)
       setYear(year + 1)
