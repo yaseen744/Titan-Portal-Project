@@ -2,12 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faGraduationCap, faIdBadge, faSchool, faCity, faArrowUpRightFromSquare,
 } from '@fortawesome/free-solid-svg-icons'
-import { classSchedule } from '../data/studentData.js'
-import { getStudentInfo } from '../../../api/session.js'
+import { studentInfo, classSchedule } from '../data/studentData.js'
 
 function CourseSummaryCard({ showSchedule = false, onViewDetail }) {
-  const studentInfo = getStudentInfo() || { batch: '', rollNo: '', campus: '', city: '' }
-
   return (
     <div className="course-card">
       <div className="course-card-header">

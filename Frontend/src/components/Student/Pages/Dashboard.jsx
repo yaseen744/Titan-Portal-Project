@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -7,10 +7,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import StudentTopbar from '../Layout/StudentTopbar.jsx'
 import CourseSummaryCard from './CourseSummaryCard.jsx'
-import { payments } from '../data/studentData.js'
+import { attendanceOverall, assignmentSummary, payments } from '../data/studentData.js'
 import { getCurrentWeekDates, dayName } from '../../Media/dateUtils.js'
-import api from '../../../api/axios.js'
-import { updateStudentFields } from '../../../api/session.js'
 
 const activityTabs = [
   { id: 'assignments', label: 'Assignments', icon: faFileLines, message: 'No Upcoming Assignments' },
@@ -25,25 +23,6 @@ function Dashboard() {
   const weekDates = getCurrentWeekDates()
   const currentChallan = payments[0]
 
-  // Real data from the backend - assignments count comes from /dashboard,
-  // attendance percentage comes from /attendance.
-  const [assignmentsTotal, setAssignmentsTotal] = useState(0)
-  const [attendancePercent, setAttendancePercent] = useState(0)
-
-  useEffect(() => {
-    api.get('/student/dashboard')
-      .then(({ data }) => {
-        setAssignmentsTotal(data.assignmentsCount || 0)
-        // keep the cached session in sync with populated course/batch info
-        if (data.student) updateStudentFields(data.student)
-      })
-      .catch((err) => console.error('Could not load dashboard data', err))
-
-    api.get('/student/attendance')
-      .then(({ data }) => setAttendancePercent(data.percentage || 0))
-      .catch((err) => console.error('Could not load attendance data', err))
-  }, [])
-
   return (
     <div className="student-page">
       <StudentTopbar breadcrumb={['Home', 'Dashboard']} onFeedbackClick={openFeedback} />
@@ -51,13 +30,13 @@ function Dashboard() {
       <div className="dashboard-top-row">
         <button type="button" className="dashboard-stat-card" onClick={() => navigate('/student/attendance')}>
           <FontAwesomeIcon icon={faCalendarCheck} className="dashboard-stat-icon" />
-          <span className="dashboard-stat-value">{attendancePercent}%</span>
+          <span className="dashboard-stat-value">{attendanceOverall.percent}%</span>
           <span className="dashboard-stat-label">Attendance</span>
         </button>
 
         <button type="button" className="dashboard-stat-card" onClick={() => navigate('/student/assignment')}>
           <FontAwesomeIcon icon={faFileLines} className="dashboard-stat-icon" />
-          <span className="dashboard-stat-value">{assignmentsTotal}</span>
+          <span className="dashboard-stat-value">{assignmentSummary.total}</span>
           <span className="dashboard-stat-label">Assignments</span>
         </button>
 

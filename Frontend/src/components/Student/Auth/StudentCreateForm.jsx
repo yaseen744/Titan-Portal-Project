@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faIdCard, faLock, faEye, faEyeSlash, faCalendarDays, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 
-function StudentCreateForm({ onSubmit, apiError, loading }) {
+function StudentCreateForm({ onSubmit }) {
   const [cnic, setCnic] = useState('')
   const [dob, setDob] = useState('')
   const [password, setPassword] = useState('')
@@ -87,10 +87,8 @@ function StudentCreateForm({ onSubmit, apiError, loading }) {
         {errors.password && <span className="auth-error-text">{errors.password}</span>}
       </div>
 
-      {apiError && <span className="auth-error-text">{apiError}</span>}
-
-      <button type="submit" className="auth-btn-primary" disabled={loading}>
-        <FontAwesomeIcon icon={faUserPlus} /> {loading ? 'Submitting...' : 'Submit'}
+      <button type="submit" className="auth-btn-primary">
+        <FontAwesomeIcon icon={faUserPlus} /> Submit
       </button>
     </form>
   )

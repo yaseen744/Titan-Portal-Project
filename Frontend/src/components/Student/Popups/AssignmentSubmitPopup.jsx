@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faUpload, faPaperclip, faCircleCheck } from '@fortawesome/free-solid-svg-icons'
-import api from '../../../api/axios.js'
 
 // mode: 'submit' or 'edit'
 function AssignmentSubmitPopup({ assignment, mode = 'submit', onClose, onDone }) {
@@ -9,28 +8,14 @@ function AssignmentSubmitPopup({ assignment, mode = 'submit', onClose, onDone })
   const [fileName, setFileName] = useState('')
   const [description, setDescription] = useState(mode === 'edit' ? assignment?.submissionNotes || '' : '')
   const [done, setDone] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
 
   if (!assignment) return null
 
   const canSubmit = link.trim().length > 0 && description.trim().length > 0
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!canSubmit) return
-    setError('')
-    setSaving(true)
-    try {
-      await api.post('/student/assignments/submit', {
-        assignmentId: assignment.id,
-        content: JSON.stringify({ link, notes: description }),
-      })
-      setDone(true)
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not submit assignment. Please try again.')
-    } finally {
-      setSaving(false)
-    }
+    setDone(true)
   }
 
   if (done) {
@@ -100,14 +85,12 @@ function AssignmentSubmitPopup({ assignment, mode = 'submit', onClose, onDone })
           ></textarea>
         </div>
 
-        {error && <p className="auth-error-text">{error}</p>}
-
         <div className="feedback-confirm-btn-row">
           <button className="generic-popup-btn-outline" onClick={onClose}>
             Back
           </button>
-          <button className="generic-popup-btn" disabled={!canSubmit || saving} onClick={handleSubmit}>
-            {saving ? 'Saving...' : mode === 'edit' ? 'Save' : 'Submit'}
+          <button className="generic-popup-btn" disabled={!canSubmit} onClick={handleSubmit}>
+            {mode === 'edit' ? 'Save' : 'Submit'}
           </button>
         </div>
       </div>

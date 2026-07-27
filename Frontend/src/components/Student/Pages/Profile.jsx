@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -10,26 +10,14 @@ import EditProfilePopup from '../Popups/EditProfilePopup.jsx'
 import WaitingPopup from '../../Media/WaitingPopup.jsx'
 import Avatar from '../../Media/Avatar.jsx'
 import titanLogo from '../../Media/images/titan-logo.png'
-import api from '../../../api/axios.js'
-import { getStudentInfo, updateStudentFields, clearSession } from '../../../api/session.js'
+import { studentInfo as initialInfo } from '../data/studentData.js'
 
 function Profile() {
   const navigate = useNavigate()
   const { openFeedback } = useOutletContext()
-  const [info, setInfo] = useState(getStudentInfo() || {})
+  const [info, setInfo] = useState(initialInfo)
   const [showEdit, setShowEdit] = useState(false)
   const [showLogout, setShowLogout] = useState(false)
-
-  useEffect(() => {
-    api.get('/student/dashboard')
-      .then(({ data }) => {
-        if (data.student) {
-          updateStudentFields(data.student)
-          setInfo(getStudentInfo())
-        }
-      })
-      .catch((err) => console.error('Could not load profile data', err))
-  }, [])
 
   return (
     <div className="student-page profile-page-bg">
@@ -90,29 +78,14 @@ function Profile() {
         show={showEdit}
         info={info}
         onClose={() => setShowEdit(false)}
-        onSave={(newInfo) => {
-          setInfo(newInfo)
-          api.put('/student/profile', {
-            name: newInfo.name,
-            email: newInfo.email,
-            phone: newInfo.phone,
-            gender: newInfo.gender,
-            dob: newInfo.dob,
-            address: newInfo.address,
-          })
-            .then(({ data }) => updateStudentFields(data.student))
-            .catch((err) => console.error('Could not save profile', err))
-        }}
+        onSave={(newInfo) => setInfo(newInfo)}
       />
 
       <WaitingPopup
         show={showLogout}
         label="Logging out..."
         durationMs={5000}
-        onComplete={() => {
-          clearSession()
-          navigate('/')
-        }}
+        onComplete={() => navigate('/')}
       />
     </div>
   )

@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import titanLogo from '../../Media/images/titan-logo.png'
 import Avatar from '../../Media/Avatar.jsx'
-import { getStudentInfo } from '../../../api/session.js'
+import { studentInfo } from '../data/studentData.js'
 
 const navItems = [
   { to: '/student/dashboard', label: 'Dashboard', icon: faGaugeHigh },
@@ -21,7 +21,6 @@ const navItems = [
 function StudentSidebar({ onLogoutClick }) {
   const [collapsed, setCollapsed] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const studentInfo = getStudentInfo() || { name: '', photo: '' }
 
   return (
     <aside className={`student-sidebar ${collapsed ? 'student-sidebar-collapsed' : ''}`}>

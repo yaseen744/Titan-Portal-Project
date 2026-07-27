@@ -4,7 +4,6 @@ import {
   faBug, faLightbulb, faCommentDots, faXmark, faImage,
   faPaperPlane, faCircleCheck,
 } from '@fortawesome/free-solid-svg-icons'
-import api from '../../../api/axios.js'
 
 const feedbackTypes = [
   { id: 'bug', label: 'Bug', icon: faBug },
@@ -18,8 +17,6 @@ function FeedbackPopup({ show, onClose }) {
   const [type, setType] = useState('bug')
   const [text, setText] = useState('')
   const [images, setImages] = useState([])
-  const [sending, setSending] = useState(false)
-  const [error, setError] = useState('')
 
   if (!show) return null
 
@@ -28,7 +25,6 @@ function FeedbackPopup({ show, onClose }) {
     setType('bug')
     setText('')
     setImages([])
-    setError('')
     onClose()
   }
 
@@ -38,23 +34,6 @@ function FeedbackPopup({ show, onClose }) {
   }
 
   const canSend = text.trim().length > 0
-
-  const handleConfirm = async () => {
-    setError('')
-    setSending(true)
-    try {
-      await api.post('/student/feedback', {
-        type,
-        message: text,
-        image: images.join(', '),
-      })
-      setStep('thanks')
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not send feedback. Please try again.')
-    } finally {
-      setSending(false)
-    }
-  }
 
   return (
     <div className="generic-popup-overlay">
@@ -127,11 +106,10 @@ function FeedbackPopup({ show, onClose }) {
             <button className="generic-popup-btn-outline" onClick={() => setStep('form')}>
               Back
             </button>
-            <button className="generic-popup-btn" disabled={sending} onClick={handleConfirm}>
-              {sending ? 'Sending...' : 'Confirm'}
+            <button className="generic-popup-btn" onClick={() => setStep('thanks')}>
+              Confirm
             </button>
           </div>
-          {error && <p className="auth-error-text">{error}</p>}
         </div>
       )}
 

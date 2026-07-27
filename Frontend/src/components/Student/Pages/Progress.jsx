@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -6,54 +6,11 @@ import {
   faSquareCheck, faClock,
 } from '@fortawesome/free-solid-svg-icons'
 import StudentTopbar from '../Layout/StudentTopbar.jsx'
-import { formatDate } from '../../Media/dateUtils.js'
-import api from '../../../api/axios.js'
-
-// Converts a raw Progress document (populated with its Module) into the
-// exact shape the UI already expects (same field names as the old dummy data).
-function mapProgressDoc(doc) {
-  const moduleTopics = doc.module?.topics || []
-  const topicStatusById = {}
-  for (const t of doc.topics || []) {
-    topicStatusById[t.topic] = t
-  }
-
-  const topics = moduleTopics.map((mt) => {
-    const status = topicStatusById[mt._id]
-    return {
-      name: mt.name,
-      completed: !!status?.completed,
-      date: status?.completedDate ? formatDate(new Date(status.completedDate)) : '',
-    }
-  })
-
-  const completedTopics = topics.filter((t) => t.completed).length
-  const totalTopics = topics.length
-  const percent = totalTopics ? Math.round((completedTopics / totalTopics) * 100) : 0
-
-  return {
-    title: doc.module?.title || 'Module',
-    completedTopics,
-    totalTopics,
-    percent,
-    topics,
-  }
-}
+import { progressModules, totalTopicsOverall, totalCompletedOverall, totalNotCompletedOverall } from '../data/studentData.js'
 
 function Progress() {
   const { openFeedback } = useOutletContext()
   const [openModules, setOpenModules] = useState({})
-  const [progressModules, setProgressModules] = useState([])
-
-  useEffect(() => {
-    api.get('/student/progress')
-      .then(({ data }) => setProgressModules((data.progress || []).map(mapProgressDoc)))
-      .catch((err) => console.error('Could not load progress data', err))
-  }, [])
-
-  const totalTopicsOverall = progressModules.reduce((sum, m) => sum + m.totalTopics, 0)
-  const totalCompletedOverall = progressModules.reduce((sum, m) => sum + m.completedTopics, 0)
-  const totalNotCompletedOverall = totalTopicsOverall - totalCompletedOverall
 
   const toggleModule = (title) => {
     setOpenModules((prev) => ({ ...prev, [title]: !prev[title] }))

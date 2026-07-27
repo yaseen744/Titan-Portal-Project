@@ -14,8 +14,6 @@ import StudentCreateForm from '../components/Student/Auth/StudentCreateForm.jsx'
 import TeacherLoginForm from '../components/Teacher/Auth/TeacherLoginForm.jsx'
 import SubAdminLoginForm from '../components/Admin/SubAdmin/Auth/SubAdminLoginForm.jsx'
 import SuperAdminLoginForm from '../components/Admin/SuperAdmin/Auth/SuperAdminLoginForm.jsx'
-import api from '../api/axios.js'
-import { saveSession } from '../api/session.js'
 
 function Landing() {
   const navigate = useNavigate()
@@ -29,47 +27,14 @@ function Landing() {
 
   const [showWaiting, setShowWaiting] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  const [authError, setAuthError] = useState('')
-  const [authLoading, setAuthLoading] = useState(false)
 
   const portalHeading =
     role === 'teacher' ? 'Trainer Portal' :
     role === 'admin' ? 'Admin Panel' :
     'Student Portal'
 
-  // Called once the Student Login form is validly filled in.
-  // Hits the real backend, saves the session, then shows the waiting popup.
-  const handleStudentLogin = async ({ cnic, password }) => {
-    setAuthError('')
-    setAuthLoading(true)
-    try {
-      const { data } = await api.post('/student/login', { cnic, password })
-      saveSession(data.token, data.student)
-      setShowWaiting(true)
-    } catch (err) {
-      setAuthError(err.response?.data?.message || 'Login failed. Please try again.')
-    } finally {
-      setAuthLoading(false)
-    }
-  }
-
-  // Called once the Student Create Account form is validly filled in.
-  const handleStudentCreateAccount = async ({ cnic, dob, password }) => {
-    setAuthError('')
-    setAuthLoading(true)
-    try {
-      const { data } = await api.post('/student/create-account', { cnic, dob, password })
-      saveSession(data.token, data.student)
-      setShowWaiting(true)
-    } catch (err) {
-      setAuthError(err.response?.data?.message || 'Could not create account. Please try again.')
-    } finally {
-      setAuthLoading(false)
-    }
-  }
-
-  // Teacher/SubAdmin/SuperAdmin backends don't exist yet, so their forms
-  // keep the original mock behaviour (just shows the waiting popup).
+  // Called once any form is validly submitted - shows the waiting popup,
+  // and once the progress bar finishes, routes into the right portal.
   const handleFormSubmit = () => {
     setShowWaiting(true)
   }
@@ -137,20 +102,14 @@ function Landing() {
         <div className="auth-card">
           {role === 'student' && mode === 'login' && (
             <StudentLoginForm
-              onSubmit={handleStudentLogin}
+              onSubmit={handleFormSubmit}
               onSwitchToTeacher={switchToTeacher}
               onSwitchToAdmin={switchToAdmin}
-              apiError={authError}
-              loading={authLoading}
             />
           )}
 
           {role === 'student' && mode === 'create' && (
-            <StudentCreateForm
-              onSubmit={handleStudentCreateAccount}
-              apiError={authError}
-              loading={authLoading}
-            />
+            <StudentCreateForm onSubmit={handleFormSubmit} />
           )}
 
           {role === 'teacher' && (

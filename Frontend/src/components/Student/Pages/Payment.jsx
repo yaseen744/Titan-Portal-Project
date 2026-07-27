@@ -85,7 +85,8 @@ function Payment() {
             </div>
             <h3 className="generic-popup-title">Fee Status Refreshed</h3>
             <p className="generic-popup-text">
-              Your fee records are already up to date.
+              Your fee records are already up to date. Once the database is connected, this will
+              pull your latest payment status live from JazzCash.
             </p>
             <button className="generic-popup-btn" onClick={() => setShowRefreshPopup(false)}>
               Okay
