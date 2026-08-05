@@ -1,38 +1,30 @@
 import express from 'express'
-import { requireAuth } from '../middleware/auth.js'
-import { loginStudent, createStudentAccount } from '../controllers/studentAuthController.js'
 import {
-  getDashboard,
-  updateProfile,
-  updatePassword,
-  getAttendance,
-  getAssignments,
-  submitAssignment,
-  getQuizzes,
-  startQuiz,
-  submitQuiz,
-  getProgress,
-  sendFeedback,
+  listStudents,
+  getStudent,
+  getStudentByRoll,
+  createStudent,
+  updateStudent,
+  setStudentStatus,
+  deleteStudent,
+  getMyStudentProfile,
+  updateMyStudentProfile,
 } from '../controllers/studentController.js'
+import { protect, restrictTo } from '../middleware/auth.js'
 
 const router = express.Router()
 
-// public
-router.post('/login', loginStudent)
-router.post('/create-account', createStudentAccount)
+router.use(protect)
 
-// protected
-router.use(requireAuth('student'))
-router.get('/dashboard', getDashboard)
-router.put('/profile', updateProfile)
-router.put('/profile/password', updatePassword)
-router.get('/attendance', getAttendance)
-router.get('/assignments', getAssignments)
-router.post('/assignments/submit', submitAssignment)
-router.get('/quizzes', getQuizzes)
-router.get('/quizzes/:quizId/start', startQuiz)
-router.post('/quizzes/:quizId/submit', submitQuiz)
-router.get('/progress', getProgress)
-router.post('/feedback', sendFeedback)
+router.get('/me/profile', restrictTo('student'), getMyStudentProfile)
+router.put('/me/profile', restrictTo('student'), updateMyStudentProfile)
+router.get('/by-roll/:roll', restrictTo('superadmin', 'subadmin'), getStudentByRoll)
+
+router.get('/', restrictTo('superadmin', 'subadmin', 'teacher'), listStudents)
+router.get('/:id', restrictTo('superadmin', 'subadmin', 'teacher'), getStudent)
+router.post('/', restrictTo('superadmin', 'subadmin'), createStudent)
+router.put('/:id', restrictTo('superadmin', 'subadmin'), updateStudent)
+router.put('/:id/status', restrictTo('superadmin', 'subadmin'), setStudentStatus)
+router.delete('/:id', restrictTo('superadmin', 'subadmin'), deleteStudent)
 
 export default router
