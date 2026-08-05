@@ -1,9 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
 import Landing from './Pages/Landing.jsx'
-import StudentPortal from './components/Student/Layout/StudentPortal.jsx'
-import TeacherPortal from './components/Teacher/Layout/TeacherPortal.jsx'
-import SubAdminPortal from './components/Admin/SubAdmin/Layout/SubAdminPortal.jsx'
-import SuperAdminPortal from './components/Admin/SuperAdmin/Layout/SuperAdminPortal.jsx'
+import StudentPortal from './components/frontend/Student/Layout/StudentPortal.jsx'
+import TeacherPortal from './components/frontend/Teacher/Layout/TeacherPortal.jsx'
+import SubAdminPortal from './components/frontend/Admin/SubAdmin/Layout/SubAdminPortal.jsx'
+import SuperAdminPortal from './components/frontend/Admin/SuperAdmin/Layout/SuperAdminPortal.jsx'
+import ProtectedRoute from './context/ProtectedRoute.jsx'
 
 function App() {
   return (
@@ -12,16 +13,44 @@ function App() {
       <Route path="/" element={<Landing />} />
 
       {/* Everything under /student/* lives inside the Student folder only */}
-      <Route path="/student/*" element={<StudentPortal />} />
+      <Route
+        path="/student/*"
+        element={
+          <ProtectedRoute role="student">
+            <StudentPortal />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Everything under /teacher/* lives inside the Teacher folder only */}
-      <Route path="/teacher/*" element={<TeacherPortal />} />
+      <Route
+        path="/teacher/*"
+        element={
+          <ProtectedRoute role="teacher">
+            <TeacherPortal />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Everything under /admin/subadmin/* lives inside Admin/SubAdmin only */}
-      <Route path="/admin/subadmin/*" element={<SubAdminPortal />} />
+      <Route
+        path="/admin/subadmin/*"
+        element={
+          <ProtectedRoute role="subadmin">
+            <SubAdminPortal />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Everything under /admin/superadmin/* lives inside Admin/SuperAdmin only */}
-      <Route path="/admin/superadmin/*" element={<SuperAdminPortal />} />
+      <Route
+        path="/admin/superadmin/*"
+        element={
+          <ProtectedRoute role="superadmin">
+            <SuperAdminPortal />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   )
 }
