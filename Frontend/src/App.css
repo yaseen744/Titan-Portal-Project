@@ -3,9 +3,10 @@
    Rules followed throughout this file (per project requirements):
    - No :root / CSS variables anywhere.
    - No combined selectors (no ".a, .b { }") — every class has its own block.
-   - Background of the site stays white; color accents come from the
-     Titan logo (navy #1B2A4D + gold #C9A227) on cards, borders, buttons.
-   - Default cursor everywhere (not the pointer hand) as requested.
+   - Color accents come from the Titan logo (navy #1B2A4D + gold #C9A227)
+     on cards, borders, buttons.
+   - Clickable elements show the pointer (hand) cursor; text/search inputs
+     keep the normal text-entry cursor.
    ========================================================= */
 
 /* ---------- LANDING PAGE WRAPPER ---------- */
@@ -14,12 +15,18 @@
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #DADCE0;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   padding: 40px 20px;
+}
+
+/* Disabled buttons should never show the pointer/hand cursor, even though
+   their class otherwise sets cursor: pointer for the normal clickable state. */
+button:disabled {
+  cursor: not-allowed;
 }
 
 .landing-glow {
@@ -112,7 +119,7 @@
 }
 
 .landing-toggle-btn {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -233,7 +240,10 @@
   background-color: transparent;
   font-size: 0.95rem;
   color: #2B2F38;
-  cursor: default;
+}
+
+select.auth-input {
+  cursor: pointer;
 }
 
 .auth-input::placeholder {
@@ -242,7 +252,7 @@
 
 .auth-eye-icon {
   color: #6B7280;
-  cursor: default;
+  cursor: pointer;
   margin-left: 10px;
   transition: color 0.2s ease;
 }
@@ -256,10 +266,43 @@
   font-size: 0.78rem;
 }
 
+.auth-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FDEDED;
+  border: 1px solid #F3B7B7;
+  color: #C53030;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  animation: fadeInDown 0.25s ease;
+}
+
+.auth-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #EAF7ED;
+  border: 1px solid #A9D8B4;
+  color: #1E7A34;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  animation: fadeInDown 0.25s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ---------- BUTTONS ---------- */
 
 .auth-btn-primary {
-  cursor: default;
+  cursor: pointer;
   border: none;
   border-radius: 10px;
   padding: 13px 0;
@@ -283,7 +326,7 @@
 }
 
 .auth-btn-secondary {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.18);
   border-radius: 10px;
   padding: 12px 0;
@@ -305,7 +348,7 @@
 }
 
 .auth-link-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background: none;
   color: #6B7280;
@@ -400,7 +443,9 @@
 .generic-popup-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(27, 42, 77, 0.35);
+  background-color: rgba(11, 18, 36, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -412,17 +457,31 @@
 .generic-popup-card {
   position: relative;
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 34px 30px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.07) 0%, rgba(255, 255, 255, 0) 55%);
+  border-radius: 20px;
+  padding: 38px 30px 30px;
   width: 100%;
   max-width: 360px;
   text-align: center;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.40), 0 0 0 1px rgba(201, 162, 39, 0.12);
+  animation: titanCardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: hidden;
+}
+
+.generic-popup-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .generic-popup-close {
-  cursor: default;
+  cursor: pointer;
   position: absolute;
   top: 14px;
   right: 14px;
@@ -435,33 +494,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .generic-popup-close:hover {
   background-color: rgba(27, 42, 77, 0.14);
+  transform: rotate(90deg);
 }
 
 .generic-popup-icon-wrap {
-  width: 56px;
-  height: 56px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
-  background-color: rgba(201, 162, 39, 0.14);
+  background: radial-gradient(circle at 30% 30%, rgba(201, 162, 39, 0.22), rgba(201, 162, 39, 0.09));
+  box-shadow: 0 0 0 6px rgba(201, 162, 39, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px auto;
+  margin: 0 auto 18px auto;
+  animation: titanIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.05s;
 }
 
 .generic-popup-icon {
   color: #C9A227;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+}
+
+.generic-popup-icon-wrap-danger {
+  background: radial-gradient(circle at 30% 30%, rgba(197, 48, 48, 0.22), rgba(197, 48, 48, 0.09));
+  box-shadow: 0 0 0 6px rgba(197, 48, 48, 0.08);
+}
+
+.generic-popup-icon-wrap-danger .generic-popup-icon {
+  color: #C53030;
 }
 
 .generic-popup-title {
   color: #1B2A4D;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   margin: 0 0 10px 0;
 }
 
@@ -473,20 +546,35 @@
 }
 
 .generic-popup-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   border-radius: 10px;
   padding: 11px 28px;
   font-weight: 700;
   font-size: 0.9rem;
   color: #ffffff;
-  background-color: #1B2A4D;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  background: linear-gradient(135deg, #1B2A4D 0%, #101a33 100%);
+  box-shadow: 0 8px 20px rgba(27, 42, 77, 0.28);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .generic-popup-btn:hover {
-  background-color: #11192E;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(27, 42, 77, 0.36);
+}
+
+.generic-popup-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes titanShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes titanIconPop {
+  0% { transform: scale(0.4); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* ---------- PHASE-1 PORTAL PLACEHOLDER ---------- */
@@ -595,7 +683,7 @@
 }
 
 .student-sidebar-fold-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background-color: rgba(27, 42, 77, 0.06);
   color: #1B2A4D;
@@ -629,7 +717,7 @@
 }
 
 .student-sidebar-nav-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -663,7 +751,7 @@
 }
 
 .student-sidebar-profile {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -716,7 +804,7 @@
 }
 
 .student-sidebar-menu-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -779,7 +867,7 @@
 }
 
 .student-feedback-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   border-radius: 10px;
   padding: 10px 18px;
@@ -865,7 +953,6 @@
   outline: none;
   font-size: 0.9rem;
   color: #2B2F38;
-  cursor: default;
 }
 
 .course-landing-filter-wrap {
@@ -873,7 +960,7 @@
 }
 
 .course-landing-filter-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
   color: #1B2A4D;
@@ -906,7 +993,7 @@
 }
 
 .course-landing-filter-item {
-  cursor: default;
+  cursor: pointer;
   display: block;
   width: 100%;
   text-align: left;
@@ -925,7 +1012,7 @@
 }
 
 .course-landing-feedback-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   border-radius: 10px;
   padding: 10px 18px;
@@ -1078,7 +1165,7 @@
 }
 
 .course-card-view-detail-btn {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   border: none;
   border-radius: 10px;
@@ -1113,7 +1200,7 @@
 }
 
 .dashboard-stat-card {
-  cursor: default;
+  cursor: pointer;
   flex: 1;
   min-width: 160px;
   border: 1px solid rgba(27, 42, 77, 0.10);
@@ -1244,7 +1331,7 @@
 }
 
 .activity-tab-btn {
-  cursor: default;
+  cursor: pointer;
   flex: 1;
   border: 1px solid rgba(27, 42, 77, 0.14);
   background-color: #ffffff;
@@ -1427,6 +1514,10 @@
   background-color: #2DA44E;
 }
 
+.attendance-overview-fill-outstanding {
+  background: linear-gradient(90deg, #2DA44E, #C9A227);
+}
+
 .attendance-overview-fill-bad {
   background-color: #C53030;
 }
@@ -1439,6 +1530,10 @@
 
 .attendance-overview-message-good {
   color: #1E8E3E;
+}
+
+.attendance-overview-message-outstanding {
+  color: #8a6d1a;
 }
 
 .attendance-overview-message-bad {
@@ -1476,7 +1571,7 @@
 }
 
 .attendance-month-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
   color: #1B2A4D;
@@ -1511,7 +1606,7 @@
 }
 
 .attendance-month-item {
-  cursor: default;
+  cursor: pointer;
   display: block;
   width: 100%;
   text-align: left;
@@ -1723,13 +1818,23 @@
   color: #C53030;
 }
 
+.assignment-status-pending {
+  background-color: rgba(27, 100, 201, 0.12);
+  color: #1D4ED8;
+}
+
+.assignment-status-late {
+  background-color: rgba(201, 162, 39, 0.16);
+  color: #8a6d1a;
+}
+
 .assignment-row-actions {
   display: flex;
   gap: 14px;
 }
 
 .assignment-action-icon {
-  cursor: default;
+  cursor: pointer;
   color: #1B2A4D;
   font-size: 0.95rem;
   opacity: 0.8;
@@ -1767,7 +1872,7 @@
 }
 
 .assignment-page-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: #ffffff;
   color: #1B2A4D;
@@ -1879,6 +1984,16 @@
   color: #C53030;
 }
 
+.assignment-grade-pending {
+  background-color: rgba(27, 100, 201, 0.12);
+  color: #1D4ED8;
+}
+
+.assignment-grade-late {
+  background-color: rgba(201, 162, 39, 0.16);
+  color: #8a6d1a;
+}
+
 .assignment-view-description {
   font-size: 0.85rem;
   color: #2B2F38;
@@ -1920,7 +2035,7 @@
 }
 
 .assignment-view-image {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   max-width: 220px;
   border-radius: 10px;
@@ -2037,7 +2152,7 @@
 }
 
 .progress-module-header {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   border: none;
   background: none;
@@ -2189,7 +2304,7 @@
 }
 
 .payment-video-play-btn {
-  cursor: default;
+  cursor: pointer;
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -2223,7 +2338,7 @@
 }
 
 .payment-refresh-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: #ffffff;
   color: #1B2A4D;
@@ -2433,7 +2548,7 @@
 }
 
 .profile-edit-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   border-radius: 10px;
   padding: 10px 18px;
@@ -2527,7 +2642,7 @@
 }
 
 .profile-logout-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   border-radius: 10px;
   padding: 11px 22px;
@@ -2614,7 +2729,7 @@
 }
 
 .feedback-type-btn {
-  cursor: default;
+  cursor: pointer;
   flex: 1;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: #ffffff;
@@ -2652,7 +2767,6 @@
   font-family: inherit;
   resize: vertical;
   margin-bottom: 16px;
-  cursor: default;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -2682,7 +2796,7 @@
 }
 
 .feedback-add-image-btn {
-  cursor: default;
+  cursor: pointer;
   flex-shrink: 0;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
@@ -2702,7 +2816,7 @@
 }
 
 .feedback-send-btn {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   border: none;
   border-radius: 10px;
@@ -2744,7 +2858,7 @@
 }
 
 .generic-popup-btn-outline {
-  cursor: default;
+  cursor: pointer;
   flex: 1;
   border: 1px solid rgba(27, 42, 77, 0.20);
   background-color: #ffffff;
@@ -3001,7 +3115,7 @@
 }
 
 .teacher-sidebar-fold-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background-color: rgba(27, 42, 77, 0.06);
   color: #1B2A4D;
@@ -3035,7 +3149,7 @@
 }
 
 .teacher-sidebar-nav-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -3069,7 +3183,7 @@
 }
 
 .teacher-sidebar-profile {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -3122,7 +3236,7 @@
 }
 
 .teacher-sidebar-menu-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -3299,7 +3413,7 @@
 }
 
 .teacher-course-card {
-  cursor: default;
+  cursor: pointer;
   text-align: left;
   border: none;
   border-radius: 16px;
@@ -3457,7 +3571,7 @@
 }
 
 .course-detail-tab-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.14);
   background-color: #ffffff;
   color: #1B2A4D;
@@ -3469,16 +3583,31 @@
   align-items: center;
   gap: 8px;
   transition: all 0.25s ease;
+  outline: none;
 }
 
 .course-detail-tab-btn:hover {
   background-color: rgba(27, 42, 77, 0.06);
+  border-color: rgba(27, 42, 77, 0.14);
+}
+
+.course-detail-tab-btn:focus-visible {
+  border-color: #C9A227;
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.28);
 }
 
 .course-detail-tab-btn-active {
   background-color: #1B2A4D;
   color: #ffffff;
   box-shadow: 0 8px 16px rgba(27, 42, 77, 0.24);
+}
+
+.course-detail-tab-btn-active:hover {
+  background-color: #1B2A4D;
+}
+
+.course-detail-tab-btn-active:focus-visible {
+  box-shadow: 0 8px 16px rgba(27, 42, 77, 0.24), 0 0 0 3px rgba(201, 162, 39, 0.28);
 }
 
 .course-tab-box {
@@ -3506,7 +3635,7 @@
 }
 
 .course-tab-new-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   border-radius: 10px;
   padding: 9px 16px;
@@ -3596,7 +3725,7 @@
 }
 
 .course-attendance-date-input {
-  cursor: default;
+  cursor: pointer;
   border: 1.5px solid #D8DCE3;
   border-radius: 10px;
   padding: 8px 12px;
@@ -3722,7 +3851,7 @@
 }
 
 .submissions-student-item {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   border: none;
   background: none;
@@ -3762,7 +3891,7 @@
 }
 
 .submissions-approve-btn {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   border: none;
   border-radius: 10px;
@@ -4012,6 +4141,35 @@
   border-radius: 16px;
   padding: 22px;
   box-shadow: 0 16px 36px rgba(27, 42, 77, 0.10);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .calendar-box {
+    padding: 12px;
+  }
+  .calendar-cell {
+    min-height: 56px;
+    padding: 3px;
+    gap: 2px;
+    border-radius: 6px;
+  }
+  .calendar-cell-day {
+    font-size: 0.66rem;
+  }
+  .calendar-event-chip {
+    font-size: 0.52rem;
+    padding: 2px 4px;
+  }
+  .calendar-weekday-label {
+    font-size: 0.62rem;
+  }
+  .calendar-month-label {
+    font-size: 0.92rem;
+  }
 }
 
 .calendar-header-row {
@@ -4023,7 +4181,7 @@
 }
 
 .calendar-nav-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
   color: #1B2A4D;
@@ -4065,12 +4223,17 @@
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
+  width: 100%;
 }
 
 .calendar-cell {
   min-height: 90px;
+  min-width: 0; /* CRITICAL: grid items default to min-width:auto, which stops them
+                   shrinking below their content's natural width - this is what was
+                   pushing the calendar outside the screen on narrow/mobile viewports */
+  overflow: hidden;
   border: 1px solid rgba(27, 42, 77, 0.08);
   border-radius: 10px;
   padding: 6px;
@@ -4186,7 +4349,7 @@
 }
 
 .teacher-view-toggle-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background: none;
   padding: 8px 18px;
@@ -4241,7 +4404,7 @@
 }
 
 .teacher-update-password-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
   color: #1B2A4D;
@@ -4439,7 +4602,7 @@
    ========================================================= */
 
 .admin-type-card {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   display: flex;
   align-items: center;
@@ -4551,7 +4714,7 @@
 }
 
 .subadmin-sidebar-fold-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background-color: rgba(27, 42, 77, 0.06);
   color: #1B2A4D;
@@ -4585,7 +4748,7 @@
 }
 
 .subadmin-nav-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -4644,7 +4807,7 @@
 }
 
 .subadmin-nav-subitem {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -4677,7 +4840,7 @@
 }
 
 .subadmin-sidebar-profile {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -4730,7 +4893,7 @@
 }
 
 .subadmin-sidebar-menu-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -4862,7 +5025,7 @@
 }
 
 .subadmin-sort-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
   color: #1B2A4D;
@@ -4899,7 +5062,7 @@
 }
 
 .subadmin-toolbar-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: #ffffff;
   color: #1B2A4D;
@@ -5053,7 +5216,7 @@
 }
 
 .students-page-size-select {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   border-radius: 8px;
   padding: 7px 10px;
@@ -5430,6 +5593,12 @@
   gap: 10px;
 }
 
+.trainer-checkin-btn {
+  margin-top: 0;
+  width: auto;
+  padding: 11px 18px;
+}
+
 .trainer-checkout-btn {
   margin-top: 0;
   width: auto;
@@ -5590,7 +5759,7 @@
 }
 
 .slot-toggle-btn {
-  cursor: default;
+  cursor: pointer;
   width: 100%;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
@@ -5699,7 +5868,7 @@
 }
 
 .trainer-request-approve-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background-color: rgba(30, 142, 62, 0.14);
   color: #1E8E3E;
@@ -5718,7 +5887,7 @@
 }
 
 .trainer-request-reject-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background-color: rgba(197, 48, 48, 0.10);
   color: #C53030;
@@ -6079,7 +6248,7 @@
 
 
 .superadmin-sidebar-fold-btn {
-  cursor: default;
+  cursor: pointer;
   border: none;
   background-color: rgba(27, 42, 77, 0.06);
   color: #1B2A4D;
@@ -6121,7 +6290,7 @@
 
 
 .superadmin-nav-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -6198,7 +6367,7 @@
 
 
 .superadmin-nav-subitem {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -6239,7 +6408,7 @@
 
 
 .superadmin-sidebar-profile {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -6302,7 +6471,7 @@
 
 
 .superadmin-sidebar-menu-item {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -6470,7 +6639,7 @@
 
 
 .superadmin-sort-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: rgba(27, 42, 77, 0.05);
   color: #1B2A4D;
@@ -6493,7 +6662,7 @@
 
 
 .superadmin-toolbar-btn {
-  cursor: default;
+  cursor: pointer;
   border: 1px solid rgba(27, 42, 77, 0.16);
   background-color: #ffffff;
   color: #1B2A4D;
@@ -7007,7 +7176,7 @@
 }
 
 .subadmin-role-chip {
-  cursor: default;
+  cursor: pointer;
   padding: 7px 16px;
   border-radius: 999px;
   border: 1px solid rgba(27, 42, 77, 0.18);
@@ -7070,7 +7239,7 @@
 }
 
 .subadmin-permission-matrix-label {
-  cursor: default;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -7125,7 +7294,7 @@
 }
 
 .subadmin-toolbar-btn {
-  cursor: default;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -7245,7 +7414,7 @@
 /* --- shared danger button variant --- */
 
 .generic-popup-btn-danger {
-  cursor: default;
+  cursor: pointer;
   padding: 12px 28px;
   border-radius: 10px;
   border: none;
@@ -7261,6 +7430,75 @@
   box-shadow: 0 8px 18px rgba(198, 40, 40, 0.25);
 }
 
+/* --- Permission actions popup (per-module READ/WRITE/UPDATE/EXPORT picker) --- */
+
+.permission-actions-popup-card {
+  max-width: 380px;
+}
+
+.permission-actions-popup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0 6px 0;
+  text-align: left;
+}
+
+.permission-actions-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(27, 42, 77, 0.14);
+  background-color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.permission-actions-popup-item:hover {
+  border-color: rgba(201, 162, 39, 0.5);
+}
+
+.permission-actions-popup-item-checked {
+  border-color: #C9A227;
+  background-color: rgba(201, 162, 39, 0.08);
+}
+
+.permission-actions-popup-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid rgba(27, 42, 77, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C9A227;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.permission-actions-popup-checkbox-on {
+  border-color: #C9A227;
+  background-color: rgba(201, 162, 39, 0.14);
+}
+
+.permission-actions-popup-item-label {
+  font-weight: 700;
+  color: #1B2A4D;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.subadmin-permission-matrix-row {
+  cursor: pointer;
+}
+
+.subadmin-permission-matrix-cell {
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .superadmin-subadmin-grid,
   .superadmin-campus-grid {
@@ -7271,5 +7509,849 @@
   .subadmin-permission-matrix-row {
     grid-template-columns: 1fr repeat(4, 44px);
     font-size: 0.68rem;
+  }
+}
+
+/* ---------- FORGOT PASSWORD POPUP FORM ---------- */
+
+.generic-popup-form {
+  text-align: left;
+  margin-bottom: 6px;
+}
+
+.generic-popup-dev-otp {
+  background-color: rgba(201, 162, 39, 0.12);
+  border: 1px dashed #C9A227;
+  color: #8a6d1a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  text-align: left;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.generic-popup-dev-otp strong {
+  font-size: 1rem;
+  letter-spacing: 2px;
+}
+
+.generic-popup-btn:disabled {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.generic-popup-btn-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ---------- CAMPUS CARD: ADD SUB ADMIN CTA (shown when a campus has no staff yet) ---------- */
+
+.superadmin-campus-add-subadmin-btn {
+  margin-top: 14px;
+  width: 100%;
+  justify-content: center;
+  font-size: 0.78rem;
+  padding: 8px 14px;
+  background-color: #C9A227;
+  box-shadow: 0 8px 18px rgba(201, 162, 39, 0.28);
+}
+
+.superadmin-campus-add-subadmin-btn:hover {
+  background-color: #ad8a1e;
+}
+
+.superadmin-campus-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* ---------- ROW 3-DOT ACTION MENU (Trainers, Sub Admins cards, etc.) ---------- */
+
+.row-menu-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.row-menu-trigger {
+  background: transparent;
+  border: none;
+  color: #6B7280;
+  font-size: 1rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.row-menu-trigger:hover {
+  background-color: rgba(27, 42, 77, 0.08);
+  color: #1B2A4D;
+}
+
+.row-menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(27, 42, 77, 0.18);
+  border: 1px solid rgba(27, 42, 77, 0.08);
+  min-width: 170px;
+  z-index: 20;
+  overflow: hidden;
+  animation: fadeInDown 0.18s ease;
+}
+
+.row-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1B2A4D;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.row-menu-item:hover {
+  background-color: rgba(27, 42, 77, 0.06);
+}
+
+.row-menu-item-danger {
+  color: #C53030;
+}
+
+.row-menu-item-danger:hover {
+  background-color: rgba(197, 48, 48, 0.08);
+}
+
+/* ---------- SLOT CARD: MULTIPLE ACTIONS ROW (Edit/Delete added alongside Open/Close) ---------- */
+
+.slot-card-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.slot-card-actions-row .slot-toggle-btn {
+  margin-top: 0;
+  flex: 1;
+  padding: 9px 4px;
+  font-size: 0.74rem;
+}
+
+.slot-toggle-btn-danger {
+  border-color: rgba(197, 48, 48, 0.3);
+  background-color: rgba(197, 48, 48, 0.06);
+  color: #C53030;
+}
+
+.slot-toggle-btn-danger:hover {
+  background-color: rgba(197, 48, 48, 0.12);
+}
+
+/* ---------- QUIZ BUILDER (Create/Edit Quiz popup) ---------- */
+
+.quiz-builder-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 26px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
+  animation: titanCardIn 0.35s ease both;
+}
+
+.quiz-question-box {
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+  background-color: rgba(27, 42, 77, 0.02);
+}
+
+.quiz-question-box-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.quiz-question-number {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background-color: #1B2A4D;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.quiz-question-box-head .auth-input {
+  flex: 1;
+}
+
+.quiz-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.quiz-option-letter {
+  flex-shrink: 0;
+  width: 22px;
+  font-weight: 700;
+  color: #6B7280;
+  font-size: 0.82rem;
+}
+
+.quiz-option-row .auth-input {
+  flex: 1;
+}
+
+.quiz-option-correct-toggle {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(27, 42, 77, 0.20);
+  background-color: #ffffff;
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quiz-option-correct-toggle:hover {
+  border-color: #1E8E3E;
+}
+
+.quiz-option-correct-toggle-on {
+  background-color: #1E8E3E;
+  border-color: #1E8E3E;
+  color: #ffffff;
+}
+
+/* ---------- PROGRESS TOPIC ROW: now a clickable tick button ---------- */
+
+button.progress-topic-row {
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  gap: 10px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+button.progress-topic-row:hover {
+  background-color: rgba(27, 42, 77, 0.04);
+}
+
+.progress-topic-row-done {
+  color: #1E8E3E;
+}
+
+/* ---------- DOWNLOAD PROGRESS (ID card / audit PDF) ---------- */
+
+.download-progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 20px;
+  background-color: rgba(27, 42, 77, 0.08);
+  overflow: hidden;
+  margin: 16px 0 8px;
+}
+
+.download-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1B2A4D, #C9A227);
+  border-radius: 20px;
+  transition: width 0.15s ease;
+}
+
+.download-progress-percent {
+  font-weight: 700;
+  color: #1B2A4D;
+  font-size: 0.9rem;
+}
+
+/* ---------- DASHBOARD ACTIVITY LIST (real upcoming assignments/quizzes) ---------- */
+
+.dashboard-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 6px;
+}
+
+.dashboard-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background-color: rgba(27, 42, 77, 0.04);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1B2A4D;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dashboard-activity-item:hover {
+  background-color: rgba(27, 42, 77, 0.08);
+}
+
+/* ---------- PAYMENT: REAL EMBEDDED TUTORIAL VIDEO (replaces the old phone-mockup placeholder) ---------- */
+
+.payment-video-embed-wrap {
+  width: 320px;
+  height: auto;
+  max-width: 100%;
+  background-color: #000;
+  border-radius: 14px;
+  border: none;
+  padding: 0;
+  box-shadow: 0 16px 34px rgba(27, 42, 77, 0.20);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.payment-video-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .payment-video-embed-wrap {
+    width: 100%;
+  }
+}
+
+/* ---------- QUIZ TAKING (full-screen, timer-driven) ---------- */
+
+.quiz-taking-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: #F4F6FA;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInDown 0.2s ease;
+}
+
+.quiz-taking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  background-color: #1B2A4D;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(27, 42, 77, 0.25);
+}
+
+.quiz-taking-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.quiz-taking-timer {
+  font-size: 1.1rem;
+  font-weight: 800;
+  background-color: rgba(255, 255, 255, 0.12);
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quiz-taking-timer-low {
+  background-color: #C53030;
+  animation: pulseWarn 1s infinite;
+}
+
+@keyframes pulseWarn {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.quiz-taking-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.quiz-taking-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-size: 0.86rem;
+  color: #2B2F38;
+  transition: background-color 0.15s ease;
+}
+
+.quiz-taking-option-row:hover {
+  background-color: rgba(27, 42, 77, 0.05);
+}
+
+.quiz-taking-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background-color: #ffffff;
+  border-top: 1px solid rgba(27, 42, 77, 0.10);
+}
+
+/* ---------- QUIZ START BUTTON ---------- */
+
+.quiz-start-btn {
+  border: none;
+  background-color: #1B2A4D;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quiz-start-btn:hover {
+  background-color: #C9A227;
+  transform: translateY(-1px);
+}
+
+/* ---------- ATTENDANCE MARK: DATE PICKER (fixes missing date-select bug) ---------- */
+
+.attendance-mark-date-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.attendance-mark-date-input {
+  border: 1px solid #D8DCE3;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: #1B2A4D;
+  font-weight: 600;
+}
+
+/* ---------- SUB ADMIN: STUDENT FEEDBACK INBOX (new page) ---------- */
+
+.feedback-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.feedback-list-card {
+  text-align: left;
+  background-color: #ffffff;
+  border: 1px solid rgba(27, 42, 77, 0.10);
+  border-radius: 16px;
+  padding: 18px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(27, 42, 77, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.feedback-list-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(27, 42, 77, 0.16);
+  border-color: rgba(201, 162, 39, 0.4);
+}
+
+.feedback-list-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.feedback-list-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.feedback-list-name {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1B2A4D;
+}
+
+.feedback-list-course {
+  font-size: 0.72rem;
+  color: #6B7280;
+}
+
+.feedback-list-preview {
+  font-size: 0.8rem;
+  color: #2B2F38;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.feedback-type-badge {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.feedback-type-bug {
+  background-color: rgba(197, 48, 48, 0.12);
+  color: #C53030;
+}
+
+.feedback-type-idea {
+  background-color: rgba(201, 162, 39, 0.15);
+  color: #8a6d1a;
+}
+
+.feedback-type-other {
+  background-color: rgba(27, 42, 77, 0.08);
+  color: #1B2A4D;
+}
+
+.feedback-detail-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 12px 28px rgba(27, 42, 77, 0.10);
+  animation: fadeInDown 0.25s ease;
+}
+
+.feedback-back-btn {
+  background: none;
+  border: none;
+  color: #1B2A4D;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 0;
+}
+
+.feedback-back-btn:hover {
+  color: #C9A227;
+}
+
+.feedback-detail-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.feedback-detail-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+
+.feedback-detail-name {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #1B2A4D;
+}
+
+.feedback-detail-meta {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #6B7280;
+}
+
+/* ---------- SUPER ADMIN STUDENTS TABLE (8 columns - adds Campus, drops Father Name/Phone to fit) ---------- */
+
+.superadmin-students-table-head {
+  grid-template-columns: 0.8fr 1.3fr 1.2fr 1.2fr 1.2fr 0.9fr 1fr 1.1fr;
+}
+
+/* ---------- PREMIUM ALERT SYSTEM (toasts + confirm dialog) ---------- */
+/* Brand colors: navy #1B2A4D / #142247, gold #C9A227 / #cda464 - matches
+   the Titan crest logo so every alert/popup feels native to the site. */
+
+.premium-toast-stack {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 380px;
+  width: calc(100% - 40px);
+  pointer-events: none;
+}
+
+.premium-toast {
+  position: relative;
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 14px 40px 14px 14px;
+  box-shadow: 0 18px 40px rgba(11, 18, 36, 0.22), 0 0 0 1px rgba(27, 42, 77, 0.06);
+  overflow: hidden;
+  animation: titanToastIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes titanToastIn {
+  0% { transform: translateX(40px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.premium-toast-icon-wrap {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  margin-top: 1px;
+}
+
+.premium-toast-success .premium-toast-icon-wrap { background-color: rgba(30, 142, 62, 0.13); color: #1E8E3E; }
+.premium-toast-error .premium-toast-icon-wrap { background-color: rgba(197, 48, 48, 0.13); color: #C53030; }
+.premium-toast-warning .premium-toast-icon-wrap { background-color: rgba(201, 162, 39, 0.16); color: #A9820F; }
+.premium-toast-info .premium-toast-icon-wrap { background-color: rgba(27, 42, 77, 0.12); color: #1B2A4D; }
+
+.premium-toast-body { flex: 1; min-width: 0; }
+
+.premium-toast-title {
+  margin: 0 0 2px 0;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: #142247;
+}
+
+.premium-toast-message {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #6B7280;
+  word-break: break-word;
+}
+
+.premium-toast-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  color: #9CA3AF;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.premium-toast-close:hover {
+  background-color: rgba(27, 42, 77, 0.08);
+  color: #1B2A4D;
+}
+
+.premium-toast-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #1B2A4D, #C9A227);
+  transform-origin: left;
+  animation-name: titanToastShrink;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes titanToastShrink {
+  0% { transform: scaleX(1); }
+  100% { transform: scaleX(0); }
+}
+
+.premium-toast-success .premium-toast-progress { background: linear-gradient(90deg, #1E8E3E, #C9A227); }
+.premium-toast-error .premium-toast-progress { background: linear-gradient(90deg, #C53030, #1B2A4D); }
+
+/* ---- Confirm dialog (replaces window.confirm) ---- */
+
+.premium-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 18, 36, 0.58);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2100;
+  padding: 20px;
+  animation: titanOverlayIn 0.2s ease both;
+}
+
+.premium-confirm-card {
+  position: relative;
+  background-color: #ffffff;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.07) 0%, rgba(255, 255, 255, 0) 55%);
+  border-radius: 20px;
+  padding: 36px 30px 28px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.42), 0 0 0 1px rgba(201, 162, 39, 0.12);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.premium-confirm-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(201, 162, 39, 0.22), rgba(201, 162, 39, 0.09));
+  box-shadow: 0 0 0 6px rgba(201, 162, 39, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+  font-size: 1.35rem;
+  color: #A9820F;
+  animation: titanIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.premium-confirm-icon-wrap-danger {
+  background: radial-gradient(circle at 30% 30%, rgba(197, 48, 48, 0.22), rgba(197, 48, 48, 0.09));
+  box-shadow: 0 0 0 6px rgba(197, 48, 48, 0.08);
+  color: #C53030;
+}
+
+.premium-confirm-title {
+  color: #142247;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+}
+
+.premium-confirm-message {
+  color: #6B7280;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0 0 24px 0;
+  white-space: pre-line;
+}
+
+.premium-confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.premium-confirm-btn {
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 22px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  flex: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.premium-confirm-btn-cancel {
+  background-color: rgba(27, 42, 77, 0.07);
+  color: #1B2A4D;
+}
+
+.premium-confirm-btn-cancel:hover {
+  background-color: rgba(27, 42, 77, 0.13);
+}
+
+.premium-confirm-btn-primary {
+  background: linear-gradient(135deg, #1B2A4D 0%, #101a33 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(27, 42, 77, 0.28);
+}
+
+.premium-confirm-btn-danger {
+  background: linear-gradient(135deg, #C53030 0%, #8f2222 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(197, 48, 48, 0.28);
+}
+
+.premium-confirm-btn:hover {
+  transform: translateY(-2px);
+}
+
+.premium-confirm-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .premium-toast-stack {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    max-width: none;
+    width: auto;
   }
 }

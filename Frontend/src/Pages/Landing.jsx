@@ -2,21 +2,25 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faRightToBracket, faUserPlus, faUserTie, faUserShield, faArrowLeft,
+  faRightToBracket, faUserPlus, faUserTie, faUserShield, faArrowLeft, faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons'
 
-import titanLogo from '../components/Media/images/titan-logo.png'
-import WaitingPopup from '../components/Media/WaitingPopup.jsx'
-import ForgotPasswordPopup from '../components/Media/ForgotPasswordPopup.jsx'
+import titanLogo from '../components/frontend/Media/images/titan-logo.png'
+import WaitingPopup from '../components/frontend/Media/WaitingPopup.jsx'
+import ForgotPasswordPopup from '../components/frontend/Media/ForgotPasswordPopup.jsx'
 
-import StudentLoginForm from '../components/Student/Auth/StudentLoginForm.jsx'
-import StudentCreateForm from '../components/Student/Auth/StudentCreateForm.jsx'
-import TeacherLoginForm from '../components/Teacher/Auth/TeacherLoginForm.jsx'
-import SubAdminLoginForm from '../components/Admin/SubAdmin/Auth/SubAdminLoginForm.jsx'
-import SuperAdminLoginForm from '../components/Admin/SuperAdmin/Auth/SuperAdminLoginForm.jsx'
+import StudentLoginForm from '../components/frontend/Student/Auth/StudentLoginForm.jsx'
+import StudentCreateForm from '../components/frontend/Student/Auth/StudentCreateForm.jsx'
+import TeacherLoginForm from '../components/frontend/Teacher/Auth/TeacherLoginForm.jsx'
+import SubAdminLoginForm from '../components/frontend/Admin/SubAdmin/Auth/SubAdminLoginForm.jsx'
+import SuperAdminLoginForm from '../components/frontend/Admin/SuperAdmin/Auth/SuperAdminLoginForm.jsx'
+
+import { api } from '../api/client.js'
+import { useAuth } from '../context/useAuth.js'
 
 function Landing() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   // 'student' | 'teacher' | 'admin'
   const [role, setRole] = useState('student')
@@ -27,45 +31,72 @@ function Landing() {
 
   const [showWaiting, setShowWaiting] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [forgotPasswordRole, setForgotPasswordRole] = useState('teacher')
+  const [loginError, setLoginError] = useState('')
+  const [pendingRedirect, setPendingRedirect] = useState(null)
 
   const portalHeading =
     role === 'teacher' ? 'Trainer Portal' :
     role === 'admin' ? 'Admin Panel' :
     'Student Portal'
 
-  // Called once any form is validly submitted - shows the waiting popup,
-  // and once the progress bar finishes, routes into the right portal.
-  const handleFormSubmit = () => {
-    setShowWaiting(true)
+  // Called once a form's own client-side validation passes. Makes the real
+  // login/create-account call, and only shows the waiting animation once
+  // the backend has actually confirmed the credentials - a failed login
+  // shows the error banner instead of a fake "logging in" animation.
+  const handleFormSubmit = async (payload) => {
+    setLoginError('')
+    try {
+      let response
+      let redirectTo
+
+      if (role === 'student' && mode === 'login') {
+        response = await api.post('/auth/login/student', payload)
+        redirectTo = '/student/landing'
+      } else if (role === 'student' && mode === 'create') {
+        response = await api.post('/auth/student/create-account', payload)
+        redirectTo = '/student/landing'
+      } else if (role === 'teacher') {
+        response = await api.post('/auth/login/teacher', payload)
+        redirectTo = '/teacher/dashboard'
+      } else if (role === 'admin' && adminType === 'subadmin') {
+        response = await api.post('/auth/login/subadmin', payload)
+        redirectTo = '/admin/subadmin/dashboard'
+      } else if (role === 'admin' && adminType === 'superadmin') {
+        response = await api.post('/auth/login/superadmin', payload)
+        redirectTo = '/admin/superadmin/dashboard'
+      }
+
+      login(response.token, response.role, response.user)
+      setPendingRedirect(redirectTo)
+      setShowWaiting(true)
+    } catch (err) {
+      setLoginError(err.message || 'Something went wrong. Please try again.')
+    }
   }
 
   const handleWaitingComplete = () => {
     setShowWaiting(false)
-    if (role === 'teacher') {
-      navigate('/teacher/dashboard')
-    } else if (role === 'admin' && adminType === 'subadmin') {
-      navigate('/admin/subadmin/dashboard')
-    } else if (role === 'admin' && adminType === 'superadmin') {
-      navigate('/admin/superadmin/dashboard')
-    } else {
-      navigate('/student/landing')
-    }
+    if (pendingRedirect) navigate(pendingRedirect)
   }
 
   const switchToTeacher = () => {
     setRole('teacher')
     setMode('login')
+    setLoginError('')
   }
 
   const switchToStudent = () => {
     setRole('student')
     setMode('login')
     setAdminType(null)
+    setLoginError('')
   }
 
   const switchToAdmin = () => {
     setRole('admin')
     setAdminType(null)
+    setLoginError('')
   }
 
   return (
@@ -85,14 +116,14 @@ function Landing() {
             <button
               type="button"
               className={`landing-toggle-btn ${mode === 'login' ? 'landing-toggle-btn-active' : ''}`}
-              onClick={() => setMode('login')}
+              onClick={() => { setMode('login'); setLoginError('') }}
             >
               <FontAwesomeIcon icon={faRightToBracket} /> Login
             </button>
             <button
               type="button"
               className={`landing-toggle-btn ${mode === 'create' ? 'landing-toggle-btn-active' : ''}`}
-              onClick={() => setMode('create')}
+              onClick={() => { setMode('create'); setLoginError('') }}
             >
               <FontAwesomeIcon icon={faUserPlus} /> Create
             </button>
@@ -100,6 +131,13 @@ function Landing() {
         )}
 
         <div className="auth-card">
+          {loginError && (
+            <div className="auth-error-banner">
+              <FontAwesomeIcon icon={faTriangleExclamation} />
+              <span>{loginError}</span>
+            </div>
+          )}
+
           {role === 'student' && mode === 'login' && (
             <StudentLoginForm
               onSubmit={handleFormSubmit}
@@ -116,7 +154,7 @@ function Landing() {
             <TeacherLoginForm
               onSubmit={handleFormSubmit}
               onSwitchToStudent={switchToStudent}
-              onForgotPassword={() => setShowForgotPassword(true)}
+              onForgotPassword={() => { setForgotPasswordRole('teacher'); setShowForgotPassword(true) }}
             />
           )}
 
@@ -127,7 +165,7 @@ function Landing() {
                 Select which kind of admin account you'd like to log in with.
               </p>
 
-              <button type="button" className="admin-type-card" onClick={() => setAdminType('subadmin')}>
+              <button type="button" className="admin-type-card" onClick={() => { setAdminType('subadmin'); setLoginError('') }}>
                 <FontAwesomeIcon icon={faUserTie} className="admin-type-icon" />
                 <span className="admin-type-text">
                   <span className="admin-type-title">Sub Admin</span>
@@ -135,7 +173,7 @@ function Landing() {
                 </span>
               </button>
 
-              <button type="button" className="admin-type-card" onClick={() => setAdminType('superadmin')}>
+              <button type="button" className="admin-type-card" onClick={() => { setAdminType('superadmin'); setLoginError('') }}>
                 <FontAwesomeIcon icon={faUserShield} className="admin-type-icon" />
                 <span className="admin-type-text">
                   <span className="admin-type-title">Super Admin</span>
@@ -153,7 +191,7 @@ function Landing() {
             <>
               <SubAdminLoginForm
                 onSubmit={handleFormSubmit}
-                onForgotPassword={() => setShowForgotPassword(true)}
+                onForgotPassword={() => { setForgotPasswordRole('subadmin'); setShowForgotPassword(true) }}
               />
               <button type="button" className="auth-link-btn" onClick={() => setAdminType(null)}>
                 <FontAwesomeIcon icon={faArrowLeft} /> Back
@@ -165,7 +203,7 @@ function Landing() {
             <>
               <SuperAdminLoginForm
                 onSubmit={handleFormSubmit}
-                onForgotPassword={() => setShowForgotPassword(true)}
+                onForgotPassword={() => { setForgotPasswordRole('superadmin'); setShowForgotPassword(true) }}
               />
               <button type="button" className="auth-link-btn" onClick={() => setAdminType(null)}>
                 <FontAwesomeIcon icon={faArrowLeft} /> Back
@@ -178,11 +216,15 @@ function Landing() {
       <WaitingPopup
         show={showWaiting}
         label={role === 'student' && mode === 'login' ? 'Waiting...' : 'Logging you in...'}
-        durationMs={5000}
+        durationMs={3000}
         onComplete={handleWaitingComplete}
       />
 
-      <ForgotPasswordPopup show={showForgotPassword} onClose={() => setShowForgotPassword(false)} />
+      <ForgotPasswordPopup
+        show={showForgotPassword}
+        role={forgotPasswordRole}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </div>
   )
 }
