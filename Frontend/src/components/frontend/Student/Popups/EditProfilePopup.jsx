@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark, faUserPen, faImage, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faXmark, faUserPen, faImage, faSpinner, faIdCard } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../../../api/client.js'
 
 // Only the fields a student is actually allowed to self-edit per the spec -
-// CNIC, address, course, roll etc. stay Sub-Admin-controlled and aren't
-// shown here at all.
+// address, course, roll, trainer/batch etc. stay Sub-Admin-controlled and
+// aren't shown here at all. CNIC and Father's CNIC ARE self-editable since
+// the student portal itself logs in with the student's CNIC.
 function EditProfilePopup({ show, info, onClose, onSave }) {
   const [form, setForm] = useState({
     name: info.name, phone: info.phone, email: info.email,
     gender: info.gender, dob: info.dob ? info.dob.slice(0, 10) : '', photo: info.photo || '',
+    cnic: info.cnic || '', fatherCnic: info.fatherCnic || '',
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -36,6 +38,10 @@ function EditProfilePopup({ show, info, onClose, onSave }) {
 
   const handleSave = async () => {
     setError('')
+    if (form.cnic && form.cnic.replace(/\D/g, '').length < 13) {
+      setError('CNIC looks too short.')
+      return
+    }
     setSaving(true)
     try {
       const updated = await api.put('/students/me/profile', form)
@@ -96,6 +102,19 @@ function EditProfilePopup({ show, info, onClose, onSave }) {
               <input type="date" className="auth-input" value={form.dob} onChange={handleChange('dob')} />
             </div>
           </div>
+          <div className="auth-input-group">
+            <label className="auth-input-label"><FontAwesomeIcon icon={faIdCard} /> CNIC</label>
+            <div className="auth-input-wrap">
+              <input className="auth-input" placeholder="42101-1234567-1" value={form.cnic} onChange={handleChange('cnic')} />
+            </div>
+            <span className="subadmin-role-hint">You log in with this CNIC — changing it changes your login ID too.</span>
+          </div>
+          <div className="auth-input-group">
+            <label className="auth-input-label"><FontAwesomeIcon icon={faIdCard} /> Father's CNIC</label>
+            <div className="auth-input-wrap">
+              <input className="auth-input" value={form.fatherCnic} onChange={handleChange('fatherCnic')} />
+            </div>
+          </div>
           <div className="auth-input-group edit-profile-grid-full">
             <label className="auth-input-label">Profile Image</label>
             <label className="feedback-add-image-btn assignment-attach-btn">
@@ -107,7 +126,7 @@ function EditProfilePopup({ show, info, onClose, onSave }) {
         </div>
 
         <p className="subadmin-role-hint">
-          CNIC, address and course details are managed by your Sub Admin.
+          Address, course and trainer/batch details are managed by your Sub Admin.
         </p>
 
         <div className="feedback-confirm-btn-row">
