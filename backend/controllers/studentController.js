@@ -146,13 +146,17 @@ export const updateStudent = asyncHandler(async (req, res) => {
   }
 
   const editable = [
-    'name', 'fatherName', 'email', 'phone', 'fatherPhone', 'dob', 'gender', 'address',
+    'name', 'fatherName', 'cnic', 'fatherCnic', 'email', 'phone', 'fatherPhone', 'dob', 'gender', 'address',
     'lastQualification', 'computerLevel', 'hasLaptop', 'photo', 'course', 'slot', 'paymentStatus',
   ]
 
-  if (req.body.email || req.body.phone) {
+  if (req.body.cnic && req.body.cnic.replace(/\D/g, '').length < 13) {
+    return res.status(400).json({ message: 'CNIC looks too short.' })
+  }
+
+  if (req.body.email || req.body.phone || req.body.cnic) {
     const dup = await findDuplicateAccount({
-      email: req.body.email, phone: req.body.phone, excludeId: student._id, excludeModel: 'Student',
+      email: req.body.email, phone: req.body.phone, cnic: req.body.cnic, excludeId: student._id, excludeModel: 'Student',
     })
     if (dup.duplicate) {
       return res.status(409).json({ message: `This ${dup.field} is already used by another account (${dup.inModel}).` })
@@ -221,24 +225,36 @@ export const getMyStudentProfile = asyncHandler(async (req, res) => {
 })
 
 export const updateMyStudentProfile = asyncHandler(async (req, res) => {
-  const { name, email, dob, gender, phone, photo } = req.body
+  const { name, email, dob, gender, phone, photo, cnic, fatherCnic } = req.body
   const student = await Student.findById(req.user._id)
 
-  if (email || phone) {
-    const dup = await findDuplicateAccount({ email, phone, excludeId: student._id, excludeModel: 'Student' })
+  if (cnic && cnic.replace(/\D/g, '').length < 13) {
+    return res.status(400).json({ message: 'CNIC looks too short.' })
+  }
+
+  if (email || phone || cnic) {
+    const dup = await findDuplicateAccount({ email, phone, cnic, excludeId: student._id, excludeModel: 'Student' })
     if (dup.duplicate) {
       return res.status(409).json({ message: `This ${dup.field} is already used by another account (${dup.inModel}).` })
     }
   }
 
-  if (name) student.name = name
-  if (email) student.email = email
-  if (dob) student.dob = dob
-  if (gender) student.gender = gender
-  if (phone) student.phone = phone
-  if (photo) student.photo = photo
+  const changedFields = []
+  if (name && name !== student.name) { student.name = name; changedFields.push('name') }
+  if (email && email !== student.email) { student.email = email; changedFields.push('email') }
+  if (dob && String(dob) !== String(student.dob)) { student.dob = dob; changedFields.push('dob') }
+  if (gender && gender !== student.gender) { student.gender = gender; changedFields.push('gender') }
+  if (phone && phone !== student.phone) { student.phone = phone; changedFields.push('phone') }
+  if (photo && photo !== student.photo) { student.photo = photo; changedFields.push('photo') }
+  // CNIC doubles as the student's login ID, so changing it here is exactly
+  // as significant as an admin changing it - the very next login must use
+  // the new number. Father's CNIC is informational only.
+  if (cnic && cnic !== student.cnic) { student.cnic = cnic; changedFields.push('cnic') }
+  if (fatherCnic !== undefined && fatherCnic !== student.fatherCnic) { student.fatherCnic = fatherCnic; changedFields.push('fatherCnic') }
 
-  student.history.push({ change: 'Updated own profile', by: student.name })
+  if (changedFields.length) {
+    student.history.push({ change: `Updated own profile: ${changedFields.join(', ')}`, by: student.name })
+  }
   await student.save()
   const safe = student.toObject()
   delete safe.password
