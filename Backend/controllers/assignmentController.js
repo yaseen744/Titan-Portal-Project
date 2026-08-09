@@ -19,7 +19,7 @@ function getDueMoment(assignment) {
 }
 
 export const assignmentsForStudentInSlot = asyncHandler(async (req, res) => {
-  const { studentId } = req.params
+    const { studentId } = req.params
   const { slot } = req.query
   if (!slot) return res.status(400).json({ message: 'A slot is required.' })
 
@@ -43,7 +43,7 @@ export const createAssignment = asyncHandler(async (req, res) => {
 
   const assignment = await Assignment.create({ teacher: req.user._id, slot, title, description, type, dueDate, dueTime })
   res.status(201).json(assignment)
-})
+  })
 
 export const listAssignmentsForSlot = asyncHandler(async (req, res) => {
   const page = Math.max(1, parseInt(req.query.page) || 1)
@@ -80,7 +80,7 @@ export const myAssignments = asyncHandler(async (req, res) => {
   }))
 
   res.json({ assignments: withStatus, total, page, pages: Math.ceil(total / limit) })
-})
+  })
 
 export const updateAssignment = asyncHandler(async (req, res) => {
   const assignment = await Assignment.findById(req.params.id)
@@ -145,7 +145,7 @@ export const submitAssignment = asyncHandler(async (req, res) => {
   const isLate = now > getDueMoment(assignment)
 
   let submission = await AssignmentSubmission.findOne({ assignment: assignment._id, student: req.user._id })
-  const isEdited = !!(submission && submission.submittedAt)
+  const isEdited = !! (submission && submission.submittedAt)
 
   if (submission) {
     submission.link = link
@@ -153,7 +153,7 @@ export const submitAssignment = asyncHandler(async (req, res) => {
     submission.image = image
     submission.submittedAt = now
     submission.isLate = isLate
-    submission.isEdited = isEdited
+    submission.isEdited = isEdited 
     submission.status = 'Pending'
   } else {
     submission = new AssignmentSubmission({
