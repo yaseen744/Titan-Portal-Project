@@ -198,9 +198,13 @@ button:disabled {
 }
 
 .auth-input-label {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: #1B2A4D;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .auth-required-star {
@@ -214,12 +218,18 @@ button:disabled {
   border-radius: 10px;
   padding: 11px 14px;
   background-color: #ffffff;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: inset 0 1px 2px rgba(27, 42, 77, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.auth-input-wrap:hover {
+  border-color: #B7BFCC;
 }
 
 .auth-input-wrap:focus-within {
   border-color: #C9A227;
-  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.16);
+  background-color: #FFFDF7;
+  box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.14);
 }
 
 .auth-input-wrap-error {
@@ -1898,25 +1908,55 @@ select.auth-input {
 /* ---------- Assignment view / submit popups ---------- */
 
 .assignment-view-card {
+  position: relative;
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 26px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.06) 0%, rgba(255, 255, 255, 0) 40%);
+  border-radius: 20px;
+  padding: 30px 28px 26px;
   width: 100%;
   max-width: 520px;
   max-height: 86vh;
   overflow-y: auto;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.34), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.assignment-view-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .assignment-submit-card {
+  position: relative;
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 26px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.06) 0%, rgba(255, 255, 255, 0) 40%);
+  border-radius: 20px;
+  padding: 30px 28px 26px;
   width: 100%;
   max-width: 460px;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.34), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.assignment-submit-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .assignment-view-top {
@@ -1924,17 +1964,29 @@ select.auth-input {
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(27, 42, 77, 0.10);
-  padding-bottom: 14px;
-  margin-bottom: 18px;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .assignment-view-top-heading {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   color: #1B2A4D;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.assignment-view-top-heading svg {
+  width: 34px;
+  height: 34px;
+  padding: 9px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  color: #C9A227;
+  background: radial-gradient(circle at 30% 30%, rgba(201, 162, 39, 0.22), rgba(201, 162, 39, 0.09));
+  box-shadow: 0 0 0 5px rgba(201, 162, 39, 0.08);
 }
 
 .assignment-view-section {
@@ -2663,21 +2715,36 @@ select.auth-input {
 }
 
 .edit-profile-card {
+  position: relative;
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 26px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.06) 0%, rgba(255, 255, 255, 0) 40%);
+  border-radius: 20px;
+  padding: 30px 28px 26px;
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   max-height: 86vh;
   overflow-y: auto;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.34), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.edit-profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .edit-profile-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 16px 18px;
 }
 
 .edit-profile-grid-full {
@@ -2690,15 +2757,29 @@ select.auth-input {
 
 .feedback-popup-card {
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 28px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.06) 0%, rgba(255, 255, 255, 0) 40%);
+  border-radius: 20px;
+  padding: 32px 28px 26px;
   width: 100%;
   max-width: 460px;
   max-height: 88vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.34), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.feedback-popup-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .feedback-popup-title {
@@ -3800,15 +3881,30 @@ select.auth-input {
    ========================================================= */
 
 .submissions-card {
+  position: relative;
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 26px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.06) 0%, rgba(255, 255, 255, 0) 40%);
+  border-radius: 20px;
+  padding: 30px 28px 26px;
   width: 100%;
   max-width: 760px;
   max-height: 88vh;
   overflow-y: auto;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.34), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.submissions-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .submissions-stat-row {
@@ -5231,15 +5327,30 @@ select.auth-input {
    ========================================================= */
 
 .filters-popup-card {
+  position: relative;
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 26px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.06) 0%, rgba(255, 255, 255, 0) 40%);
+  border-radius: 20px;
+  padding: 30px 28px 26px;
   width: 100%;
   max-width: 640px;
   max-height: 88vh;
   overflow-y: auto;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.34), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.filters-popup-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .filters-grid {
@@ -7662,15 +7773,30 @@ select.auth-input {
 /* ---------- QUIZ BUILDER (Create/Edit Quiz popup) ---------- */
 
 .quiz-builder-card {
+  position: relative;
   background-color: #ffffff;
-  border-radius: 18px;
-  padding: 26px;
+  background-image: linear-gradient(180deg, rgba(201, 162, 39, 0.06) 0%, rgba(255, 255, 255, 0) 40%);
+  border-radius: 20px;
+  padding: 30px 28px 26px;
   width: 100%;
   max-width: 640px;
   max-height: 88vh;
   overflow-y: auto;
-  box-shadow: 0 25px 60px rgba(27, 42, 77, 0.30);
-  animation: titanCardIn 0.35s ease both;
+  box-shadow: 0 30px 70px rgba(11, 18, 36, 0.34), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  animation: titanCardIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.quiz-builder-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 20px 20px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 50%, #1B2A4D 100%);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.2s linear infinite;
 }
 
 .quiz-question-box {

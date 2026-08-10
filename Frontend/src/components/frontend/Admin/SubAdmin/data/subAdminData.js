@@ -39,14 +39,14 @@ export const permissions = [
 
 // Checks both (a) that this module even supports the given action, and
 // (b) that the currently logged-in Sub Admin was actually granted this
-// permission by Super Admin. Reading localStorage directly (rather than a
+// permission by Super Admin. Reading sessionStorage directly (rather than a
 // React hook) keeps this a plain function so every existing call site -
 // `hasPermission('STUDENT')` - keeps working without changes.
 export function hasPermission(key, action = 'READ') {
   const perm = permissions.find((p) => p.key === key)
   if (!perm || !perm.actions.includes(action)) return false
   try {
-    const stored = JSON.parse(localStorage.getItem('titan_user') || 'null')
+    const stored = JSON.parse(sessionStorage.getItem('titan_user') || 'null')
     const granted = stored?.permissionKeys || []
     if (!granted.includes(key)) return false
     const grantedActions = stored?.permissionActions?.[key]
