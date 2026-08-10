@@ -1,5 +1,5 @@
 # Titan Portal
-
+# welcome
 A complete multi-role institute management system — **Student**, **Teacher**, **Sub Admin**, and
 **Super Admin** portals — backed by a real Node.js/Express API and MongoDB database.
 
