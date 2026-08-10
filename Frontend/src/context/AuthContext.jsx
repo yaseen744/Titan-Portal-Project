@@ -4,10 +4,10 @@ import { AuthContext } from './authContextObject.js'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('titan_user')
+    const stored = sessionStorage.getItem('titan_user')
     return stored ? JSON.parse(stored) : null
   })
-  const [role, setRole] = useState(() => localStorage.getItem('titan_role') || null)
+  const [role, setRole] = useState(() => sessionStorage.getItem('titan_role') || null)
   const [loading, setLoading] = useState(true)
 
   // On first load, if a token exists, re-fetch the account fresh from the
@@ -24,12 +24,12 @@ export function AuthProvider({ children }) {
         const res = await api.get('/auth/me')
         setUser(res.user)
         setRole(res.role)
-        localStorage.setItem('titan_user', JSON.stringify(res.user))
-        localStorage.setItem('titan_role', res.role)
+        sessionStorage.setItem('titan_user', JSON.stringify(res.user))
+        sessionStorage.setItem('titan_role', res.role)
       } catch {
         setToken(null)
-        localStorage.removeItem('titan_user')
-        localStorage.removeItem('titan_role')
+        sessionStorage.removeItem('titan_user')
+        sessionStorage.removeItem('titan_role')
         setUser(null)
         setRole(null)
       } finally {
@@ -41,16 +41,16 @@ export function AuthProvider({ children }) {
 
   const login = useCallback((token, newRole, newUser) => {
     setToken(token)
-    localStorage.setItem('titan_role', newRole)
-    localStorage.setItem('titan_user', JSON.stringify(newUser))
+    sessionStorage.setItem('titan_role', newRole)
+    sessionStorage.setItem('titan_user', JSON.stringify(newUser))
     setRole(newRole)
     setUser(newUser)
   }, [])
 
   const logout = useCallback(() => {
     setToken(null)
-    localStorage.removeItem('titan_role')
-    localStorage.removeItem('titan_user')
+    sessionStorage.removeItem('titan_role')
+    sessionStorage.removeItem('titan_user')
     setRole(null)
     setUser(null)
   }, [])
@@ -58,7 +58,7 @@ export function AuthProvider({ children }) {
   const updateUser = useCallback((patch) => {
     setUser((prev) => {
       const next = { ...prev, ...patch }
-      localStorage.setItem('titan_user', JSON.stringify(next))
+      sessionStorage.setItem('titan_user', JSON.stringify(next))
       return next
     })
   }, [])
