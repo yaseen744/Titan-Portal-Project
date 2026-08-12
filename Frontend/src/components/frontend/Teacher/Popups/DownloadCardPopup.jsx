@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faIdCard, faCircleCheck, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../../../api/client.js'
@@ -9,8 +9,15 @@ function DownloadCardPopup({ teacherId, filename, onClose }) {
   const [percent, setPercent] = useState(0)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
+  // Guards against the download firing twice - React 18 StrictMode (dev only)
+  // intentionally mounts/runs effects twice, which would otherwise trigger
+  // two real file downloads for a single click.
+  const startedRef = useRef(false)
 
   useEffect(() => {
+    if (startedRef.current) return
+    startedRef.current = true
+
     // Smooth animated progress bar while the real PDF request is in flight -
     // the file itself is tiny so a literal byte-progress readout would jump
     // straight to 100% and not feel like the "premium" loader that was asked for.
