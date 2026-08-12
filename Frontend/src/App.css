@@ -2896,6 +2896,39 @@ select.auth-input {
   background-color: rgba(27, 42, 77, 0.10);
 }
 
+.edit-profile-photo-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.photo-reset-btn {
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 1px dashed rgba(27, 42, 77, 0.28);
+  background-color: transparent;
+  color: #5B6478;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.photo-reset-btn:hover:not(:disabled) {
+  background-color: rgba(27, 42, 77, 0.06);
+  color: #1B2A4D;
+}
+
+.photo-reset-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .feedback-send-btn {
   cursor: pointer;
   width: 100%;
@@ -7232,13 +7265,17 @@ select.auth-input {
 
 .superadmin-subadmin-card-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 14px;
 }
 
 .superadmin-subadmin-action-btn {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 92px;
   justify-content: center;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .superadmin-subadmin-suspend-btn {

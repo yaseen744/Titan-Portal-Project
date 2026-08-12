@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark, faUserPen, faImage, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faXmark, faUserPen, faImage, faSpinner, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../../../api/client.js'
 
 function TeacherEditProfilePopup({ show, info, onClose, onSave }) {
@@ -95,11 +95,21 @@ function TeacherEditProfilePopup({ show, info, onClose, onSave }) {
         </div>
         <div className="auth-input-group">
           <label className="auth-input-label">Photo</label>
-          <label className="feedback-add-image-btn assignment-attach-btn">
-            <FontAwesomeIcon icon={uploadingPhoto ? faSpinner : faImage} spin={uploadingPhoto} />
-            {uploadingPhoto ? 'Uploading...' : form.photo ? 'Photo selected — change?' : 'Choose Photo'}
-            <input type="file" accept="image/*" hidden onChange={handlePhotoChange} />
-          </label>
+          <div className="edit-profile-photo-row">
+            <label className="feedback-add-image-btn assignment-attach-btn">
+              <FontAwesomeIcon icon={uploadingPhoto ? faSpinner : faImage} spin={uploadingPhoto} />
+              {uploadingPhoto ? 'Uploading...' : form.photo ? 'Photo selected — change?' : 'Choose Photo'}
+              <input type="file" accept="image/*" hidden onChange={handlePhotoChange} />
+            </label>
+            <button
+              type="button"
+              className="photo-reset-btn"
+              disabled={!form.photo || uploadingPhoto}
+              onClick={() => setForm((f) => ({ ...f, photo: '' }))}
+            >
+              <FontAwesomeIcon icon={faRotateLeft} /> Use Default Photo
+            </button>
+          </div>
         </div>
 
         <div className="feedback-confirm-btn-row">

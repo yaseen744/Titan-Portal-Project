@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloudArrowDown, faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 
@@ -13,8 +13,15 @@ function DownloadProgressPopup({ title = 'Preparing your file...', successTitle 
   const [percent, setPercent] = useState(0)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
+  // Guards against the download firing twice - React 18 StrictMode (dev only)
+  // intentionally mounts/runs effects twice, which would otherwise trigger
+  // two real file downloads (export/PDF) for a single click.
+  const startedRef = useRef(false)
 
   useEffect(() => {
+    if (startedRef.current) return
+    startedRef.current = true
+
     // Smooth animated progress while the real request is in flight - most
     // of these files generate near-instantly server-side, so a literal
     // byte-progress readout would jump straight to 100% and not feel like

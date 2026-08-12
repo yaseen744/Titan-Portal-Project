@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faXmark, faUserPen, faImage, faSpinner, faChalkboardUser, faIdCard } from '@fortawesome/free-solid-svg-icons'
+import { faXmark, faUserPen, faImage, faSpinner, faChalkboardUser, faIdCard, faBuilding } from '@fortawesome/free-solid-svg-icons'
 import { genders, qualifications, computerLevels } from '../../../shared/permissionsConfig.js'
 import { api } from '../../../../../api/client.js'
 
@@ -17,25 +17,34 @@ function EditStudentPopup({ student, onClose, onSave }) {
     lastQualification: student.lastQualification,
     computerLevel: student.computerLevel,
     photo: student.photo || '',
+    campus: student.campus?._id || '',
     slot: student.slot?._id || '',
   })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
 
+  // --- Campus reassignment ---------------------------------------------
+  // Super Admin (unlike Sub Admin) manages every campus, so they can move a
+  // student to a different one entirely. Everything downstream - the batch
+  // list, trainer choices, even the student's `city` on save - re-derives
+  // itself from whichever campus is currently picked here.
+  const [campuses, setCampuses] = useState([])
+  useEffect(() => { api.get('/campuses').then(setCampuses).catch(() => {}) }, [])
+
   // --- Trainer reassignment -------------------------------------------
   // A trainer isn't a field on the student directly - it's whoever teaches
   // the batch (Slot) the student is sitting in. So "change the trainer"
   // really means "move this student into a batch taught by someone else",
-  // for the same course at the same campus. We pull every batch for that
-  // course + campus, group them by trainer, and let the admin pick a
-  // trainer (and, only if that trainer runs more than one batch here, the
-  // specific batch too).
+  // for the same course at the (possibly newly picked) campus. We pull
+  // every batch for that course + campus, group them by trainer, and let
+  // the admin pick a trainer (and, only if that trainer runs more than one
+  // batch here, the specific batch too).
   const [campusSlots, setCampusSlots] = useState([])
   useEffect(() => {
-    if (!student.campus?._id) return
-    api.get(`/slots?campus=${student.campus._id}`).then(setCampusSlots).catch(() => {})
-  }, [student.campus?._id])
+    if (!form.campus) { setCampusSlots([]); return }
+    api.get(`/slots?campus=${form.campus}`).then(setCampusSlots).catch(() => {})
+  }, [form.campus])
 
   const courseSlots = useMemo(
     () => campusSlots.filter((s) => s.course?._id === student.course?._id),
@@ -49,6 +58,18 @@ function EditStudentPopup({ student, onClose, onSave }) {
     return [...map.values()]
   }, [courseSlots])
 
+  // Whenever the campus (and therefore the pool of valid batches) changes,
+  // make sure the selected slot still belongs to that pool - otherwise fall
+  // back to the first available batch there, or clear it if this campus
+  // doesn't offer the course at all yet.
+  useEffect(() => {
+    const stillValid = courseSlots.some((s) => s._id === form.slot)
+    if (!stillValid) {
+      setForm((f) => ({ ...f, slot: courseSlots[0]?._id || '' }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseSlots])
+
   const selectedSlot = courseSlots.find((s) => s._id === form.slot)
   const selectedTrainerId = selectedSlot?.teacher?._id || ''
   const batchesForSelectedTrainer = courseSlots.filter((s) => s.teacher?._id === selectedTrainerId)
@@ -58,6 +79,8 @@ function EditStudentPopup({ student, onClose, onSave }) {
     const matches = courseSlots.filter((s) => s.teacher?._id === teacherId)
     setForm((f) => ({ ...f, slot: matches[0]?._id || '' }))
   }
+
+  const handleCampusChange = (e) => setForm((f) => ({ ...f, campus: e.target.value }))
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value })
 
@@ -79,6 +102,10 @@ function EditStudentPopup({ student, onClose, onSave }) {
     setError('')
     if (form.cnic && form.cnic.replace(/\D/g, '').length < 13) {
       setError('CNIC looks too short.')
+      return
+    }
+    if (!form.slot) {
+      setError('This campus doesn\'t have a batch for this student\'s course yet — add one from Administration first, or pick a different campus.')
       return
     }
     setSaving(true)
@@ -160,6 +187,20 @@ function EditStudentPopup({ student, onClose, onSave }) {
           <div className="auth-input-group edit-profile-grid-full">
             <label className="auth-input-label">Address</label>
             <div className="auth-input-wrap"><input className="auth-input" value={form.address} onChange={set('address')} /></div>
+          </div>
+
+          <div className="auth-input-group">
+            <label className="auth-input-label"><FontAwesomeIcon icon={faBuilding} /> Campus</label>
+            <div className="auth-input-wrap">
+              <select className="auth-input" value={form.campus} onChange={handleCampusChange}>
+                {campuses.map((c) => <option key={c._id} value={c._id}>{c.name} ({c.city})</option>)}
+              </select>
+            </div>
+            {form.campus && form.campus !== (student.campus?._id || '') && (
+              <span className="subadmin-role-hint">
+                Moving this student to {campuses.find((c) => c._id === form.campus)?.name} — they'll show up under that campus's Sub Admin from now on.
+              </span>
+            )}
           </div>
 
           <div className="auth-input-group">
