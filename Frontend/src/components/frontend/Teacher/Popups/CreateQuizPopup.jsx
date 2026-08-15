@@ -32,9 +32,9 @@ function questionsFromQuiz(quiz) {
   }))
 }
 
-// Teacher builds one question at a time (text + options + which option(s)
-// are correct - multiple allowed), rather than a rigid "enter a number and
-// get that many blank boxes" flow - more forgiving to use and just as fast.
+// Teacher builds one question at a time (text + options + which single
+// option is correct), rather than a rigid "enter a number and get that
+// many blank boxes" flow - more forgiving to use and just as fast.
 // Passing `initial` (an existing quiz) switches this into edit mode.
 function CreateQuizPopup({ show, slotId, initial = null, onClose, onCreated }) {
   const isEdit = Boolean(initial)
@@ -74,11 +74,21 @@ function CreateQuizPopup({ show, slotId, initial = null, onClose, onCreated }) {
   const setOptionText = (qId, optId, text) => setQuestions(questions.map((q) => (
     q._localId === qId ? { ...q, options: q.options.map((o) => (o._localId === optId ? { ...o, text } : o)) } : q
   )))
-  const toggleCorrect = (qId, optIndex) => setQuestions(questions.map((q) => {
-    if (q._localId !== qId) return q
-    const has = q.correctIndexes.includes(optIndex)
-    return { ...q, correctIndexes: has ? q.correctIndexes.filter((i) => i !== optIndex) : [...q.correctIndexes, optIndex] }
-  }))
+  // A teacher can mark more than one option as correct on a question (e.g.
+  // "A, B and D are all acceptable answers") - so this toggles an option
+  // in/out of the correct set rather than replacing it. The student side
+  // still only ever lets them pick one option; they're correct if that one
+  // pick lands on any option the teacher marked correct here.
+  const setCorrect = (qId, optIndex) => setQuestions(questions.map((q) => (
+    q._localId === qId
+      ? {
+          ...q,
+          correctIndexes: q.correctIndexes.includes(optIndex)
+            ? q.correctIndexes.filter((i) => i !== optIndex)
+            : [...q.correctIndexes, optIndex],
+        }
+      : q
+  )))
 
   const handleClose = () => {
     setTitle(''); setTotalMarks(''); setTimerMinutes(''); setDueDate(''); setDueTime('')
@@ -203,8 +213,9 @@ function CreateQuizPopup({ show, slotId, initial = null, onClose, onCreated }) {
                 <button
                   type="button"
                   className={`quiz-option-correct-toggle ${q.correctIndexes.includes(optIdx) ? 'quiz-option-correct-toggle-on' : ''}`}
-                  onClick={() => toggleCorrect(q._localId, optIdx)}
-                  title="Mark as correct"
+                  onClick={() => setCorrect(q._localId, optIdx)}
+                  title="Mark as the correct answer"
+                  aria-pressed={q.correctIndexes.includes(optIdx)}
                 >
                   <FontAwesomeIcon icon={faCheck} />
                 </button>

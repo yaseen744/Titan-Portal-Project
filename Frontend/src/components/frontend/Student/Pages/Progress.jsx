@@ -39,7 +39,14 @@ function Progress() {
   const modules = student.course?.syllabus || []
   const completedTopics = student.slot?.completedTopics || []
   const totalTopics = modules.reduce((s, m) => s + m.topics.length, 0)
-  const totalCompleted = completedTopics.length
+  // Same fix as the teacher's Course Progress tab: only count completedTopics
+  // entries that still match a topic in the current syllabus, so this total
+  // can't drift above what the per-module breakdown below actually shows
+  // after the Admin edits the syllabus.
+  const totalCompleted = modules.reduce(
+    (sum, m) => sum + m.topics.filter((t) => isTopicDone(completedTopics, m._id, t._id)).length,
+    0
+  )
   const totalNotCompleted = totalTopics - totalCompleted
 
   return (

@@ -1,6 +1,12 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 const TOKEN_KEY = 'titan_token'
 
+// Server origin without the trailing /api - e.g. 'http://localhost:5000'.
+// Used to turn a relative upload path like '/uploads/xyz.jpg' (returned by
+// POST /upload, see uploadController.js) into a real, loadable image URL,
+// without ever hardcoding a host/port that could go stale.
+export const API_ORIGIN = BASE_URL.replace(/\/api\/?$/, '')
+
 export function getToken() {
   return sessionStorage.getItem(TOKEN_KEY)
 }

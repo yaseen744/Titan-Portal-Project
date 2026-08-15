@@ -62,12 +62,11 @@ function QuizTakingPopup({ quizId, onClose, onFinished }) {
     return () => clearTimeout(t)
   }, [secondsLeft, result, doSubmit])
 
-  const toggleOption = (questionId, optionIndex) => {
-    setAnswers((prev) => {
-      const current = prev[questionId] || []
-      const next = current.includes(optionIndex) ? current.filter((i) => i !== optionIndex) : [...current, optionIndex]
-      return { ...prev, [questionId]: next }
-    })
+  // Each question has exactly one correct answer, so selecting an option
+  // replaces whatever was picked before for that question rather than
+  // adding to a set - matches the radio-button UI below.
+  const selectOption = (questionId, optionIndex) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: [optionIndex] }))
   }
 
   if (error) {
@@ -130,9 +129,10 @@ function QuizTakingPopup({ quizId, onClose, onFinished }) {
             {q.options.map((opt, optIdx) => (
               <label key={opt._id} className="quiz-taking-option-row">
                 <input
-                  type="checkbox"
+                  type="radio"
+                  name={`question-${q._id}`}
                   checked={(answers[q._id] || []).includes(optIdx)}
-                  onChange={() => toggleOption(q._id, optIdx)}
+                  onChange={() => selectOption(q._id, optIdx)}
                 />
                 <span className="quiz-option-letter">{String.fromCharCode(65 + optIdx)}</span>
                 {opt.text}

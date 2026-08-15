@@ -104,7 +104,7 @@ function Trainers() {
       <DeleteTrainerPopup
         trainer={deleting}
         onClose={() => setDeleting(null)}
-        onDeleted={(message) => { setToast(message); load(); setTimeout(() => setToast(''), 6000) }}
+        onDeleted={() => load()}
       />
     </div>
   )
