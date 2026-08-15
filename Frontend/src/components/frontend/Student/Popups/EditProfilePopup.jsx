@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faUserPen, faImage, faSpinner, faIdCard, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../../../api/client.js'
+import EmailOtpPopup from '../../Media/EmailOtpPopup.jsx'
 
 // Only the fields a student is actually allowed to self-edit per the spec -
 // address, course, roll, trainer/batch etc. stay Sub-Admin-controlled and
@@ -16,6 +17,8 @@ function EditProfilePopup({ show, info, onClose, onSave }) {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [showEmailOtp, setShowEmailOtp] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
 
   if (!show) return null
 
@@ -44,14 +47,37 @@ function EditProfilePopup({ show, info, onClose, onSave }) {
     }
     setSaving(true)
     try {
-      const updated = await api.put('/students/me/profile', form)
+      // Email is never sent through the regular profile save - it always
+      // goes through a separate OTP-confirmed step (see EmailOtpPopup
+      // below), so a code has to be confirmed on the current email before
+      // it actually changes.
+      const { email, ...rest } = form
+      const updated = await api.put('/students/me/profile', rest)
       onSave(updated)
+
+      const trimmedEmail = email.trim().toLowerCase()
+      if (trimmedEmail && trimmedEmail !== info.email.toLowerCase()) {
+        setPendingEmail(trimmedEmail)
+        setShowEmailOtp(true)
+        return
+      }
       onClose()
     } catch (err) {
       setError(err.message || 'Could not save changes.')
     } finally {
       setSaving(false)
     }
+  }
+
+  const refreshAfterEmailChange = async () => {
+    try {
+      const refreshed = await api.get('/students/me/profile')
+      onSave(refreshed)
+    } catch {
+      // Non-fatal - the parent already has the other saved fields.
+    }
+    setShowEmailOtp(false)
+    onClose()
   }
 
   return (
@@ -148,6 +174,16 @@ function EditProfilePopup({ show, info, onClose, onSave }) {
           </button>
         </div>
       </div>
+
+      <EmailOtpPopup
+        show={showEmailOtp}
+        newEmail={pendingEmail}
+        subjectLabel="your"
+        onRequest={() => api.post('/auth/email-change/request', { newEmail: pendingEmail })}
+        onVerify={(otp) => api.post('/auth/email-change/verify', { otp })}
+        onDone={refreshAfterEmailChange}
+        onClose={() => setShowEmailOtp(false)}
+      />
     </div>
   )
 }

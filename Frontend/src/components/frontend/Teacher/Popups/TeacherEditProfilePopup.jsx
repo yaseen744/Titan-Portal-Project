@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faUserPen, faImage, faSpinner, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../../../api/client.js'
+import EmailOtpPopup from '../../Media/EmailOtpPopup.jsx'
 
 function TeacherEditProfilePopup({ show, info, onClose, onSave }) {
   const [form, setForm] = useState({
@@ -12,6 +13,8 @@ function TeacherEditProfilePopup({ show, info, onClose, onSave }) {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [showEmailOtp, setShowEmailOtp] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
 
   if (!show) return null
 
@@ -35,22 +38,41 @@ function TeacherEditProfilePopup({ show, info, onClose, onSave }) {
     setError('')
     setSaving(true)
     try {
+      // Email always goes through a separate OTP-confirmed step below - a
+      // code has to be confirmed on the current email before it changes.
       const updated = await api.put('/teachers/me/profile', {
         name: form.name,
         phone: form.phone,
-        email: form.email,
         bio: form.bio,
         designation: form.designation,
         photo: form.photo,
         socialLinks: form.linkUrl ? [{ platform: 'Link', url: form.linkUrl }] : [],
       })
       onSave(updated)
+
+      const trimmedEmail = form.email.trim().toLowerCase()
+      if (trimmedEmail && trimmedEmail !== info.email.toLowerCase()) {
+        setPendingEmail(trimmedEmail)
+        setShowEmailOtp(true)
+        return
+      }
       onClose()
     } catch (err) {
       setError(err.message || 'Could not save changes.')
     } finally {
       setSaving(false)
     }
+  }
+
+  const refreshAfterEmailChange = async () => {
+    try {
+      const { user } = await api.get('/auth/me')
+      onSave(user)
+    } catch {
+      // Non-fatal - the parent already has the other saved fields.
+    }
+    setShowEmailOtp(false)
+    onClose()
   }
 
   return (
@@ -119,6 +141,16 @@ function TeacherEditProfilePopup({ show, info, onClose, onSave }) {
           </button>
         </div>
       </div>
+
+      <EmailOtpPopup
+        show={showEmailOtp}
+        newEmail={pendingEmail}
+        subjectLabel="your"
+        onRequest={() => api.post('/auth/email-change/request', { newEmail: pendingEmail })}
+        onVerify={(otp) => api.post('/auth/email-change/verify', { otp })}
+        onDone={refreshAfterEmailChange}
+        onClose={() => setShowEmailOtp(false)}
+      />
     </div>
   )
 }

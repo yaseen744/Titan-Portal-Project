@@ -21,7 +21,15 @@ function CourseProgressTab({ slot, onSlotUpdated }) {
 
   const modules = slot.course?.syllabus || []
   const totalTopics = modules.reduce((s, m) => s + m.topics.length, 0)
-  const totalCompleted = slot.completedTopics?.length || 0
+  // Count only completedTopics entries that still match a topic in the
+  // *current* syllabus. Using the raw array length here counted stale
+  // entries left behind whenever the Admin edited/reordered/removed
+  // syllabus topics, which is exactly why this number could drift above
+  // the sum of the per-module counts shown further down the page.
+  const totalCompleted = modules.reduce(
+    (sum, m) => sum + m.topics.filter((t) => isTopicDone(slot, m._id, t._id)).length,
+    0
+  )
   const overallPercent = totalTopics ? Math.round((totalCompleted / totalTopics) * 100) : 0
 
   const toggleModule = (id) => setOpenModules((prev) => ({ ...prev, [id]: !prev[id] }))

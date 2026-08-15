@@ -6,6 +6,22 @@ import { asyncHandler } from '../middleware/errorHandler.js'
 const MAX_ATTEMPTS = 3
 const PASS_PERCENTAGE = 70
 
+// A teacher can mark one or more options correct on a question, but the
+// student always picks just a single option when taking the quiz - they're
+// marked correct if that one pick is any of the marked-correct indexes.
+// So a question just needs at least one correct option, not exactly one.
+function validateQuestions(questions) {
+  for (const q of questions) {
+    if (!q.text || !q.options?.length || q.options.length < 2) {
+      return 'Every question needs text and at least 2 options.'
+    }
+    if (!q.correctOptionIndexes?.length) {
+      return `"${q.text}" must have at least one correct option marked.`
+    }
+  }
+  return null
+}
+
 function stripAnswers(quiz) {
   const obj = quiz.toObject ? quiz.toObject() : quiz
   return {
@@ -47,11 +63,8 @@ export const createQuiz = asyncHandler(async (req, res) => {
   if (String(slotDoc.teacher) !== String(req.user._id)) {
     return res.status(403).json({ message: 'You can only create quizzes for your own batch.' })
   }
-  for (const q of questions) {
-    if (!q.text || !q.options?.length || q.options.length < 2 || !q.correctOptionIndexes?.length) {
-      return res.status(400).json({ message: 'Every question needs text, at least 2 options and at least one correct option marked.' })
-    }
-  }
+  const questionsError = validateQuestions(questions)
+  if (questionsError) return res.status(400).json({ message: questionsError })
 
   const quiz = await Quiz.create({ teacher: req.user._id, slot, title, totalMarks, timerMinutes, dueDate, dueTime, questions })
   res.status(201).json(quiz)
@@ -179,9 +192,11 @@ export const submitQuiz = asyncHandler(async (req, res) => {
 
   for (const q of quiz.questions) {
     if (serverTimedOut) continue // ran out of time -> everything remaining counts as incorrect
-    const given = (answerMap.get(String(q._id)) || []).slice().sort()
-    const correct = q.correctOptionIndexes.slice().sort()
-    const isCorrect = given.length === correct.length && given.every((v, i) => v === correct[i])
+    // Student picks exactly one option for a question; it's correct as long
+    // as that pick is one of the (possibly several) options the teacher
+    // marked correct - not an exact match against the whole correct set.
+    const given = answerMap.get(String(q._id)) || []
+    const isCorrect = given.length === 1 && q.correctOptionIndexes.includes(given[0])
     if (isCorrect) correctCount++
   }
 
@@ -219,7 +234,11 @@ export const updateQuiz = asyncHandler(async (req, res) => {
   if (timerMinutes) quiz.timerMinutes = timerMinutes
   if (dueDate) quiz.dueDate = dueDate
   if (dueTime !== undefined) quiz.dueTime = dueTime
-  if (questions) quiz.questions = questions
+  if (questions) {
+    const questionsError = validateQuestions(questions)
+    if (questionsError) return res.status(400).json({ message: questionsError })
+    quiz.questions = questions
+  }
   await quiz.save()
   res.json(quiz)
 })

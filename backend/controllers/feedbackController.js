@@ -8,10 +8,12 @@ export const createFeedback = asyncHandler(async (req, res) => {
   res.status(201).json(feedback)
 })
 
-// Only unread feedback is returned - once a Sub Admin opens/reads one it
-// disappears from this list, exactly as the spec describes.
+// Only feedback the *current role* hasn't read yet is returned - a Sub
+// Admin opening a card only marks it read for Sub Admins (readBySubAdmin),
+// so the same feedback still shows up once for Super Admin (readBySuperAdmin)
+// and vice versa - each role gets its own independent "seen it" list.
 export const listFeedback = asyncHandler(async (req, res) => {
-  const filter = { read: false }
+  const filter = req.role === 'subadmin' ? { readBySubAdmin: false } : { readBySuperAdmin: false }
   if (req.role === 'subadmin') filter.campus = req.user.campus
   const feedback = await Feedback.find(filter)
     .populate('student', 'name email roll course')
@@ -21,7 +23,8 @@ export const listFeedback = asyncHandler(async (req, res) => {
 })
 
 export const markFeedbackRead = asyncHandler(async (req, res) => {
-  const feedback = await Feedback.findByIdAndUpdate(req.params.id, { read: true }, { new: true })
+  const field = req.role === 'subadmin' ? 'readBySubAdmin' : 'readBySuperAdmin'
+  const feedback = await Feedback.findByIdAndUpdate(req.params.id, { [field]: true }, { new: true })
   if (!feedback) return res.status(404).json({ message: 'Feedback not found.' })
   res.json({ message: 'Marked as read.' })
 })

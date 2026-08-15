@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_ORIGIN } from '../../../api/client.js'
 
 // A robust avatar: tries to show a real photo if a photoUrl is given, but
 // automatically falls back to a clean initials circle if that photo fails
@@ -23,13 +24,24 @@ function getColorClass(name) {
   return palette[sum % palette.length]
 }
 
+// A saved photo can be either an old-style absolute URL
+// ('http://host:port/uploads/xyz.jpg', from before this fix) or the new
+// relative path ('/uploads/xyz.jpg'). Only the relative kind needs the
+// current API origin prefixed on - absolute URLs are left untouched so
+// nothing that was already saved ever breaks.
+function resolvePhotoUrl(photoUrl) {
+  if (!photoUrl) return photoUrl
+  if (/^https?:\/\//i.test(photoUrl)) return photoUrl
+  return `${API_ORIGIN}${photoUrl.startsWith('/') ? '' : '/'}${photoUrl}`
+}
+
 function Avatar({ name, photoUrl, className = '' }) {
   const [imgFailed, setImgFailed] = useState(false)
 
   if (photoUrl && !imgFailed) {
     return (
       <img
-        src={photoUrl}
+        src={resolvePhotoUrl(photoUrl)}
         alt={name}
         className={className}
         onError={() => setImgFailed(true)}
