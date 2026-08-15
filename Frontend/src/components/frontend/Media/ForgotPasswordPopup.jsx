@@ -15,8 +15,7 @@ function ForgotPasswordPopup({ show, onClose, role }) {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [maskedPhone, setMaskedPhone] = useState('')
-  const [devOtp, setDevOtp] = useState('')
+  const [maskedEmail, setMaskedEmail] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -31,8 +30,7 @@ function ForgotPasswordPopup({ show, onClose, role }) {
     setOtp('')
     setNewPassword('')
     setConfirmPassword('')
-    setMaskedPhone('')
-    setDevOtp('')
+    setMaskedEmail('')
     setError('')
     setLoading(false)
   }
@@ -54,8 +52,7 @@ function ForgotPasswordPopup({ show, onClose, role }) {
         role,
         ...(employeeId.trim() ? { employeeId: employeeId.trim() } : {}),
       })
-      setMaskedPhone(res.maskedPhone || '')
-      setDevOtp(res.devOtp || '')
+      setMaskedEmail(res.maskedEmail || '')
       setStep('verify')
     } catch (err) {
       if (err.code === 'NEED_EMPLOYEE_ID') {
@@ -120,8 +117,8 @@ function ForgotPasswordPopup({ show, onClose, role }) {
             </div>
             <h3 className="generic-popup-title">Forgot Password</h3>
             <p className="generic-popup-text">
-              Enter your registered email. We'll send a 6-digit verification code via WhatsApp
-              to the phone number on file for this account.
+              Enter your registered email. We'll send a 6-digit verification code to that
+              email address so you can securely reset your password.
             </p>
 
             {error && (
@@ -207,16 +204,8 @@ function ForgotPasswordPopup({ show, onClose, role }) {
             </div>
             <h3 className="generic-popup-title">Enter Verification Code</h3>
             <p className="generic-popup-text">
-              A 6-digit code was sent via WhatsApp to {maskedPhone || 'the number on file'}. It expires in 5 minutes.
+              A 6-digit code was sent to {maskedEmail || 'the email on file'}. It expires in 5 minutes.
             </p>
-
-            {devOtp && (
-              <div className="generic-popup-dev-otp">
-                <FontAwesomeIcon icon={faShieldHalved} /> Real WhatsApp sending isn't wired up yet (needs a
-                WhatsApp Business API account) — for now, here's your code so you can test the flow:
-                <br /><strong>{devOtp}</strong>
-              </div>
-            )}
 
             {error && (
               <div className="auth-error-banner">

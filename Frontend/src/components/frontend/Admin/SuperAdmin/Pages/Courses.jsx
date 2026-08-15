@@ -64,7 +64,23 @@ function CourseEditor({ course, onClose, onSaved }) {
       const payload = {
         name: name.trim(),
         description,
-        syllabus: modules.map((m) => ({ title: m.title.trim(), topics: m.topics.map((t) => ({ title: t.title.trim() })) })),
+        // Preserve each module/topic's existing _id when saving. Sending
+        // only { title } here for everything - as this used to do - made
+        // Mongo mint a brand-new _id for every module and topic on every
+        // save, even ones whose title never changed. That silently
+        // orphaned every batch's already-completed-topic records (they
+        // reference the old moduleId/topicId), which is exactly why
+        // progress broke right after a Syllabus edit. Newly added modules/
+        // topics have no real `_id` yet (only a local UUID for React's
+        // `key`), so they correctly get a fresh one from Mongo as before.
+        syllabus: modules.map((m) => ({
+          ...(m._id ? { _id: m._id } : {}),
+          title: m.title.trim(),
+          topics: m.topics.map((t) => ({
+            ...(t._id ? { _id: t._id } : {}),
+            title: t.title.trim(),
+          })),
+        })),
       }
       if (course._id) await api.put(`/courses/${course._id}`, payload)
       else await api.post('/courses', payload)

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faChalkboardUser, faCircleCheck, faImage, faSpinner, faIdBadge } from '@fortawesome/free-solid-svg-icons'
 import { genders } from '../../../shared/permissionsConfig.js'
 import { api } from '../../../../../api/client.js'
+import EmailOtpPopup from '../../../Media/EmailOtpPopup.jsx'
 
 const emptyForm = {
   campus: '', employeeId: '', name: '', gender: '', designation: '', bio: '', phone: '',
@@ -27,6 +28,8 @@ function AddTrainerPopup({ show, initial, onClose, onSaved }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [showEmailOtp, setShowEmailOtp] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
 
   useEffect(() => {
     if (show) api.get('/campuses').then(setCampuses).catch(() => {})
@@ -66,10 +69,10 @@ function AddTrainerPopup({ show, initial, onClose, onSaved }) {
     }
     setLoading(true)
     try {
-      const payload = {
+      const trimmedEmail = form.email.trim().toLowerCase()
+      const basePayload = {
         employeeId: form.employeeId.trim(),
         name: form.name.trim(),
-        email: form.email.trim(),
         phone: form.phone.trim(),
         gender: form.gender,
         designation: form.designation,
@@ -78,14 +81,41 @@ function AddTrainerPopup({ show, initial, onClose, onSaved }) {
         photo: form.photo,
         ...(form.password ? { password: form.password } : {}),
       }
-      const teacher = initial
-        ? await api.put(`/teachers/${initial._id}`, payload)
-        : await api.post('/teachers', { ...payload, campus: form.campus })
+
+      if (!initial) {
+        // New trainer - email is set directly at creation, no OTP needed yet.
+        const teacher = await api.post('/teachers', { ...basePayload, email: trimmedEmail, campus: form.campus })
+        setCreated(teacher)
+        return
+      }
+
+      // Editing an existing trainer - email never travels in this call.
+      // If it changed, it's confirmed separately via OTP sent to the
+      // trainer's CURRENT email before it actually applies.
+      const teacher = await api.put(`/teachers/${initial._id}`, basePayload)
+      if (trimmedEmail && trimmedEmail !== initial.email.toLowerCase()) {
+        setPendingEmail(trimmedEmail)
+        setShowEmailOtp(true)
+        return
+      }
       setCreated(teacher)
     } catch (err) {
       setError(err.message || 'Could not save trainer.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const refreshAfterEmailChange = async () => {
+    setLoading(true)
+    try {
+      const teacher = await api.get(`/teachers/${initial._id}`)
+      setCreated(teacher)
+    } catch (err) {
+      setError(err.message || 'Email was changed, but the latest details could not be reloaded.')
+    } finally {
+      setLoading(false)
+      setShowEmailOtp(false)
     }
   }
 
@@ -105,6 +135,20 @@ function AddTrainerPopup({ show, initial, onClose, onSaved }) {
           <button className="generic-popup-btn" onClick={() => { onSaved?.(); handleClose() }}>Okay</button>
         </div>
       </div>
+    )
+  }
+
+  if (showEmailOtp) {
+    return (
+      <EmailOtpPopup
+        show={showEmailOtp}
+        newEmail={pendingEmail}
+        subjectLabel="this trainer's"
+        onRequest={() => api.post(`/teachers/${initial._id}/email-change/request`, { newEmail: pendingEmail })}
+        onVerify={(otp) => api.post(`/teachers/${initial._id}/email-change/verify`, { otp })}
+        onDone={refreshAfterEmailChange}
+        onClose={() => setShowEmailOtp(false)}
+      />
     )
   }
 

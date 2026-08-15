@@ -6,6 +6,7 @@ import {
 } from '../../../shared/permissionsConfig.js'
 import PermissionActionsPopup from '../../../shared/PermissionActionsPopup.jsx'
 import { api } from '../../../../../api/client.js'
+import EmailOtpPopup from '../../../Media/EmailOtpPopup.jsx'
 
 const emptyForm = { name: '', email: '', phone: '', employeeId: '', gender: '', role: 'Campus Manager', campus: '', password: '', photo: '' }
 
@@ -56,6 +57,8 @@ function SubAdminPopup({ initial, presetCampus, onClose, onSaved }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [showEmailOtp, setShowEmailOtp] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
 
   useEffect(() => {
     if (presetCampus) return
@@ -127,16 +130,29 @@ function SubAdminPopup({ initial, presetCampus, onClose, onSaved }) {
     }
     setLoading(true)
     try {
-      const payload = {
-        name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim(),
+      const trimmedEmail = form.email.trim().toLowerCase()
+      const basePayload = {
+        name: form.name.trim(), phone: form.phone.trim(),
         employeeId: form.employeeId.trim(),
         gender: form.gender, role: form.role, photo: form.photo, permissionKeys, permissionActions,
         ...(form.password ? { password: form.password } : {}),
       }
-      if (initial) {
-        await api.put(`/subadmins/${initial._id}`, payload)
-      } else {
-        await api.post('/subadmins', { ...payload, campus: form.campus })
+
+      if (!initial) {
+        // New Sub Admin - email is set directly at creation, no OTP needed yet.
+        await api.post('/subadmins', { ...basePayload, email: trimmedEmail, campus: form.campus })
+        setSaved(true)
+        return
+      }
+
+      // Editing an existing Sub Admin - email never travels in this call.
+      // If it changed, it's confirmed separately via OTP sent to the
+      // Sub Admin's CURRENT email before it actually applies.
+      await api.put(`/subadmins/${initial._id}`, basePayload)
+      if (trimmedEmail && trimmedEmail !== initial.email.toLowerCase()) {
+        setPendingEmail(trimmedEmail)
+        setShowEmailOtp(true)
+        return
       }
       setSaved(true)
     } catch (err) {
@@ -144,6 +160,11 @@ function SubAdminPopup({ initial, presetCampus, onClose, onSaved }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  const finishAfterEmailChange = () => {
+    setShowEmailOtp(false)
+    setSaved(true)
   }
 
   if (saved) {
@@ -160,6 +181,20 @@ function SubAdminPopup({ initial, presetCampus, onClose, onSaved }) {
           <button className="generic-popup-btn" onClick={() => { onSaved?.(); handleClose() }}>Okay</button>
         </div>
       </div>
+    )
+  }
+
+  if (showEmailOtp) {
+    return (
+      <EmailOtpPopup
+        show={showEmailOtp}
+        newEmail={pendingEmail}
+        subjectLabel="this Sub Admin's"
+        onRequest={() => api.post(`/subadmins/${initial._id}/email-change/request`, { newEmail: pendingEmail })}
+        onVerify={(otp) => api.post(`/subadmins/${initial._id}/email-change/verify`, { otp })}
+        onDone={finishAfterEmailChange}
+        onClose={() => setShowEmailOtp(false)}
+      />
     )
   }
 

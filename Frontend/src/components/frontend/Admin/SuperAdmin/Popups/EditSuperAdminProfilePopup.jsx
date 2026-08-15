@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faUserPen, faImage, faSpinner, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../../../../api/client.js'
 import { useAuth } from '../../../../../context/useAuth.js'
+import EmailOtpPopup from '../../../Media/EmailOtpPopup.jsx'
 
 function EditSuperAdminProfilePopup({ onClose, onSaved }) {
   const { user } = useAuth()
@@ -13,6 +14,8 @@ function EditSuperAdminProfilePopup({ onClose, onSaved }) {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
+  const [showEmailOtp, setShowEmailOtp] = useState(false)
+  const [pendingEmail, setPendingEmail] = useState('')
 
   const set = (field) => (e) => setForm({ ...form, [field]: e.target.value })
 
@@ -34,14 +37,34 @@ function EditSuperAdminProfilePopup({ onClose, onSaved }) {
     setError('')
     setSaving(true)
     try {
-      const updated = await api.put('/superadmin/me/profile', form)
+      // Email always goes through a separate OTP-confirmed step below.
+      const { email, ...rest } = form
+      const updated = await api.put('/superadmin/me/profile', rest)
       onSaved(updated)
+
+      const trimmedEmail = email.trim().toLowerCase()
+      if (trimmedEmail && trimmedEmail !== (user?.email || '').toLowerCase()) {
+        setPendingEmail(trimmedEmail)
+        setShowEmailOtp(true)
+        return
+      }
       onClose()
     } catch (err) {
       setError(err.message || 'Could not save changes.')
     } finally {
       setSaving(false)
     }
+  }
+
+  const refreshAfterEmailChange = async () => {
+    try {
+      const { user: refreshed } = await api.get('/auth/me')
+      onSaved(refreshed)
+    } catch {
+      // Non-fatal - the parent already has the other saved fields.
+    }
+    setShowEmailOtp(false)
+    onClose()
   }
 
   return (
@@ -95,7 +118,7 @@ function EditSuperAdminProfilePopup({ onClose, onSaved }) {
           </div>
         </div>
 
-        <p className="subadmin-role-hint">The forgot-password WhatsApp code always goes to whatever phone number is saved here.</p>
+        <p className="subadmin-role-hint">Changing your email requires confirming a code sent to your current email first.</p>
 
         <div className="feedback-confirm-btn-row">
           <button type="button" className="generic-popup-btn-outline" onClick={onClose}>Back</button>
@@ -104,6 +127,16 @@ function EditSuperAdminProfilePopup({ onClose, onSaved }) {
           </button>
         </div>
       </div>
+
+      <EmailOtpPopup
+        show={showEmailOtp}
+        newEmail={pendingEmail}
+        subjectLabel="your"
+        onRequest={() => api.post('/auth/email-change/request', { newEmail: pendingEmail })}
+        onVerify={(otp) => api.post('/auth/email-change/verify', { otp })}
+        onDone={refreshAfterEmailChange}
+        onClose={() => setShowEmailOtp(false)}
+      />
     </div>
   )
 }

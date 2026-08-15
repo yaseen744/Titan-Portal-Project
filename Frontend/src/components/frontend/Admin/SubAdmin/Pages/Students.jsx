@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faMagnifyingGlass, faFilter, faFileExport, faPlus, faEye, faTag,
-  faPenToSquare, faPaperPlane, faDownload, faChevronLeft, faChevronRight, faFilePdf,
+  faPenToSquare, faPaperPlane, faDownload, faChevronLeft, faChevronRight, faFilePdf, faTrashCan,
 } from '@fortawesome/free-solid-svg-icons'
 import SubAdminTopbar from '../Layout/SubAdminTopbar.jsx'
 import FiltersPopup from '../Popups/FiltersPopup.jsx'
@@ -12,6 +12,7 @@ import PaymentsPopup from '../Popups/PaymentsPopup.jsx'
 import DownloadProgressPopup from '../../../shared/DownloadProgressPopup.jsx'
 import { hasPermission } from '../data/subAdminData.js'
 import { api } from '../../../../../api/client.js'
+import { useAlert } from '../../../../../context/AlertContext.jsx'
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50]
 
@@ -27,6 +28,7 @@ function paymentChipClass(status) {
 
 function Students() {
   const navigate = useNavigate()
+  const { confirmAction, success, error: alertError } = useAlert()
   const [allStudents, setAllStudents] = useState([])
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
@@ -68,6 +70,22 @@ function Students() {
   const handleExport = () => setExportPopup(true)
 
   const handleDownloadRecord = (student) => setDownloadTarget(student)
+
+  const handleDeleteStudent = async (student) => {
+    const ok = await confirmAction({
+      title: `Delete ${student.name}?`,
+      message: `This permanently deletes ${student.name}'s (Roll ${student.roll}) record - they will no longer be able to log in, and they'll be removed from their course/campus. This can't be undone.`,
+      confirmText: 'Yes, delete',
+    })
+    if (!ok) return
+    try {
+      await api.delete(`/students/${student._id}`)
+      success(`${student.name}'s record has been deleted.`, 'Student Deleted')
+      load()
+    } catch (err) {
+      alertError(err.message || 'Could not delete this student.')
+    }
+  }
 
   return (
     <div className="subadmin-page">
@@ -149,6 +167,14 @@ function Students() {
                 onClick={() => handleDownloadRecord(s)}
                 style={{ opacity: downloadTarget?._id === s._id ? 0.5 : 1 }}
               />
+              {hasPermission('STUDENT', 'UPDATE') && (
+                <FontAwesomeIcon
+                  icon={faTrashCan}
+                  className="assignment-action-icon"
+                  title="Delete Student"
+                  onClick={() => handleDeleteStudent(s)}
+                />
+              )}
             </span>
           </div>
         ))}
