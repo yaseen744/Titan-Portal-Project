@@ -99,15 +99,25 @@ export const superAdminDashboard = asyncHandler(async (req, res) => {
 
 export const teacherDashboard = asyncHandler(async (req, res) => {
   const teacherId = req.user._id
-  const slots = await Slot.find({ teacher: teacherId, isDeleted: false }).populate('course', 'name').populate('campus', 'name city')
+  const slots = await Slot.find({ teacher: teacherId, isDeleted: false }).populate('course', 'name syllabus').populate('campus', 'name city')
   const enrolledStudents = await Student.countDocuments({ slot: { $in: slots.map((s) => s._id) }, status: { $ne: 'dropout' } })
 
   const totalAssignments = await Assignment.countDocuments({ slot: { $in: slots.map((s) => s._id) }, isDeleted: false })
+
+  // Attach live seat counts per slot - `seatsUsed` is only a virtual on the
+  // Slot model, so it never comes back from a plain .find() and has to be
+  // computed and merged in manually (same pattern as slotController).
+  const slotsWithSeats = await Promise.all(
+    slots.map(async (s) => {
+      const seatsUsed = await Student.countDocuments({ slot: s._id, status: { $ne: 'dropout' } })
+      return { ...s.toObject(), seatsUsed }
+    })
+  )
 
   res.json({
     activeCourses: slots.length,
     enrolledStudents,
     totalAssignments,
-    slots,
+    slots: slotsWithSeats,
   })
 })

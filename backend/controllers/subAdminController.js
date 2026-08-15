@@ -2,6 +2,9 @@ import bcrypt from 'bcryptjs'
 import SubAdmin from '../models/SubAdmin.js'
 import Campus from '../models/Campus.js'
 import { asyncHandler } from '../middleware/errorHandler.js'
+import { sendMail } from '../utils/mailer.js'
+import { welcomeEmailTemplate } from '../utils/emailTemplates.js'
+import { requestEmailChange, verifyEmailChange } from '../utils/emailChangeService.js'
 
 export const listSubAdmins = asyncHandler(async (req, res) => {
   const subAdmins = await SubAdmin.find().populate('campus', 'name city').select('-password').sort({ createdAt: -1 })
@@ -57,12 +60,27 @@ export const createSubAdmin = asyncHandler(async (req, res) => {
   const safe = subAdmin.toObject()
   delete safe.password
   res.status(201).json(safe)
+
+  sendMail({
+    to: subAdmin.email,
+    subject: 'Welcome to Titan Portal 🎉',
+    html: welcomeEmailTemplate({ name: subAdmin.name, role: 'Sub Admin', loginEmail: subAdmin.email }),
+  }).catch(() => {})
 })
 
 export const updateSubAdmin = asyncHandler(async (req, res) => {
   const { name, email, password, phone, employeeId, gender, photo, role, permissionKeys, permissionActions } = req.body
   const subAdmin = await SubAdmin.findById(req.params.id)
   if (!subAdmin) return res.status(404).json({ message: 'Sub Admin not found.' })
+
+  // Email changes always go through the OTP-confirmed flow below - a Super
+  // Admin editing a Sub Admin's email included - never set inline here.
+  if (email && email.toLowerCase().trim() !== subAdmin.email) {
+    return res.status(400).json({
+      message: 'Email can\'t be changed here. Use the "Change Email" action, which sends a confirmation code to the Sub Admin\'s current email first.',
+      code: 'EMAIL_CHANGE_REQUIRES_OTP',
+    })
+  }
 
   if (employeeId && employeeId.trim() !== subAdmin.employeeId) {
     const idTaken = await SubAdmin.findOne({ employeeId: employeeId.trim(), _id: { $ne: subAdmin._id } }).lean()
@@ -73,7 +91,6 @@ export const updateSubAdmin = asyncHandler(async (req, res) => {
   }
 
   if (name) subAdmin.name = name
-  if (email) subAdmin.email = email
   if (phone) subAdmin.phone = phone
   if (gender) subAdmin.gender = gender
   if (photo) subAdmin.photo = photo
@@ -115,8 +132,14 @@ export const updateMySubAdminProfile = asyncHandler(async (req, res) => {
   const { name, email, phone, photo } = req.body
   const subAdmin = await SubAdmin.findById(req.user._id)
 
+  if (email && email.toLowerCase().trim() !== subAdmin.email) {
+    return res.status(400).json({
+      message: 'Email can\'t be changed here. Use "Change Email", which sends a confirmation code to your current email first.',
+      code: 'EMAIL_CHANGE_REQUIRES_OTP',
+    })
+  }
+
   if (name) subAdmin.name = name
-  if (email) subAdmin.email = email
   if (phone) subAdmin.phone = phone
   if (photo !== undefined) subAdmin.photo = photo
 
@@ -124,4 +147,35 @@ export const updateMySubAdminProfile = asyncHandler(async (req, res) => {
   const safe = subAdmin.toObject()
   delete safe.password
   res.json(safe)
+})
+
+// --- Email Change (OTP-confirmed), Super Admin changing a Sub Admin's email ---
+// A Sub Admin changing their OWN email uses the generic
+// /api/auth/email-change/request|verify endpoints. The code always goes to
+// the Sub Admin's CURRENT email on file, so the change only goes through if
+// that inbox confirms it.
+export const requestSubAdminEmailChange = asyncHandler(async (req, res) => {
+  const subAdmin = await SubAdmin.findById(req.params.id)
+  if (!subAdmin) return res.status(404).json({ message: 'Sub Admin not found.' })
+  try {
+    const { maskedEmail, devOtp } = await requestEmailChange({ role: 'subadmin', account: subAdmin, newEmail: req.body.newEmail })
+    res.json({
+      message: `A confirmation code was sent to this Sub Admin's current email (${maskedEmail}). The change only applies once that code is entered correctly.`,
+      maskedEmail,
+      ...(devOtp ? { devOtp } : {}),
+    })
+  } catch (err) {
+    res.status(err.status || 400).json({ message: err.message })
+  }
+})
+
+export const verifySubAdminEmailChange = asyncHandler(async (req, res) => {
+  const subAdmin = await SubAdmin.findById(req.params.id)
+  if (!subAdmin) return res.status(404).json({ message: 'Sub Admin not found.' })
+  try {
+    const { newEmail } = await verifyEmailChange({ role: 'subadmin', account: subAdmin, otp: req.body.otp })
+    res.json({ message: 'Sub Admin email updated successfully.', email: newEmail })
+  } catch (err) {
+    res.status(err.status || 400).json({ message: err.message })
+  }
 })

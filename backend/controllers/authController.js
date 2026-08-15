@@ -5,7 +5,9 @@ import Teacher from '../models/Teacher.js'
 import Student from '../models/Student.js'
 import Otp from '../models/Otp.js'
 import { generateToken } from '../utils/generateToken.js'
-import { sendOtpWhatsApp } from '../utils/otpService.js'
+import { sendMail } from '../utils/mailer.js'
+import { otpEmailTemplate, welcomeEmailTemplate, loginNotificationEmailTemplate } from '../utils/emailTemplates.js'
+import { requestEmailChange, verifyEmailChange, maskEmail } from '../utils/emailChangeService.js'
 import { asyncHandler } from '../middleware/errorHandler.js'
 
 const modelByRole = {
@@ -15,15 +17,86 @@ const modelByRole = {
   student: Student,
 }
 
+const accountModelByRole = {
+  superadmin: 'SuperAdmin',
+  subadmin: 'SubAdmin',
+  teacher: 'Teacher',
+}
+
+// Friendly display name per role, used in the login-notification email
+// (kept consistent with the label already used in welcomeEmailTemplate).
+const roleLabelByRole = {
+  superadmin: 'Super Admin',
+  subadmin: 'Sub Admin',
+  teacher: 'Trainer',
+}
+
 function sanitize(doc) {
   const obj = doc.toObject ? doc.toObject() : doc
   delete obj.password
   return obj
 }
 
-function maskPhone(phone) {
-  if (!phone || phone.length < 4) return '****'
-  return `${'*'.repeat(Math.max(phone.length - 4, 0))}${phone.slice(-4)}`
+// Best-effort, dependency-free device summary from the User-Agent header -
+// just enough for the login-notification email to say "Windows · Chrome"
+// instead of a raw, unreadable UA string.
+function describeDevice(userAgent = '') {
+  if (!userAgent) return ''
+  const os = /windows/i.test(userAgent)
+    ? 'Windows'
+    : /mac os/i.test(userAgent)
+    ? 'macOS'
+    : /android/i.test(userAgent)
+    ? 'Android'
+    : /iphone|ipad/i.test(userAgent)
+    ? 'iOS'
+    : /linux/i.test(userAgent)
+    ? 'Linux'
+    : 'Unknown device'
+
+  const browser = /edg\//i.test(userAgent)
+    ? 'Edge'
+    : /chrome\//i.test(userAgent)
+    ? 'Chrome'
+    : /firefox\//i.test(userAgent)
+    ? 'Firefox'
+    : /safari\//i.test(userAgent)
+    ? 'Safari'
+    : ''
+
+  return browser ? `${os} · ${browser}` : os
+}
+
+// Real client IP even behind a reverse proxy (Vercel, Render, Nginx, etc.)
+// falls back to req.ip when there's no proxy in front of the app.
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for']
+  if (forwarded) return forwarded.split(',')[0].trim()
+  return req.ip || req.socket?.remoteAddress || ''
+}
+
+// Fires the "new sign-in" security email for Super Admin / Sub Admin /
+// Trainer logins. Never awaited by the caller and never throws outward -
+// a slow or failed notification email must never delay or break a login.
+function notifyLogin(req, account, role) {
+  const time = new Date().toLocaleString('en-PK', {
+    timeZone: 'Asia/Karachi',
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+
+  sendMail({
+    to: account.email,
+    subject: 'New Sign-in to Your Titan Portal Account',
+    html: loginNotificationEmailTemplate({
+      name: account.name,
+      role: roleLabelByRole[role] || role,
+      loginEmail: account.email,
+      time: `${time} (PKT)`,
+      ip: getClientIp(req),
+      device: describeDevice(req.headers['user-agent']),
+    }),
+  }).catch(() => {})
 }
 
 // --- Login: Super Admin / Sub Admin / Teacher (email + password) ---
@@ -65,6 +138,10 @@ export const loginWithEmail = (role) =>
 
     const token = generateToken(account._id, role)
     res.json({ token, role, user: sanitize(account) })
+
+    // Fire-and-forget: response has already been sent, this just informs
+    // the account owner in the background that a login just happened.
+    notifyLogin(req, account, role)
   })
 
 // --- Login: Student (CNIC + password) ---
@@ -130,6 +207,14 @@ export const studentCreateAccount = asyncHandler(async (req, res) => {
   student.history.push({ change: 'Account activated by student', by: student.name })
   await student.save()
 
+  // Fire the welcome email in the background - a slow/failed email should
+  // never block the student from getting their token and logging in.
+  sendMail({
+    to: student.email,
+    subject: 'Welcome to Titan Portal 🎉',
+    html: welcomeEmailTemplate({ name: student.name, role: 'Student', loginEmail: student.email }),
+  }).catch(() => {})
+
   const token = generateToken(student._id, 'student')
   res.status(201).json({ token, role: 'student', user: sanitize(student) })
 })
@@ -172,19 +257,32 @@ export const forgotPasswordRequest = asyncHandler(async (req, res) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000) // 5 minutes
 
   await Otp.create({
-    accountModel: role === 'superadmin' ? 'SuperAdmin' : role === 'subadmin' ? 'SubAdmin' : 'Teacher',
+    accountModel: accountModelByRole[role],
     accountId: account._id,
     phone: account.phone,
     code,
     expiresAt,
+    purpose: 'password_reset',
   })
 
-  await sendOtpWhatsApp(account.phone, code)
+  await sendMail({
+    to: account.email,
+    subject: 'Password Reset Code — Titan Portal',
+    html: otpEmailTemplate({
+      name: account.name,
+      code,
+      minutes: 5,
+      heading: 'Reset Your Password',
+      message: `We received a request to reset the password on your Titan Portal account.
+        Enter the code below to continue. If you didn't request this, you can safely ignore this email —
+        your password will not be changed.`,
+    }),
+  })
 
   const devExposeOtp = process.env.DEV_EXPOSE_OTP === 'true'
   res.json({
-    message: `A 6-digit code was sent via WhatsApp to the number on file (${maskPhone(account.phone)}).`,
-    maskedPhone: maskPhone(account.phone),
+    message: `A 6-digit verification code was sent to the email on file (${maskEmail(account.email)}).`,
+    maskedEmail: maskEmail(account.email),
     ...(devExposeOtp ? { devOtp: code } : {}),
   })
 })
@@ -208,7 +306,7 @@ export const forgotPasswordVerify = asyncHandler(async (req, res) => {
   // Same disambiguation as the request step above - with a shared email,
   // the OTP code (tied to one specific account) is what actually pins down
   // which account this is, so try that first before asking for their ID.
-  const accountModel = role === 'superadmin' ? 'SuperAdmin' : role === 'subadmin' ? 'SubAdmin' : 'Teacher'
+  const accountModel = accountModelByRole[role]
   const idLabel = role === 'teacher' ? 'Trainer ID' : role === 'subadmin' ? 'Sub Admin ID' : 'ID'
   let account = candidates[0]
   if (candidates.length > 1) {
@@ -281,4 +379,41 @@ export const changePassword = asyncHandler(async (req, res) => {
 // --- Current logged-in user ---
 export const getMe = asyncHandler(async (req, res) => {
   res.json({ role: req.role, user: sanitize(req.user) })
+})
+
+// --- Self-service Email Change (Super Admin / Sub Admin / Teacher / Student) ---
+// Step 1: request a confirmation code. It is sent to the CURRENT email on
+// file (not the new one) - the account holder must prove they still control
+// their existing inbox before the address is allowed to change.
+export const requestMyEmailChange = asyncHandler(async (req, res) => {
+  const { newEmail } = req.body
+  const Model = modelByRole[req.role]
+  const account = await Model.findById(req.user._id)
+  if (!account) return res.status(404).json({ message: 'Account not found.' })
+
+  try {
+    const { maskedEmail, devOtp } = await requestEmailChange({ role: req.role, account, newEmail })
+    res.json({
+      message: `A confirmation code was sent to your current email (${maskedEmail}). Enter it below to confirm the change.`,
+      maskedEmail,
+      ...(devOtp ? { devOtp } : {}),
+    })
+  } catch (err) {
+    res.status(err.status || 400).json({ message: err.message })
+  }
+})
+
+// Step 2: verify the code and apply the new email.
+export const verifyMyEmailChange = asyncHandler(async (req, res) => {
+  const { otp } = req.body
+  const Model = modelByRole[req.role]
+  const account = await Model.findById(req.user._id)
+  if (!account) return res.status(404).json({ message: 'Account not found.' })
+
+  try {
+    const { newEmail } = await verifyEmailChange({ role: req.role, account, otp })
+    res.json({ message: 'Your email has been updated successfully.', email: newEmail })
+  } catch (err) {
+    res.status(err.status || 400).json({ message: err.message })
+  }
 })

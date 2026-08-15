@@ -24,7 +24,20 @@ export const compareProgressForCourse = asyncHandler(async (req, res) => {
 
   res.json(
     slots.map((s) => {
-      const totalTopics = (s.course?.syllabus || []).reduce((sum, m) => sum + m.topics.length, 0)
+      const modules = s.course?.syllabus || []
+      const totalTopics = modules.reduce((sum, m) => sum + m.topics.length, 0)
+      // Only count completedTopics entries that still match a topic in the
+      // current syllabus - same fix as the progress tabs. A raw
+      // completedTopics.length here would keep counting entries left behind
+      // by a syllabus edit, inflating "covered" above what's actually true.
+      const covered = modules.reduce(
+        (sum, m) =>
+          sum +
+          m.topics.filter((t) =>
+            s.completedTopics.some((c) => String(c.moduleId) === String(m._id) && String(c.topicId) === String(t._id))
+          ).length,
+        0
+      )
       return {
         _id: s._id,
         teacherName: s.teacher?.name,
@@ -33,7 +46,7 @@ export const compareProgressForCourse = asyncHandler(async (req, res) => {
         scheduleDays: s.scheduleDays,
         startTime: s.startTime,
         endTime: s.endTime,
-        covered: s.completedTopics.length,
+        covered,
         total: totalTopics,
       }
     })

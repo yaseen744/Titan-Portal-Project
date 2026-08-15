@@ -248,12 +248,21 @@ export const updateMyStudentProfile = asyncHandler(async (req, res) => {
   const { name, email, dob, gender, phone, photo, cnic, fatherCnic } = req.body
   const student = await Student.findById(req.user._id)
 
+  // Email changes always go through the OTP-confirmed flow
+  // (/api/auth/email-change/request + /verify) - never set inline here.
+  if (email && email.toLowerCase().trim() !== student.email) {
+    return res.status(400).json({
+      message: 'Email can\'t be changed here. Use "Change Email", which sends a confirmation code to your current email first.',
+      code: 'EMAIL_CHANGE_REQUIRES_OTP',
+    })
+  }
+
   if (cnic && cnic.replace(/\D/g, '').length < 13) {
     return res.status(400).json({ message: 'CNIC looks too short.' })
   }
 
-  if (email || phone || cnic) {
-    const dup = await findDuplicateAccount({ email, phone, cnic, excludeId: student._id, excludeModel: 'Student' })
+  if (phone || cnic) {
+    const dup = await findDuplicateAccount({ phone, cnic, excludeId: student._id, excludeModel: 'Student' })
     if (dup.duplicate) {
       return res.status(409).json({ message: `This ${dup.field} is already used by another account (${dup.inModel}).` })
     }
@@ -261,7 +270,6 @@ export const updateMyStudentProfile = asyncHandler(async (req, res) => {
 
   const changedFields = []
   if (name && name !== student.name) { student.name = name; changedFields.push('name') }
-  if (email && email !== student.email) { student.email = email; changedFields.push('email') }
   if (dob && String(dob) !== String(student.dob)) { student.dob = dob; changedFields.push('dob') }
   if (gender && gender !== student.gender) { student.gender = gender; changedFields.push('gender') }
   if (phone && phone !== student.phone) { student.phone = phone; changedFields.push('phone') }

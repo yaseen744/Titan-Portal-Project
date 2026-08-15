@@ -20,8 +20,17 @@ function TrainerAttendanceMark() {
   const handleSearch = async (e) => {
     e.preventDefault()
     setError('')
+    setFound(null)
+    setNotFound(false)
+
+    const query = idInput.trim()
+    if (!query) {
+      setError('Please enter an Employee ID or trainer number.')
+      return
+    }
+
     try {
-      const res = await api.get(`/teacher-attendance/lookup/${idInput.trim()}`)
+      const res = await api.get(`/teacher-attendance/lookup/${encodeURIComponent(query)}`)
       setFound(res)
       setSelectedSlot(res.slots[0]?._id || '')
       setNotFound(false)

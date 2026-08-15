@@ -6,15 +6,23 @@ export const updateMySuperAdminProfile = asyncHandler(async (req, res) => {
   const { name, email, phone, photo, country } = req.body
   const superAdmin = await SuperAdmin.findById(req.user._id)
 
-  if (email || phone) {
-    const dup = await findDuplicateAccount({ email, phone, excludeId: superAdmin._id, excludeModel: 'SuperAdmin' })
+  // Email changes always go through the OTP-confirmed flow
+  // (/api/auth/email-change/request + /verify) - never set inline here.
+  if (email && email.toLowerCase().trim() !== superAdmin.email) {
+    return res.status(400).json({
+      message: 'Email can\'t be changed here. Use "Change Email", which sends a confirmation code to your current email first.',
+      code: 'EMAIL_CHANGE_REQUIRES_OTP',
+    })
+  }
+
+  if (phone) {
+    const dup = await findDuplicateAccount({ phone, excludeId: superAdmin._id, excludeModel: 'SuperAdmin' })
     if (dup.duplicate) {
       return res.status(409).json({ message: `This ${dup.field} is already used by another account (${dup.inModel}).` })
     }
   }
 
   if (name) superAdmin.name = name
-  if (email) superAdmin.email = email
   if (phone) superAdmin.phone = phone
   if (photo !== undefined) superAdmin.photo = photo
   if (country) superAdmin.country = country

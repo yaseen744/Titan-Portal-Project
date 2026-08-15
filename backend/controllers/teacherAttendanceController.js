@@ -52,8 +52,31 @@ function minutesSinceMidnightInKarachi(date) {
   return h * 60 + m
 }
 
+// Employee IDs are free-typed text (e.g. "TR-1001"), so escape anything a
+// person types before it goes into a RegExp - otherwise characters like
+// "." or "(" would be treated as regex syntax instead of literal text.
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 export const lookupTeacherByEmployeeId = asyncHandler(async (req, res) => {
-  const teacher = await Teacher.findOne({ employeeId: req.params.employeeId }).select('-password')
+  const raw = (req.params.employeeId || '').trim()
+  if (!raw) {
+    return res.status(400).json({ message: 'Please enter an Employee ID or trainer number.' })
+  }
+
+  // First try the full Employee ID exactly as typed (case-insensitive),
+  // e.g. "TR-1001" - this is the same lookup as before.
+  let teacher = await Teacher.findOne({ employeeId: new RegExp(`^${escapeRegex(raw)}$`, 'i') }).select('-password')
+
+  // If that didn't match and what was typed is just digits (e.g. "1001"),
+  // fall back to matching the numeric part of any trainer's Employee ID -
+  // so scanning/typing the bare number works too, not just the full ID.
+  if (!teacher && /^\d+$/.test(raw)) {
+    const candidates = await Teacher.find({ employeeId: new RegExp(escapeRegex(raw)) }).select('-password')
+    teacher = candidates.find((c) => c.employeeId.replace(/\D/g, '') === raw) || null
+  }
+
   if (!teacher) return res.status(404).json({ message: 'No trainer found with this Employee ID.' })
   const slots = await Slot.find({ teacher: teacher._id, isDeleted: false }).populate('course', 'name')
   res.json({ teacher, slots })
