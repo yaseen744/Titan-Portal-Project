@@ -7,7 +7,15 @@ const feedbackSchema = new mongoose.Schema(
     type: { type: String, enum: ['Bug', 'Idea', 'Other'], required: true },
     message: { type: String, required: true },
     image: { type: String, default: '' },
+<<<<<<< HEAD
     read: { type: Boolean, default: false },
+=======
+    // Read status is tracked separately per role, so a Sub Admin opening a
+    // feedback card only removes it from *their* inbox - Super Admin still
+    // gets to see that same feedback once, independently, and vice versa.
+    readBySubAdmin: { type: Boolean, default: false },
+    readBySuperAdmin: { type: Boolean, default: false },
+>>>>>>> 19d6766 (full updated code)
   },
   { timestamps: true }
 )

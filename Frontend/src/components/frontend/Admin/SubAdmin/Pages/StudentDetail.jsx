@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { formatDate } from '../../../Media/dateUtils.js'
 import {
   faUser, faGraduationCap, faAddressCard, faBookOpen, faClockRotateLeft,
   faFilePdf, faPenToSquare, faMoneyBillWave, faPlus, faArrowLeft,
@@ -210,7 +211,7 @@ function StudentDetail() {
             <span>{v.invoiceNo}</span>
             <span>{v.type}</span>
             <span>{v.month}</span>
-            <span>{new Date(v.dueDate).toLocaleDateString()}</span>
+            <span>{formatDate(new Date(v.dueDate))}</span>
             <span>Rs. {v.amount}</span>
             <span className={statusClass(v.status)}>{v.status}</span>
           </div>

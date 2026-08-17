@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faFileLines, faPaperclip } from '@fortawesome/free-solid-svg-icons'
+import { formatDate, formatTime } from '../../Media/dateUtils.js'
 
 function AssignmentViewPopup({ assignment, onClose }) {
   const [enlarged, setEnlarged] = useState(false)
@@ -24,7 +25,7 @@ function AssignmentViewPopup({ assignment, onClose }) {
         <div className="assignment-view-section">
           <h4 className="assignment-view-title">{assignment.title}</h4>
           <div className="assignment-view-meta-row">
-            <span>Due: {new Date(assignment.dueDate).toLocaleDateString()} {assignment.dueTime}</span>
+            <span>Due: {formatDate(new Date(assignment.dueDate))}{assignment.dueTime ? ` at ${formatTime(assignment.dueTime)}` : ''}</span>
             <span className={`assignment-grade-chip assignment-grade-${displayStatus.replace(/\s+/g, '-').toLowerCase()}`}>
               {displayStatus}
             </span>

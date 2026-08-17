@@ -8,6 +8,7 @@ import {
 import StudentTopbar from '../Layout/StudentTopbar.jsx'
 import AssignmentViewPopup from '../Popups/AssignmentViewPopup.jsx'
 import AssignmentSubmitPopup from '../Popups/AssignmentSubmitPopup.jsx'
+import { formatDate } from '../../Media/dateUtils.js'
 import { api } from '../../../../api/client.js'
 
 function statusClass(status) {
@@ -108,7 +109,7 @@ function Assignments() {
             <div key={a._id} className={`assignment-list-row ${statusClass(displayStatus)}`}>
               <span className="assignment-row-name">{a.title}</span>
               <span className="assignment-row-course">{a.type}</span>
-              <span className="assignment-row-date">{new Date(a.dueDate).toLocaleDateString()}</span>
+              <span className="assignment-row-date">{formatDate(new Date(a.dueDate))}</span>
               <span className={`assignment-status-chip assignment-status-${displayStatus.replace(/\s+/g, '-').toLowerCase()}`}>
                 {displayStatus}
               </span>

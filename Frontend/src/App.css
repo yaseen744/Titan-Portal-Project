@@ -7123,6 +7123,33 @@ select.auth-input {
   margin: 14px 4px 6px;
 }
 
+/* =========================================================
+   SUB ADMIN — logo role badge (mirrors the Super Admin crown
+   badge above, distinct navy/steel tone to signal the role)
+   ========================================================= */
+
+.subadmin-sidebar-logo-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.subadmin-sidebar-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #2F6FD6;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  border: 2px solid #1B2A4D;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
 .superadmin-nav-divider-label {
   font-size: 0.62rem;
   font-weight: 800;
@@ -7156,7 +7183,7 @@ select.auth-input {
 
 .superadmin-subadmin-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
   margin-top: 16px;
 }
@@ -7475,7 +7502,7 @@ select.auth-input {
 
 .superadmin-campus-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
   margin-top: 16px;
 }
@@ -7752,6 +7779,13 @@ select.auth-input {
   z-index: 20;
   overflow: hidden;
   animation: fadeInDown 0.18s ease;
+}
+
+/* Portal-rendered dropdown (see RowMenu.jsx): lives directly under <body>,
+   positioned in fixed coordinates, so it needs a very high z-index instead
+   of relying on any ancestor's stacking context. */
+.row-menu-dropdown-portal {
+  z-index: 9999;
 }
 
 .row-menu-item {
@@ -8145,7 +8179,7 @@ button.progress-topic-row:hover {
 
 .feedback-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
 }
 
@@ -8516,5 +8550,2341 @@ button.progress-topic-row:hover {
     left: 12px;
     max-width: none;
     width: auto;
+  }
+}
+
+/* =========================================================================
+   TITAN PORTAL — PREMIUM UI UPGRADE LAYER
+   Pure visual polish. No functionality, routes, API calls or data logic
+   are touched anywhere in this section — only how things look.
+   Rules here are written after everything above on purpose, so they win
+   the cascade at equal specificity and safely "re-skin" the existing
+   classes across Student / Teacher / SubAdmin / SuperAdmin.
+   ========================================================================= */
+
+/* ---------- Headings & buttons pick up the premium display font ---------- */
+
+h1, h2, h3, h4,
+.generic-popup-title,
+.auth-heading,
+.landing-heading {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+button {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
+}
+
+/* =========================================================================
+   PREMIUM SIDEBARS — deep navy gradient with gold accents, all 4 portals
+   ========================================================================= */
+
+.superadmin-sidebar,
+.subadmin-sidebar,
+.teacher-sidebar,
+.student-sidebar {
+  background: linear-gradient(190deg, #1B2A4D 0%, #131f3c 55%, #0d1730 100%);
+  border-right: none;
+  box-shadow: 6px 0 24px rgba(11, 18, 36, 0.14);
+  position: relative;
+}
+
+.superadmin-sidebar::before,
+.subadmin-sidebar::before,
+.teacher-sidebar::before,
+.student-sidebar::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.16) 0%, rgba(201, 162, 39, 0) 70%);
+  pointer-events: none;
+}
+
+.superadmin-sidebar-fold-btn,
+.subadmin-sidebar-fold-btn,
+.teacher-sidebar-fold-btn,
+.student-sidebar-fold-btn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #E8C468;
+}
+
+.superadmin-sidebar-fold-btn:hover,
+.subadmin-sidebar-fold-btn:hover,
+.teacher-sidebar-fold-btn:hover,
+.student-sidebar-fold-btn:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+.superadmin-sidebar-logo,
+.subadmin-sidebar-logo,
+.teacher-sidebar-logo,
+.student-sidebar-logo {
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.35), 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.superadmin-sidebar-crown-badge {
+  background: linear-gradient(135deg, #E8C468, #C9A227);
+  color: #1B2A4D;
+  box-shadow: 0 2px 8px rgba(201, 162, 39, 0.5);
+}
+
+.subadmin-sidebar-badge {
+  background: linear-gradient(135deg, #5A8EE8, #2F6FD6);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(47, 111, 214, 0.5);
+}
+
+/* nav items — superadmin / subadmin share ".*-nav-item", teacher / student
+   share ".*-sidebar-nav-item" */
+.superadmin-nav-item,
+.subadmin-nav-item,
+.teacher-sidebar-nav-item,
+.student-sidebar-nav-item {
+  color: rgba(255, 255, 255, 0.72);
+  border-left: 3px solid transparent;
+  border-radius: 0 10px 10px 0;
+}
+
+.superadmin-nav-item:hover,
+.subadmin-nav-item:hover,
+.teacher-sidebar-nav-item:hover,
+.student-sidebar-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+.superadmin-nav-item-active,
+.subadmin-nav-item-active,
+.teacher-sidebar-nav-item-active,
+.student-sidebar-nav-item-active {
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.22) 0%, rgba(201, 162, 39, 0.05) 100%);
+  border: none;
+  border-left: 3px solid #E8C468;
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.12);
+}
+
+.superadmin-nav-icon,
+.subadmin-nav-icon,
+.teacher-sidebar-nav-icon,
+.student-sidebar-nav-icon {
+  color: #E8C468;
+  opacity: 0.95;
+}
+
+.superadmin-nav-chevron,
+.subadmin-nav-chevron {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.superadmin-nav-subitem,
+.subadmin-nav-subitem {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.superadmin-nav-subitem:hover,
+.subadmin-nav-subitem:hover {
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+.superadmin-nav-subitem-active,
+.subadmin-nav-subitem-active {
+  background-color: rgba(201, 162, 39, 0.20);
+  color: #ffffff;
+}
+
+.superadmin-nav-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  margin: 12px 4px 8px;
+  padding-top: 10px;
+}
+
+.superadmin-nav-divider-label {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.superadmin-sidebar-profile-wrap,
+.subadmin-sidebar-profile-wrap,
+.teacher-sidebar-profile-wrap,
+.student-sidebar-profile-wrap {
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.superadmin-sidebar-profile:hover,
+.subadmin-sidebar-profile:hover,
+.teacher-sidebar-profile:hover,
+.student-sidebar-profile:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.superadmin-sidebar-name,
+.subadmin-sidebar-name,
+.teacher-sidebar-name,
+.student-sidebar-name {
+  color: #ffffff;
+}
+
+.superadmin-sidebar-avatar,
+.subadmin-sidebar-avatar,
+.teacher-sidebar-avatar,
+.student-sidebar-avatar {
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.45);
+}
+
+/* =========================================================================
+   BIG-SCREEN LAYOUT FIX — the empty right-hand space on wide monitors.
+   Stat/summary cards now wrap responsively instead of stretching into
+   giant, sparse-looking tiles, and page padding scales up gracefully.
+   ========================================================================= */
+
+.superadmin-stat-grid,
+.subadmin-stat-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.superadmin-stat-card,
+.subadmin-stat-card,
+.teacher-stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.superadmin-stat-card::after,
+.subadmin-stat-card::after,
+.teacher-stat-card::after {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.10), rgba(201, 162, 39, 0));
+  pointer-events: none;
+}
+
+@media (min-width: 1440px) {
+  .superadmin-page,
+  .subadmin-page,
+  .teacher-page,
+  .student-page {
+    padding: 32px 44px 60px 44px;
+    max-width: 1760px;
+    margin: 0 auto;
+  }
+
+  .superadmin-stat-grid,
+  .subadmin-stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .teacher-stat-row {
+    gap: 22px;
+  }
+
+  .teacher-stat-card {
+    flex: 1 1 240px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .superadmin-shell-main,
+  .subadmin-shell-main,
+  .teacher-shell-main,
+  .student-shell-main {
+    background-image:
+      radial-gradient(circle at 100% 0%, rgba(201, 162, 39, 0.05) 0%, rgba(201, 162, 39, 0) 32%),
+      radial-gradient(circle at 0% 100%, rgba(27, 42, 77, 0.04) 0%, rgba(27, 42, 77, 0) 30%);
+    background-attachment: fixed;
+  }
+}
+
+/* =========================================================================
+   CARDS, TABLES & BUTTONS — extra depth and a livelier hover feel
+   ========================================================================= */
+
+.superadmin-stat-card,
+.subadmin-stat-card,
+.teacher-stat-card {
+  border-radius: 16px;
+}
+
+.superadmin-stat-card:hover,
+.subadmin-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 34px rgba(27, 42, 77, 0.14);
+  border-color: rgba(201, 162, 39, 0.30);
+}
+
+/* =========================================================================
+   TOPBARS — subtle glass/elevation so content doesn't sit flat under a
+   huge blank sidebar-less strip on very wide screens
+   ========================================================================= */
+
+.superadmin-topbar,
+.subadmin-topbar,
+.teacher-topbar {
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(27, 42, 77, 0.08);
+}
+
+/* =========================================================================
+   PREMIUM POPUPS / SWEETALERT-STYLE MODALS — extra polish pass
+   ========================================================================= */
+
+.generic-popup-card {
+  backdrop-filter: blur(2px);
+}
+
+.generic-popup-btn-outline {
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.generic-popup-btn-outline:hover {
+  transform: translateY(-1px);
+}
+
+@media (min-width: 1024px) {
+  .generic-popup-card {
+    padding: 42px 36px 34px;
+  }
+}
+
+/* =========================================================================
+   PREMIUM UI UPGRADE — PASS 2
+   Buttons, tables, pagination, and page-level depth across every portal.
+   ========================================================================= */
+
+/* ---------- Gradient primary buttons (toolbar "Add New", auth submit) ---------- */
+
+.auth-btn-primary {
+  background: linear-gradient(135deg, #C9A227 0%, #A8841C 100%);
+  box-shadow: 0 10px 24px rgba(201, 162, 39, 0.34);
+}
+
+.auth-btn-primary:hover {
+  background: linear-gradient(135deg, #D8B23A 0%, #A8841C 100%);
+  box-shadow: 0 16px 30px rgba(201, 162, 39, 0.42);
+}
+
+.subadmin-toolbar-btn-primary,
+.superadmin-toolbar-btn-primary {
+  background: linear-gradient(135deg, #1B2A4D 0%, #0F1830 100%);
+  border-color: transparent;
+  box-shadow: 0 10px 22px rgba(27, 42, 77, 0.30);
+}
+
+.subadmin-toolbar-btn-primary:hover,
+.superadmin-toolbar-btn-primary:hover {
+  background: linear-gradient(135deg, #24365F 0%, #131f3c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(27, 42, 77, 0.36);
+}
+
+.subadmin-toolbar-btn:hover,
+.superadmin-toolbar-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(201, 162, 39, 0.45);
+}
+
+/* ---------- Table cards: deeper shadow, sticky header, accented row hover ---------- */
+
+.students-table-box {
+  box-shadow: 0 16px 34px rgba(27, 42, 77, 0.10);
+  border-color: rgba(27, 42, 77, 0.08);
+}
+
+.students-table-head {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  z-index: 2;
+}
+
+.students-table-row {
+  border-left: 3px solid transparent;
+  border-radius: 4px;
+}
+
+.students-table-row:hover {
+  background-color: rgba(201, 162, 39, 0.05);
+  border-left: 3px solid #C9A227;
+}
+
+.attendance-table-row:hover,
+.quiz-table-row:hover,
+.assignment-list-row:hover,
+.teacher-assignment-list-row:hover,
+.teacher-quiz-list-row:hover,
+.voucher-table-row:hover {
+  background-color: rgba(201, 162, 39, 0.05);
+}
+
+/* ---------- Pagination — small premium pill buttons ---------- */
+
+.assignment-page-btn {
+  transition: all 0.2s ease;
+}
+
+.assignment-page-btn:hover:not(:disabled) {
+  background-color: #1B2A4D;
+  color: #ffffff;
+  border-color: #1B2A4D;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(27, 42, 77, 0.22);
+}
+
+/* ---------- Loading / empty states get a touch more presence ---------- */
+
+.subadmin-chart-title {
+  letter-spacing: 0.01em;
+}
+
+
+/* =========================================================================
+   PREMIUM CARD SYSTEM — requested UI-only upgrade
+   Scope (exactly, nothing else touched):
+     1) Super Admin Dashboard stat tiles      (.superadmin-stat-card)
+     2) Campuses & Courses cards               (.superadmin-campus-card)
+     3) Sub Admin cards                        (.superadmin-subadmin-card)
+     4) Feedback cards                         (.feedback-list-card / .feedback-detail-card)
+
+   Built entirely on the existing Titan crest identity already used
+   elsewhere in this file (navy #1B2A4D/#142247 + gold #C9A227/#cda464,
+   the same gradient used on the toast progress bar) — a thin gold crest
+   border + a navy→gold ribbon on every card, echoing the shield logo's
+   gold outline. No layout, spacing, grid, JS, or backend rules touched;
+   only border/background/shadow/color/motion on the exact classes above.
+   Appended at the end of the file on purpose so it wins the cascade
+   without editing a single existing line elsewhere in this stylesheet.
+   ========================================================================= */
+
+/* ---------- 1) DASHBOARD STAT TILES — one signature accent each ----------
+   Applies to both Super Admin (.superadmin-stat-card) and Sub Admin
+   (.subadmin-stat-card) dashboards so both portals share the exact same
+   premium tile treatment. */
+
+.superadmin-stat-card:nth-child(1), .subadmin-stat-card:nth-child(1) { --stat-accent: #1B2A4D; --stat-accent-soft: rgba(27, 42, 77, 0.09); }
+.superadmin-stat-card:nth-child(2), .subadmin-stat-card:nth-child(2) { --stat-accent: #1E8E3E; --stat-accent-soft: rgba(30, 142, 62, 0.09); }
+.superadmin-stat-card:nth-child(3), .subadmin-stat-card:nth-child(3) { --stat-accent: #C9A227; --stat-accent-soft: rgba(201, 162, 39, 0.12); }
+.superadmin-stat-card:nth-child(4), .subadmin-stat-card:nth-child(4) { --stat-accent: #2F6FD6; --stat-accent-soft: rgba(47, 111, 214, 0.09); }
+.superadmin-stat-card:nth-child(5), .subadmin-stat-card:nth-child(5) { --stat-accent: #8547C9; --stat-accent-soft: rgba(133, 71, 201, 0.09); }
+.superadmin-stat-card:nth-child(6), .subadmin-stat-card:nth-child(6) { --stat-accent: #0F9B8E; --stat-accent-soft: rgba(15, 155, 142, 0.09); }
+.superadmin-stat-card:nth-child(7) { --stat-accent: #D97706; --stat-accent-soft: rgba(217, 119, 6, 0.10); }
+.superadmin-stat-card:nth-child(8) { --stat-accent: #B3275C; --stat-accent-soft: rgba(179, 39, 92, 0.09); }
+
+.superadmin-stat-card,
+.subadmin-stat-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 100% at 0% 0%, var(--stat-accent-soft, rgba(201, 162, 39, 0.08)) 0%, transparent 60%),
+    #ffffff;
+  border: 1px solid var(--stat-accent-soft, rgba(27, 42, 77, 0.14));
+  border-radius: 16px;
+  box-shadow: 0 10px 24px -12px rgba(27, 42, 77, 0.18), 0 1px 3px rgba(27, 42, 77, 0.06);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+
+.superadmin-stat-card::before,
+.subadmin-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--stat-accent, #1B2A4D) 0%, #C9A227 100%);
+}
+
+.superadmin-stat-card::after,
+.subadmin-stat-card::after {
+  content: '';
+  position: absolute;
+  top: -38px; right: -38px;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--stat-accent-soft, rgba(201, 162, 39, 0.14)), transparent 72%);
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.superadmin-stat-card:hover,
+.subadmin-stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 44px -16px var(--stat-accent-soft, rgba(27, 42, 77, 0.30)), 0 4px 14px rgba(27, 42, 77, 0.08);
+  border-color: var(--stat-accent, #C9A227);
+}
+
+.superadmin-stat-card:hover::after,
+.subadmin-stat-card:hover::after {
+  transform: scale(1.25);
+}
+
+.superadmin-stat-icon,
+.subadmin-stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--stat-accent-soft, rgba(201, 162, 39, 0.14));
+  color: var(--stat-accent, #9C7A0E);
+  font-size: 1.05rem;
+  box-shadow: inset 0 0 0 1px var(--stat-accent-soft, rgba(201, 162, 39, 0.18));
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.superadmin-stat-card:hover .superadmin-stat-icon,
+.subadmin-stat-card:hover .subadmin-stat-icon {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.superadmin-stat-value,
+.subadmin-stat-value {
+  font-size: 1.55rem;
+  letter-spacing: -0.01em;
+}
+
+.superadmin-stat-label,
+.subadmin-stat-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.68rem;
+  transition: color 0.3s ease;
+}
+
+.superadmin-stat-card:hover .superadmin-stat-label,
+.subadmin-stat-card:hover .subadmin-stat-label {
+  color: var(--stat-accent, #6B7280);
+}
+
+/* ---------- 2) CAMPUS & COURSE CARDS (shared markup/classes) ---------- */
+
+.superadmin-campus-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(180deg, rgba(201, 162, 39, 0.05) 0%, #ffffff 40%);
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 10px 26px -14px rgba(27, 42, 77, 0.22), 0 1px 3px rgba(27, 42, 77, 0.05);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+
+.superadmin-campus-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.superadmin-campus-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 46px -18px rgba(27, 42, 77, 0.28), 0 6px 16px rgba(201, 162, 39, 0.14);
+  border-color: rgba(201, 162, 39, 0.55);
+}
+
+.superadmin-campus-icon-wrap {
+  background: linear-gradient(145deg, rgba(201, 162, 39, 0.20), rgba(201, 162, 39, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.30);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.superadmin-campus-card:hover .superadmin-campus-icon-wrap {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.superadmin-campus-name {
+  transition: color 0.3s ease;
+}
+
+.superadmin-campus-card:hover .superadmin-campus-name {
+  color: #142247;
+}
+
+/* ---------- 3) SUB ADMIN CARDS ---------- */
+
+.superadmin-subadmin-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(180deg, rgba(27, 42, 77, 0.04) 0%, #ffffff 40%);
+  border: 1px solid rgba(27, 42, 77, 0.14);
+  border-radius: 16px;
+  box-shadow: 0 10px 26px -14px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+
+.superadmin-subadmin-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.superadmin-subadmin-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 46px -18px rgba(27, 42, 77, 0.26), 0 6px 16px rgba(27, 42, 77, 0.10);
+  border-color: rgba(201, 162, 39, 0.45);
+}
+
+.superadmin-subadmin-card-suspended {
+  border-color: rgba(198, 40, 40, 0.22);
+}
+
+.superadmin-subadmin-card-suspended::before {
+  background: linear-gradient(90deg, #7a1f1f 0%, #C53030 100%);
+}
+
+.superadmin-subadmin-card-suspended:hover {
+  border-color: rgba(198, 40, 40, 0.45);
+  box-shadow: 0 26px 46px -18px rgba(198, 40, 40, 0.20), 0 6px 16px rgba(27, 42, 77, 0.08);
+}
+
+.superadmin-subadmin-avatar {
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.28);
+  transition: box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.superadmin-subadmin-card:hover .superadmin-subadmin-avatar {
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.55);
+  transform: scale(1.05);
+}
+
+.superadmin-subadmin-card-suspended .superadmin-subadmin-avatar {
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.24);
+}
+
+/* ---------- 4) FEEDBACK CARDS ---------- */
+
+.feedback-list-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(27, 42, 77, 0.14);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(27, 42, 77, 0.035) 0%, #ffffff 40%);
+  box-shadow: 0 10px 26px -14px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+
+.feedback-list-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.feedback-list-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 46px -18px rgba(27, 42, 77, 0.26), 0 6px 16px rgba(201, 162, 39, 0.12);
+  border-color: rgba(201, 162, 39, 0.5);
+}
+
+.feedback-list-avatar {
+  box-shadow: 0 0 0 3px rgba(27, 42, 77, 0.10);
+  transition: box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feedback-list-card:hover .feedback-list-avatar {
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.45);
+  transform: scale(1.05);
+}
+
+/* Type-aware accent — reads the type badge already inside the card, so no
+   markup changes are needed. Falls back gracefully to the default gold/navy
+   ribbon above in any browser that doesn't yet support :has(). */
+.feedback-list-card:has(.feedback-type-bug)::before { background: linear-gradient(90deg, #7a1f1f, #C53030); }
+.feedback-list-card:has(.feedback-type-bug):hover { border-color: rgba(197, 48, 48, 0.5); box-shadow: 0 26px 46px -18px rgba(197, 48, 48, 0.22), 0 6px 16px rgba(27, 42, 77, 0.08); }
+
+.feedback-list-card:has(.feedback-type-idea)::before { background: linear-gradient(90deg, #9C7A0E, #C9A227); }
+.feedback-list-card:has(.feedback-type-idea):hover { border-color: rgba(201, 162, 39, 0.55); }
+
+.feedback-list-card:has(.feedback-type-other)::before { background: linear-gradient(90deg, #142247, #2F6FD6); }
+.feedback-list-card:has(.feedback-type-other):hover { border-color: rgba(47, 111, 214, 0.45); }
+
+.feedback-detail-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(27, 42, 77, 0.12);
+  box-shadow: 0 18px 40px -18px rgba(27, 42, 77, 0.26), 0 1px 3px rgba(27, 42, 77, 0.06);
+}
+
+.feedback-detail-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+/* ---------- Respect reduced-motion for everything added above ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .superadmin-stat-card,
+  .superadmin-stat-card::after,
+  .superadmin-stat-icon,
+  .superadmin-stat-label,
+  .subadmin-stat-card,
+  .subadmin-stat-card::after,
+  .subadmin-stat-icon,
+  .subadmin-stat-label,
+  .superadmin-campus-card,
+  .superadmin-campus-icon-wrap,
+  .superadmin-campus-name,
+  .superadmin-subadmin-card,
+  .superadmin-subadmin-avatar,
+  .feedback-list-card,
+  .feedback-list-avatar {
+    transition: none;
+  }
+
+  .superadmin-stat-card:hover,
+  .subadmin-stat-card:hover,
+  .superadmin-campus-card:hover,
+  .superadmin-subadmin-card:hover,
+  .feedback-list-card:hover {
+    transform: none;
+  }
+}
+
+
+/* =========================================================================
+   TITAN PORTAL — PREMIUM UI UPGRADE, PASS 3
+   Visual polish only — exactly like the upgrade layers above this one, no
+   JS, routes, markup, or data logic is touched anywhere below, only how
+   things look. Written last on purpose so it wins the cascade and safely
+   re-skins the existing classes across every portal (Super Admin, Sub
+   Admin, Teacher, Student) without editing a single line above.
+
+   Covers: global buttons / popups / search bars, Administration (batch
+   slot cards), Students & Trainers tables, the Course form, Teacher
+   Dashboard, the Teacher's student roster, the Student Dashboard's
+   Attendance + Assignment tiles, Student Progress, Student Attendance,
+   Student Assignments, Student Quiz, the Teacher's assignment/quiz
+   builders + grading popups, and Teacher Attendance & Calendar. Campus,
+   Course, Sub Admin and Feedback cards get a second, richer pass on top
+   of the existing one.
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1) GLOBAL BUTTONS — a soft light-sweep on every primary action button,
+      so "Add New", "Save", quiz-start, and popup confirm buttons all feel
+      like one consistent, premium button system site-wide.
+   ------------------------------------------------------------------------- */
+
+.auth-btn-primary,
+.generic-popup-btn,
+.course-tab-new-btn,
+.subadmin-toolbar-btn-primary,
+.superadmin-toolbar-btn-primary,
+.quiz-start-btn,
+.submissions-approve-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.auth-btn-primary::after,
+.generic-popup-btn::after,
+.course-tab-new-btn::after,
+.subadmin-toolbar-btn-primary::after,
+.superadmin-toolbar-btn-primary::after,
+.quiz-start-btn::after,
+.submissions-approve-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent 0%, rgba(255, 255, 255, 0.38) 50%, transparent 100%);
+  transform: skewX(-18deg);
+  transition: left 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.auth-btn-primary:hover::after,
+.generic-popup-btn:hover::after,
+.course-tab-new-btn:hover::after,
+.subadmin-toolbar-btn-primary:hover::after,
+.superadmin-toolbar-btn-primary:hover::after,
+.quiz-start-btn:hover::after,
+.submissions-approve-btn:hover::after {
+  left: 130%;
+}
+
+.course-tab-new-btn {
+  background: linear-gradient(135deg, #1B2A4D 0%, #0F1830 100%);
+  box-shadow: 0 10px 22px rgba(27, 42, 77, 0.30);
+}
+
+.course-tab-new-btn:hover {
+  background: linear-gradient(135deg, #24365F 0%, #131f3c 100%);
+  box-shadow: 0 14px 28px rgba(27, 42, 77, 0.38);
+}
+
+.quiz-start-btn {
+  background: linear-gradient(135deg, #1B2A4D 0%, #101a33 100%);
+  box-shadow: 0 8px 18px rgba(27, 42, 77, 0.26);
+}
+
+.quiz-start-btn:hover {
+  background: linear-gradient(135deg, #E8C468 0%, #C9A227 100%);
+  color: #1B2A4D;
+  box-shadow: 0 10px 22px rgba(201, 162, 39, 0.40);
+  transform: translateY(-2px);
+}
+
+.submissions-approve-btn {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, background-color 0.2s ease;
+}
+
+.submissions-approve-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(30, 142, 62, 0.28);
+}
+
+.auth-btn-secondary,
+.subadmin-toolbar-btn,
+.superadmin-toolbar-btn,
+.generic-popup-btn-outline,
+.attendance-month-btn,
+.slot-toggle-btn,
+.calendar-nav-btn,
+.feedback-back-btn {
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.auth-btn-secondary:hover,
+.attendance-month-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(27, 42, 77, 0.10);
+}
+
+.slot-toggle-btn {
+  background: linear-gradient(135deg, rgba(27, 42, 77, 0.05) 0%, rgba(27, 42, 77, 0.09) 100%);
+  border-color: rgba(27, 42, 77, 0.16);
+}
+
+.slot-toggle-btn:hover {
+  background: linear-gradient(135deg, #1B2A4D 0%, #101a33 100%);
+  color: #ffffff;
+  border-color: #1B2A4D;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(27, 42, 77, 0.26);
+}
+
+.slot-toggle-btn-danger:hover {
+  background: linear-gradient(135deg, #C53030 0%, #7a1f1f 100%);
+  border-color: #C53030;
+  box-shadow: 0 10px 22px rgba(197, 48, 48, 0.28);
+}
+
+.calendar-nav-btn:hover {
+  background-color: #1B2A4D;
+  color: #ffffff;
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(27, 42, 77, 0.28);
+}
+
+/* -------------------------------------------------------------------------
+   2) GLOBAL SEARCH BARS — glowing gold focus ring + lifted hover, used by
+      every "search by name / roll / CNIC / phone" field across the app.
+   ------------------------------------------------------------------------- */
+
+.course-landing-search-wrap,
+.course-detail-search-wrap {
+  border: 1.5px solid #E1E4EA;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(27, 42, 77, 0.04);
+  transition: border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.course-landing-search-wrap:hover,
+.course-detail-search-wrap:hover {
+  border-color: rgba(201, 162, 39, 0.45);
+}
+
+.course-landing-search-wrap:focus-within,
+.course-detail-search-wrap:focus-within {
+  border-color: #C9A227;
+  box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.16), 0 10px 22px rgba(27, 42, 77, 0.10);
+  transform: translateY(-1px);
+}
+
+.course-landing-search-icon {
+  transition: color 0.3s ease;
+}
+
+.course-landing-search-wrap:focus-within .course-landing-search-icon {
+  color: #C9A227;
+}
+
+/* -------------------------------------------------------------------------
+   3) GLOBAL POPUPS — richer overlay, a soft gold halo around every popup
+      card, and a livelier close button, on top of the shimmer/pop-in this
+      project already ships with.
+   ------------------------------------------------------------------------- */
+
+.generic-popup-overlay {
+  background: radial-gradient(circle at 50% 20%, rgba(27, 42, 77, 0.62) 0%, rgba(9, 14, 28, 0.72) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.generic-popup-card,
+.submissions-card,
+.quiz-builder-card,
+.filters-popup-card,
+.subadmin-popup-card {
+  box-shadow: 0 40px 90px rgba(11, 18, 36, 0.42), 0 0 0 1px rgba(201, 162, 39, 0.16), 0 0 60px rgba(201, 162, 39, 0.08);
+}
+
+.generic-popup-close {
+  background: linear-gradient(135deg, rgba(27, 42, 77, 0.08), rgba(201, 162, 39, 0.10));
+}
+
+.generic-popup-close:hover {
+  background: linear-gradient(135deg, #1B2A4D, #0F1830);
+  color: #E8C468;
+  transform: rotate(90deg) scale(1.06);
+  box-shadow: 0 6px 14px rgba(27, 42, 77, 0.32);
+}
+
+.generic-popup-icon-wrap {
+  position: relative;
+}
+
+.generic-popup-icon-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201, 162, 39, 0.35);
+  animation: titanRingPulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.generic-popup-icon-wrap-danger::before {
+  border-color: rgba(197, 48, 48, 0.35);
+}
+
+@keyframes titanRingPulse {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  70% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.generic-popup-btn-outline:hover {
+  border-color: #1B2A4D;
+  background-color: rgba(27, 42, 77, 0.05);
+  box-shadow: 0 6px 14px rgba(27, 42, 77, 0.10);
+}
+
+/* Premium focus glow on every text/select input inside forms & popups —
+   Course creation form, Add Sub Admin, New Assignment, Create Quiz, etc. */
+.auth-input-wrap {
+  transition: border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.3s ease;
+}
+
+.auth-input-wrap:focus-within {
+  box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.16), 0 6px 16px rgba(201, 162, 39, 0.10);
+}
+
+.student-form-section-heading {
+  position: relative;
+  padding-left: 14px;
+}
+
+.student-form-section-heading::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 3px;
+  bottom: 3px;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #C9A227, #1B2A4D);
+}
+
+.feedback-textarea:focus {
+  box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.16);
+}
+
+/* -------------------------------------------------------------------------
+   4) ADMINISTRATION — batch / slot cards get their own signature accent,
+      a gradient top ribbon, and glowing open/closed status chips.
+   ------------------------------------------------------------------------- */
+
+.slot-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(180deg, rgba(27, 42, 77, 0.035) 0%, #ffffff 42%);
+  border: 1px solid rgba(27, 42, 77, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 10px 26px -14px rgba(27, 42, 77, 0.22), 0 1px 3px rgba(27, 42, 77, 0.05);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+
+.slot-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.slot-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 26px 46px -18px rgba(27, 42, 77, 0.26), 0 6px 16px rgba(201, 162, 39, 0.12);
+  border-color: rgba(201, 162, 39, 0.45);
+}
+
+.slot-open {
+  background: linear-gradient(135deg, rgba(30, 142, 62, 0.16), rgba(30, 142, 62, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(30, 142, 62, 0.25);
+}
+
+.slot-closed {
+  background: linear-gradient(135deg, rgba(197, 48, 48, 0.14), rgba(197, 48, 48, 0.06));
+  box-shadow: inset 0 0 0 1px rgba(197, 48, 48, 0.22);
+}
+
+.slot-card-seats-track {
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.course-card-progress-fill {
+  background: linear-gradient(90deg, #1B2A4D, #C9A227);
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* -------------------------------------------------------------------------
+   5) STUDENTS TABLE (Super Admin / Sub Admin) — sticky gradient header,
+      accented row hover, and a lifted table shell.
+   ------------------------------------------------------------------------- */
+
+.students-table-box {
+  border: 1px solid rgba(27, 42, 77, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px -18px rgba(27, 42, 77, 0.24), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.students-table-head {
+  background: linear-gradient(180deg, rgba(27, 42, 77, 0.035) 0%, rgba(27, 42, 77, 0) 100%);
+  border-radius: 10px 10px 0 0;
+}
+
+.students-table-row {
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.students-table-row:hover {
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.07) 0%, rgba(201, 162, 39, 0.02) 100%);
+  border-left: 3px solid #C9A227;
+}
+
+.assignment-action-icon {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+}
+
+.assignment-action-icon:hover {
+  transform: translateY(-2px) scale(1.15);
+  color: #C9A227;
+}
+
+.students-page-number {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.18), rgba(201, 162, 39, 0.09));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.24);
+}
+
+/* -------------------------------------------------------------------------
+   6) TRAINERS PAGE & the Teacher's own student roster (CourseStudentsTab)
+      share the same ".student-row" markup — one premium pass covers both.
+   ------------------------------------------------------------------------- */
+
+.course-tab-box {
+  border: 1px solid rgba(27, 42, 77, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px -18px rgba(27, 42, 77, 0.22), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.student-row-head {
+  background: linear-gradient(180deg, rgba(27, 42, 77, 0.03) 0%, rgba(27, 42, 77, 0) 100%);
+  border-radius: 8px 8px 0 0;
+}
+
+.student-row {
+  border-left: 3px solid transparent;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.student-row:hover {
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.07) 0%, rgba(201, 162, 39, 0.02) 100%);
+  border-left: 3px solid #C9A227;
+}
+
+.student-row-photo {
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.30);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.student-row:hover .student-row-photo {
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.60);
+  transform: scale(1.06);
+}
+
+/* -------------------------------------------------------------------------
+   7) TEACHER DASHBOARD — signature accent per stat tile (mirrors the
+      Super Admin dashboard pattern), premium schedule + course cards.
+   ------------------------------------------------------------------------- */
+
+.teacher-stat-card:nth-child(1) { --stat-accent: #1B2A4D; --stat-accent-soft: rgba(27, 42, 77, 0.09); }
+.teacher-stat-card:nth-child(2) { --stat-accent: #C9A227; --stat-accent-soft: rgba(201, 162, 39, 0.12); }
+.teacher-stat-card:nth-child(3) { --stat-accent: #0F9B8E; --stat-accent-soft: rgba(15, 155, 142, 0.09); }
+.teacher-stat-card:nth-child(4) { --stat-accent: #B3275C; --stat-accent-soft: rgba(179, 39, 92, 0.09); }
+
+.teacher-stat-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 100% at 0% 0%, var(--stat-accent-soft, rgba(201, 162, 39, 0.08)) 0%, transparent 60%),
+    #ffffff;
+  border: 1px solid var(--stat-accent-soft, rgba(27, 42, 77, 0.14));
+  border-radius: 16px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+
+.teacher-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--stat-accent, #1B2A4D) 0%, #C9A227 100%);
+}
+
+.teacher-stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 44px -16px var(--stat-accent-soft, rgba(27, 42, 77, 0.30)), 0 4px 14px rgba(27, 42, 77, 0.08);
+  border-color: var(--stat-accent, #C9A227);
+}
+
+.teacher-stat-icon {
+  color: var(--stat-accent, #C9A227);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.teacher-stat-card:hover .teacher-stat-icon {
+  transform: scale(1.12) rotate(-4deg);
+}
+
+.teacher-schedule-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 14px 32px -16px rgba(27, 42, 77, 0.22), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.teacher-schedule-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.teacher-day-box {
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.teacher-day-box-active {
+  background: linear-gradient(135deg, #1B2A4D 0%, #0F1830 100%);
+  box-shadow: 0 8px 18px rgba(27, 42, 77, 0.28);
+}
+
+.teacher-course-card {
+  position: relative;
+  isolation: isolate;
+  box-shadow: 0 16px 36px -18px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.teacher-course-card:hover {
+  transform: translateY(-6px) scale(1.005);
+}
+
+.teacher-course-card-green {
+  background: linear-gradient(160deg, rgba(30, 142, 62, 0.10) 0%, #ffffff 55%);
+}
+
+.teacher-course-card-green:hover {
+  box-shadow: 0 26px 46px -18px rgba(30, 142, 62, 0.26);
+  border-color: rgba(30, 142, 62, 0.40);
+}
+
+.teacher-course-card-blue {
+  background: linear-gradient(160deg, rgba(33, 150, 243, 0.09) 0%, #ffffff 55%);
+}
+
+.teacher-course-card-blue:hover {
+  box-shadow: 0 26px 46px -18px rgba(33, 150, 243, 0.24);
+  border-color: rgba(33, 150, 243, 0.40);
+}
+
+.teacher-course-card-red {
+  background: linear-gradient(160deg, rgba(197, 48, 48, 0.08) 0%, #ffffff 55%);
+}
+
+.teacher-course-card-red:hover {
+  box-shadow: 0 26px 46px -18px rgba(197, 48, 48, 0.22);
+  border-color: rgba(197, 48, 48, 0.36);
+}
+
+.teacher-course-card-silver:hover {
+  box-shadow: 0 26px 46px -18px rgba(27, 42, 77, 0.18);
+  border-color: rgba(201, 162, 39, 0.35);
+}
+
+.teacher-course-batch-badge {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.20), rgba(201, 162, 39, 0.10));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.24);
+}
+
+.teacher-course-progress-fill {
+  background: linear-gradient(90deg, #1B2A4D, #C9A227);
+}
+
+/* -------------------------------------------------------------------------
+   8) STUDENT DASHBOARD — exactly the two requested tiles, Attendance and
+      Assignments (".dashboard-stat-card" is used only by these two on
+      this page), each with its own accent + a livelier hover.
+   ------------------------------------------------------------------------- */
+
+.dashboard-stat-card:nth-of-type(1) { --stat-accent: #C9A227; --stat-accent-soft: rgba(201, 162, 39, 0.14); }
+.dashboard-stat-card:nth-of-type(2) { --stat-accent: #0F9B8E; --stat-accent-soft: rgba(15, 155, 142, 0.10); }
+
+.dashboard-stat-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 100% at 0% 0%, var(--stat-accent-soft, rgba(201, 162, 39, 0.10)) 0%, transparent 62%),
+    #ffffff;
+  border: 1px solid var(--stat-accent-soft, rgba(27, 42, 77, 0.14));
+  border-radius: 16px;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+
+.dashboard-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--stat-accent, #1B2A4D) 0%, #C9A227 100%);
+}
+
+.dashboard-stat-card::after {
+  content: '';
+  position: absolute;
+  top: -34px; right: -34px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--stat-accent-soft, rgba(201, 162, 39, 0.14)), transparent 72%);
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 44px -16px var(--stat-accent-soft, rgba(27, 42, 77, 0.30)), 0 4px 14px rgba(27, 42, 77, 0.08);
+  border-color: var(--stat-accent, #C9A227);
+}
+
+.dashboard-stat-card:hover::after {
+  transform: scale(1.3);
+}
+
+.dashboard-stat-icon {
+  color: var(--stat-accent, #C9A227);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dashboard-stat-card:hover .dashboard-stat-icon {
+  transform: scale(1.15) rotate(-4deg);
+}
+
+.dashboard-stat-value {
+  transition: color 0.3s ease;
+}
+
+/* -------------------------------------------------------------------------
+   9) STUDENT PROGRESS — accented stat tiles, a richer module accordion,
+      and a gradient percent pill.
+   ------------------------------------------------------------------------- */
+
+.progress-stat-box:nth-child(1) { --stat-accent: #1B2A4D; --stat-accent-soft: rgba(27, 42, 77, 0.09); }
+.progress-stat-box:nth-child(2) { --stat-accent: #C9A227; --stat-accent-soft: rgba(201, 162, 39, 0.12); }
+.progress-stat-box:nth-child(3) { --stat-accent: #0F9B8E; --stat-accent-soft: rgba(15, 155, 142, 0.09); }
+
+.progress-stat-box {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 100% at 0% 0%, var(--stat-accent-soft, rgba(201, 162, 39, 0.08)) 0%, transparent 60%),
+    #ffffff;
+  border: 1px solid var(--stat-accent-soft, rgba(27, 42, 77, 0.14));
+  border-radius: 16px;
+}
+
+.progress-stat-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--stat-accent, #1B2A4D) 0%, #C9A227 100%);
+}
+
+.progress-stat-box:hover {
+  border-color: var(--stat-accent, #C9A227);
+  box-shadow: 0 22px 40px -16px var(--stat-accent-soft, rgba(27, 42, 77, 0.28));
+}
+
+.progress-stat-icon {
+  color: var(--stat-accent, #C9A227);
+}
+
+.progress-module-box {
+  border-radius: 16px;
+  box-shadow: 0 14px 30px -16px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.progress-module-box:hover {
+  border-color: rgba(201, 162, 39, 0.35);
+  box-shadow: 0 20px 40px -16px rgba(27, 42, 77, 0.24);
+}
+
+.progress-module-percent-circle {
+  background: linear-gradient(135deg, #1B2A4D 0%, #0F1830 100%);
+  box-shadow: 0 6px 16px rgba(27, 42, 77, 0.30);
+}
+
+.progress-module-tick-done {
+  filter: drop-shadow(0 2px 4px rgba(45, 164, 78, 0.35));
+}
+
+button.progress-topic-row:hover {
+  background-color: rgba(201, 162, 39, 0.06);
+}
+
+/* -------------------------------------------------------------------------
+   10) STUDENT ATTENDANCE PAGE — glowing overview bar, premium detail box,
+       and the same accented-tile treatment feeding Teacher Attendance too
+       (they share ".attendance-stat-box").
+   ------------------------------------------------------------------------- */
+
+.attendance-overview-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 16px 34px -16px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.attendance-overview-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.attendance-overview-track {
+  height: 14px;
+  box-shadow: inset 0 1px 3px rgba(27, 42, 77, 0.14);
+}
+
+.attendance-overview-fill {
+  position: relative;
+  transition: width 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.attendance-overview-fill-outstanding {
+  background: linear-gradient(90deg, #1E8E3E, #C9A227, #1E8E3E);
+  background-size: 200% 100%;
+  animation: titanShimmer 3.4s linear infinite;
+}
+
+.attendance-stat-box:nth-child(1) { --stat-accent: #1B2A4D; --stat-accent-soft: rgba(27, 42, 77, 0.09); }
+.attendance-stat-box:nth-child(2) { --stat-accent: #1E8E3E; --stat-accent-soft: rgba(30, 142, 62, 0.10); }
+.attendance-stat-box:nth-child(3) { --stat-accent: #C9A227; --stat-accent-soft: rgba(201, 162, 39, 0.12); }
+.attendance-stat-box:nth-child(4) { --stat-accent: #C53030; --stat-accent-soft: rgba(197, 48, 48, 0.09); }
+
+.attendance-stat-box {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 100% at 0% 0%, var(--stat-accent-soft, rgba(201, 162, 39, 0.08)) 0%, transparent 60%),
+    #ffffff;
+  border: 1px solid var(--stat-accent-soft, rgba(27, 42, 77, 0.14));
+  border-radius: 16px;
+}
+
+.attendance-stat-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--stat-accent, #1B2A4D) 0%, #C9A227 100%);
+}
+
+.attendance-stat-box:hover {
+  border-color: var(--stat-accent, #C9A227);
+  box-shadow: 0 22px 40px -16px var(--stat-accent-soft, rgba(27, 42, 77, 0.28));
+}
+
+.attendance-stat-icon {
+  color: var(--stat-accent, #C9A227);
+}
+
+.attendance-detail-box {
+  border-radius: 16px;
+  box-shadow: 0 16px 34px -16px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.attendance-status-chip {
+  box-shadow: inset 0 0 0 1px currentColor;
+  opacity: 0.94;
+}
+
+.attendance-status-present {
+  background: linear-gradient(135deg, rgba(30, 142, 62, 0.18), rgba(30, 142, 62, 0.08));
+}
+
+.attendance-status-leave {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(234, 179, 8, 0.10));
+}
+
+.attendance-status-absent {
+  background: linear-gradient(135deg, rgba(197, 48, 48, 0.16), rgba(197, 48, 48, 0.07));
+}
+
+/* -------------------------------------------------------------------------
+   11) STUDENT ASSIGNMENTS PAGE — same premium tile treatment as
+       Attendance, plus a lifted list box and glowing row hover.
+   ------------------------------------------------------------------------- */
+
+.assignment-stat-box:nth-child(1) { --stat-accent: #1B2A4D; --stat-accent-soft: rgba(27, 42, 77, 0.09); }
+.assignment-stat-box:nth-child(2) { --stat-accent: #C9A227; --stat-accent-soft: rgba(201, 162, 39, 0.12); }
+.assignment-stat-box:nth-child(3) { --stat-accent: #0F9B8E; --stat-accent-soft: rgba(15, 155, 142, 0.09); }
+.assignment-stat-box:nth-child(4) { --stat-accent: #B3275C; --stat-accent-soft: rgba(179, 39, 92, 0.09); }
+
+.assignment-stat-box {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 100% at 0% 0%, var(--stat-accent-soft, rgba(201, 162, 39, 0.08)) 0%, transparent 60%),
+    #ffffff;
+  border: 1px solid var(--stat-accent-soft, rgba(27, 42, 77, 0.14));
+  border-radius: 16px;
+}
+
+.assignment-stat-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--stat-accent, #1B2A4D) 0%, #C9A227 100%);
+}
+
+.assignment-stat-box:hover {
+  border-color: var(--stat-accent, #C9A227);
+  box-shadow: 0 22px 40px -16px var(--stat-accent-soft, rgba(27, 42, 77, 0.28));
+}
+
+.assignment-stat-icon {
+  color: var(--stat-accent, #C9A227);
+}
+
+.assignment-list-box {
+  border-radius: 16px;
+  box-shadow: 0 16px 34px -16px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.assignment-list-row:hover {
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.07) 0%, rgba(201, 162, 39, 0.02) 100%);
+}
+
+/* -------------------------------------------------------------------------
+   12) STUDENT QUIZ PAGE — a warmer info box, premium results table, and a
+       glowing "passed / failed" status chip.
+   ------------------------------------------------------------------------- */
+
+.quiz-info-box {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(201, 162, 39, 0.07) 0%, #ffffff 60%);
+  border: 1px solid rgba(201, 162, 39, 0.20);
+}
+
+.quiz-info-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.quiz-info-heading {
+  color: #142247;
+}
+
+.quiz-table-box {
+  border-radius: 16px;
+  box-shadow: 0 16px 34px -16px rgba(27, 42, 77, 0.20), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.quiz-table-row:hover {
+  background: linear-gradient(90deg, rgba(201, 162, 39, 0.07) 0%, rgba(201, 162, 39, 0.02) 100%);
+}
+
+.quiz-status-chip {
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.quiz-status-passed {
+  background: linear-gradient(135deg, rgba(30, 142, 62, 0.18), rgba(30, 142, 62, 0.08));
+}
+
+.quiz-status-failed {
+  background: linear-gradient(135deg, rgba(197, 48, 48, 0.16), rgba(197, 48, 48, 0.07));
+}
+
+/* -------------------------------------------------------------------------
+   13) TEACHER ASSIGNMENT / QUIZ BUILDERS + grading popups — the quiz
+       question cards, correct-answer toggle, and submission results table.
+   ------------------------------------------------------------------------- */
+
+.assignment-submit-card {
+  box-shadow: 0 40px 90px rgba(11, 18, 36, 0.42), 0 0 0 1px rgba(201, 162, 39, 0.16), 0 0 60px rgba(201, 162, 39, 0.08);
+}
+
+.quiz-question-box {
+  position: relative;
+  background: linear-gradient(160deg, rgba(27, 42, 77, 0.025) 0%, #ffffff 60%);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.quiz-question-box:hover {
+  border-color: rgba(201, 162, 39, 0.35);
+  box-shadow: 0 10px 24px -14px rgba(27, 42, 77, 0.20);
+}
+
+.quiz-question-number {
+  background: linear-gradient(135deg, #1B2A4D 0%, #0F1830 100%);
+  box-shadow: 0 4px 12px rgba(27, 42, 77, 0.28);
+}
+
+.quiz-option-correct-toggle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 10px rgba(30, 142, 62, 0.24);
+}
+
+.quiz-option-correct-toggle-on {
+  background: linear-gradient(135deg, #2DA44E, #1E8E3E);
+  box-shadow: 0 4px 12px rgba(30, 142, 62, 0.34);
+}
+
+.submissions-stat-box {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.submissions-stat-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px -12px rgba(27, 42, 77, 0.24);
+  border-color: rgba(201, 162, 39, 0.35);
+}
+
+.quiz-results-table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.quiz-results-row:hover {
+  background-color: rgba(201, 162, 39, 0.06);
+}
+
+/* -------------------------------------------------------------------------
+   14) TEACHER ATTENDANCE & CALENDAR — premium calendar cells, glowing
+       "today" marker, and richer event chips.
+   ------------------------------------------------------------------------- */
+
+.calendar-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 20px 44px -18px rgba(27, 42, 77, 0.24), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.calendar-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.calendar-cell {
+  border-radius: 12px;
+  transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.calendar-cell:hover {
+  background: linear-gradient(160deg, rgba(201, 162, 39, 0.08) 0%, rgba(201, 162, 39, 0.02) 100%);
+  border-color: rgba(201, 162, 39, 0.30);
+}
+
+.calendar-cell-today {
+  border: 2px solid #C9A227;
+  background: linear-gradient(160deg, rgba(201, 162, 39, 0.10) 0%, rgba(201, 162, 39, 0.03) 100%);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.14);
+}
+
+.calendar-event-chip {
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.calendar-event-chip-green { background: linear-gradient(135deg, rgba(30, 142, 62, 0.20), rgba(30, 142, 62, 0.09)); }
+.calendar-event-chip-blue { background: linear-gradient(135deg, rgba(33, 150, 243, 0.20), rgba(33, 150, 243, 0.09)); }
+.calendar-event-chip-red { background: linear-gradient(135deg, rgba(197, 48, 48, 0.18), rgba(197, 48, 48, 0.08)); }
+.calendar-event-chip-silver { background: linear-gradient(135deg, rgba(27, 42, 77, 0.14), rgba(27, 42, 77, 0.06)); }
+
+.teacher-view-toggle-group {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.teacher-no-record-box {
+  border-radius: 16px;
+}
+
+/* -------------------------------------------------------------------------
+   15) CAMPUSES / COURSES / SUB ADMINS / FEEDBACK — a richer second pass
+       on top of the existing premium card system: gradient role badges,
+       gradient feedback-type badges, and a glowing campus stat row.
+   ------------------------------------------------------------------------- */
+
+.superadmin-subadmin-role-badge {
+  background: linear-gradient(135deg, rgba(27, 42, 77, 0.10), rgba(201, 162, 39, 0.10));
+  box-shadow: inset 0 0 0 1px rgba(27, 42, 77, 0.14);
+}
+
+.superadmin-campus-stat {
+  transition: color 0.25s ease;
+}
+
+.superadmin-campus-card:hover .superadmin-campus-stat {
+  color: #142247;
+}
+
+.feedback-type-bug {
+  background: linear-gradient(135deg, rgba(197, 48, 48, 0.18), rgba(197, 48, 48, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(197, 48, 48, 0.24);
+}
+
+.feedback-type-idea {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.22), rgba(201, 162, 39, 0.10));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.28);
+}
+
+.feedback-type-other {
+  background: linear-gradient(135deg, rgba(27, 42, 77, 0.14), rgba(27, 42, 77, 0.06));
+  box-shadow: inset 0 0 0 1px rgba(27, 42, 77, 0.18);
+}
+
+.feedback-list-preview {
+  transition: color 0.25s ease;
+}
+
+.superadmin-campus-icon-wrap,
+.superadmin-subadmin-avatar,
+.feedback-list-avatar {
+  position: relative;
+}
+
+/* -------------------------------------------------------------------------
+   Respect reduced-motion for every animated element introduced in this
+   pass, matching the convention already set above.
+   ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-btn-primary::after,
+  .generic-popup-btn::after,
+  .course-tab-new-btn::after,
+  .subadmin-toolbar-btn-primary::after,
+  .superadmin-toolbar-btn-primary::after,
+  .quiz-start-btn::after,
+  .submissions-approve-btn::after,
+  .generic-popup-icon-wrap::before,
+  .attendance-overview-fill-outstanding,
+  .dashboard-stat-card,
+  .dashboard-stat-card::after,
+  .dashboard-stat-icon,
+  .teacher-stat-card,
+  .teacher-stat-icon,
+  .progress-stat-box,
+  .attendance-stat-box,
+  .assignment-stat-box,
+  .slot-card,
+  .students-table-row,
+  .student-row,
+  .student-row-photo,
+  .calendar-cell,
+  .quiz-question-box {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .dashboard-stat-card:hover,
+  .teacher-stat-card:hover,
+  .slot-card:hover,
+  .quiz-start-btn:hover,
+  .course-tab-new-btn:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================================
+   TITAN PORTAL — PREMIUM UI UPGRADE, PASS 4
+   Pure visual polish, exactly like the passes above — no JS, routes,
+   markup, or data logic touched anywhere below, only how things look.
+   Written last on purpose so it wins the cascade and safely layers on
+   top of every earlier pass without editing a single line above it.
+
+   Scope of this pass:
+     A) Role-switch 3D entrance animation (Student <-> Teacher <-> Admin)
+     B) Login / Landing page — richer color, gradient border, buttons
+        (padding & margin are untouched throughout this section)
+     C) Super Admin & Sub Admin Profile — centers on wide screens (fixes
+        the empty right-hand gap) + a deeper premium pass
+     D) Student Assignments & Quiz pages — deeper premium pass
+     E) Teacher course tabs (Assignments / Quizzes) — deeper premium pass
+     F) Admin panel — small finishing touches
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   A) ROLE-SWITCH 3D TRANSITION
+   Every login form (Student / Teacher / Sub Admin / Super Admin / Create
+   Account / Choose Admin Type) shares the same ".auth-form" root class.
+   Switching role or mode unmounts one form and mounts another, so this
+   entrance animation replays automatically on every switch — a soft 3D
+   tilt-and-settle rather than a full flip, so it stays elegant.
+   ------------------------------------------------------------------------- */
+
+.auth-card {
+  perspective: 1400px;
+}
+
+.auth-form {
+  animation: titanFormShiftIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-style: preserve-3d;
+}
+
+@keyframes titanFormShiftIn {
+  0% {
+    opacity: 0;
+    transform: rotateY(-16deg) translateX(28px) translateZ(-30px) scale(0.95);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0) translateZ(0) scale(1);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   B) LOGIN / LANDING PAGE — richer color, gradient border, premium
+      buttons. Only color / border / shadow / motion change here — no
+      padding or margin is touched anywhere in this block.
+   ------------------------------------------------------------------------- */
+
+.landing-page {
+  background-color: #E7E9EE;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(27, 42, 77, 0.08) 0%, transparent 42%),
+    radial-gradient(circle at 88% 84%, rgba(201, 162, 39, 0.14) 0%, transparent 46%),
+    radial-gradient(rgba(27, 42, 77, 0.06) 1px, transparent 1px),
+    linear-gradient(165deg, #F5F2E8 0%, #ECEEF2 45%, #DEE2E9 100%);
+  background-size: auto, auto, 24px 24px, auto;
+}
+
+.landing-logo {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 10px 26px rgba(27, 42, 77, 0.28), 0 0 44px rgba(201, 162, 39, 0.20);
+}
+
+.landing-heading {
+  background: linear-gradient(120deg, #1B2A4D 0%, #142247 55%, #8a6d1a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.landing-toggle-group {
+  background-color: rgba(27, 42, 77, 0.055);
+  box-shadow: inset 0 1px 3px rgba(27, 42, 77, 0.10), inset 0 0 0 1px rgba(27, 42, 77, 0.06);
+}
+
+.landing-toggle-btn-active {
+  background: linear-gradient(135deg, #1B2A4D 0%, #101a33 100%);
+  box-shadow: 0 8px 20px rgba(27, 42, 77, 0.34);
+}
+
+.landing-toggle-btn-active:hover {
+  background: linear-gradient(135deg, #24365F 0%, #131f3c 100%);
+}
+
+.auth-card {
+  border: 1.5px solid transparent;
+  background-image:
+    linear-gradient(#ffffff, #ffffff),
+    linear-gradient(150deg, #C9A227 0%, rgba(201, 162, 39, 0.35) 30%, rgba(27, 42, 77, 0.35) 70%, #1B2A4D 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 26px 60px rgba(27, 42, 77, 0.16), 0 6px 16px rgba(27, 42, 77, 0.06);
+  transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.auth-card:hover {
+  box-shadow: 0 34px 74px rgba(27, 42, 77, 0.20), 0 10px 22px rgba(201, 162, 39, 0.10);
+  transform: translateY(-2px);
+}
+
+.auth-input-wrap {
+  border-color: #E3E6EC;
+}
+
+.auth-input-wrap:hover {
+  border-color: #C9A227;
+}
+
+.auth-btn-primary {
+  background: linear-gradient(135deg, #E8C468 0%, #C9A227 45%, #A8841C 100%);
+  box-shadow: 0 12px 26px rgba(201, 162, 39, 0.38), 0 0 0 1px rgba(201, 162, 39, 0.10);
+  letter-spacing: 0.02em;
+}
+
+.auth-btn-primary:hover {
+  background: linear-gradient(135deg, #F0D488 0%, #D8B23A 45%, #A8841C 100%);
+  box-shadow: 0 18px 34px rgba(201, 162, 39, 0.46), 0 0 0 1px rgba(201, 162, 39, 0.16);
+}
+
+.admin-type-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(27, 42, 77, 0.12);
+  box-shadow: 0 10px 22px rgba(27, 42, 77, 0.08);
+}
+
+.admin-type-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #C9A227, #1B2A4D);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.admin-type-card:hover::before {
+  transform: scaleY(1);
+  transform-origin: top;
+}
+
+.admin-type-card:hover {
+  box-shadow: 0 18px 36px rgba(27, 42, 77, 0.16);
+  border-color: rgba(201, 162, 39, 0.4);
+}
+
+.admin-type-icon {
+  filter: drop-shadow(0 2px 6px rgba(201, 162, 39, 0.35));
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.25s ease;
+}
+
+.admin-type-card:hover .admin-type-icon {
+  transform: scale(1.14) rotate(-6deg);
+  color: #A8841C;
+}
+
+.auth-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------------------------------
+   C) SUPER ADMIN & SUB ADMIN PROFILE
+   Fix: the card only had a max-width with no auto margin, so on any
+   screen wider than ~800px it sat pinned to the left with a dead gap on
+   the right. Centering it keeps left/right space equal at every width.
+   ------------------------------------------------------------------------- */
+
+.superadmin-profile-card,
+.subadmin-profile-card {
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 22px 50px -18px rgba(27, 42, 77, 0.26), 0 2px 8px rgba(27, 42, 77, 0.06);
+  border-color: rgba(27, 42, 77, 0.08);
+}
+
+.superadmin-profile-card::before,
+.subadmin-profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.superadmin-profile-avatar,
+.subadmin-profile-avatar {
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 5px rgba(201, 162, 39, 0.45), 0 8px 18px rgba(27, 42, 77, 0.18);
+}
+
+.superadmin-profile-role-badge {
+  background: linear-gradient(135deg, rgba(232, 196, 104, 0.22), rgba(201, 162, 39, 0.10));
+  color: #8a6d1a;
+  border: 1px solid rgba(201, 162, 39, 0.40);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.subadmin-profile-role-badge {
+  background: linear-gradient(135deg, rgba(90, 142, 232, 0.18), rgba(47, 111, 214, 0.08));
+  color: #1D4ED8;
+  border: 1px solid rgba(47, 111, 214, 0.35);
+}
+
+/* The Edit button reuses the same red ".profile-logout-btn" class as
+   Logout; this targets it by its position (first of the two buttons)
+   so Edit reads as a primary navy action and Logout stays a clear,
+   distinct danger action — no markup changes needed. */
+.superadmin-profile-top > div:last-child > .profile-logout-btn:first-child,
+.subadmin-profile-top > div:last-child > .profile-logout-btn:first-child {
+  background: linear-gradient(135deg, #1B2A4D 0%, #0F1830 100%);
+  box-shadow: 0 10px 22px rgba(27, 42, 77, 0.28);
+}
+
+.superadmin-profile-top > div:last-child > .profile-logout-btn:first-child:hover,
+.subadmin-profile-top > div:last-child > .profile-logout-btn:first-child:hover {
+  background: linear-gradient(135deg, #24365F 0%, #131f3c 100%);
+}
+
+.permission-row {
+  border-radius: 10px;
+  padding: 12px 10px;
+  transition: background-color 0.2s ease;
+}
+
+.permission-row:hover {
+  background-color: rgba(201, 162, 39, 0.055);
+}
+
+.permission-badge {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.20), rgba(201, 162, 39, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.30);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.permission-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.45), 0 4px 10px rgba(201, 162, 39, 0.18);
+}
+
+.teacher-update-password-btn.superadmin-change-password-btn,
+.teacher-update-password-btn.subadmin-change-password-btn {
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.teacher-update-password-btn.superadmin-change-password-btn:hover,
+.teacher-update-password-btn.subadmin-change-password-btn:hover {
+  border-color: #C9A227;
+  box-shadow: 0 8px 18px rgba(201, 162, 39, 0.16);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 800px) {
+  .superadmin-profile-card,
+  .subadmin-profile-card {
+    max-width: 100%;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   D) STUDENT ASSIGNMENTS & QUIZ — deeper premium pass on top of the
+      tile treatment already in place (Pass 3, sections 11 & 12).
+   ------------------------------------------------------------------------- */
+
+.assignment-stat-box {
+  position: relative;
+}
+
+.assignment-stat-box::after {
+  content: '';
+  position: absolute;
+  top: -34px; right: -34px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--stat-accent-soft, rgba(201, 162, 39, 0.14)), transparent 72%);
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.assignment-stat-box:hover::after {
+  transform: scale(1.25);
+}
+
+.assignment-stat-box:hover {
+  transform: translateY(-5px);
+}
+
+.assignment-stat-icon {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 2px 5px rgba(201, 162, 39, 0.30));
+}
+
+.assignment-stat-box:hover .assignment-stat-icon {
+  transform: scale(1.12) rotate(-5deg);
+}
+
+.assignment-list-box,
+.quiz-table-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.assignment-list-box::before,
+.quiz-table-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.assignment-list-head,
+.quiz-table-head {
+  background: linear-gradient(180deg, rgba(27, 42, 77, 0.035) 0%, rgba(27, 42, 77, 0) 100%);
+  border-radius: 10px 10px 0 0;
+  margin: -1px -1px 0 -1px;
+  padding-left: 11px;
+  padding-right: 11px;
+}
+
+.assignment-list-row,
+.quiz-table-row {
+  position: relative;
+  border-radius: 8px;
+  transition: background 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: titanRowRise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.assignment-list-row:hover,
+.quiz-table-row:hover {
+  box-shadow: inset 3px 0 0 0 #C9A227;
+  transform: translateX(2px);
+}
+
+@keyframes titanRowRise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.assignment-list-row:nth-child(2), .quiz-table-row:nth-child(2) { animation-delay: 0.03s; }
+.assignment-list-row:nth-child(3), .quiz-table-row:nth-child(3) { animation-delay: 0.07s; }
+.assignment-list-row:nth-child(4), .quiz-table-row:nth-child(4) { animation-delay: 0.11s; }
+.assignment-list-row:nth-child(5), .quiz-table-row:nth-child(5) { animation-delay: 0.15s; }
+.assignment-list-row:nth-child(6), .quiz-table-row:nth-child(6) { animation-delay: 0.19s; }
+
+.assignment-row-approved {
+  background-color: rgba(30, 142, 62, 0.035);
+}
+
+.assignment-row-not-approved {
+  background-color: rgba(27, 42, 77, 0.025);
+}
+
+.assignment-row-not-submitted {
+  background: linear-gradient(90deg, rgba(197, 48, 48, 0.06), rgba(197, 48, 48, 0.015));
+}
+
+.assignment-status-chip,
+.quiz-status-chip {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.assignment-list-row:hover .assignment-status-chip,
+.quiz-table-row:hover .quiz-status-chip {
+  transform: translateY(-1px);
+}
+
+.assignment-status-approved {
+  box-shadow: inset 0 0 0 1px rgba(30, 142, 62, 0.30), 0 3px 8px rgba(30, 142, 62, 0.14);
+}
+
+.assignment-status-not-approved {
+  box-shadow: inset 0 0 0 1px rgba(27, 42, 77, 0.18), 0 3px 8px rgba(27, 42, 77, 0.08);
+}
+
+.assignment-status-not-submitted {
+  box-shadow: inset 0 0 0 1px rgba(197, 48, 48, 0.28), 0 3px 8px rgba(197, 48, 48, 0.12);
+}
+
+.assignment-status-pending {
+  box-shadow: inset 0 0 0 1px rgba(29, 78, 216, 0.28), 0 3px 8px rgba(29, 78, 216, 0.12);
+}
+
+.assignment-status-late {
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.35), 0 3px 8px rgba(201, 162, 39, 0.14);
+}
+
+.quiz-status-chip:not(.quiz-status-passed):not(.quiz-status-failed) {
+  background-color: rgba(107, 114, 128, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(107, 114, 128, 0.28);
+  color: #4B5566;
+}
+
+.quiz-status-passed {
+  box-shadow: inset 0 0 0 1px rgba(30, 142, 62, 0.32), 0 3px 10px rgba(30, 142, 62, 0.16);
+}
+
+.quiz-status-failed {
+  box-shadow: inset 0 0 0 1px rgba(197, 48, 48, 0.30), 0 3px 10px rgba(197, 48, 48, 0.14);
+}
+
+.assignment-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  border-radius: 50%;
+  background-color: rgba(27, 42, 77, 0.045);
+  box-shadow: inset 0 0 0 1px rgba(27, 42, 77, 0.05);
+}
+
+.assignment-action-icon:hover {
+  background-color: rgba(201, 162, 39, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(201, 162, 39, 0.35), 0 4px 10px rgba(201, 162, 39, 0.22);
+}
+
+.assignment-action-icon-disabled {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.assignment-page-btn {
+  border-radius: 999px;
+  padding: 9px 18px;
+}
+
+.assignment-page-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.quiz-info-box {
+  border-radius: 16px;
+  transition: box-shadow 0.3s ease;
+}
+
+.quiz-info-box:hover {
+  box-shadow: 0 14px 30px -16px rgba(27, 42, 77, 0.18);
+}
+
+.quiz-info-heading svg {
+  color: #A8841C;
+  filter: drop-shadow(0 1px 3px rgba(201, 162, 39, 0.35));
+}
+
+.quiz-action-completed {
+  border-radius: 999px;
+}
+
+.row-menu-trigger {
+  border-radius: 50%;
+}
+
+.row-menu-dropdown {
+  border-radius: 14px;
+  box-shadow: 0 20px 44px rgba(27, 42, 77, 0.22), 0 0 0 1px rgba(201, 162, 39, 0.10);
+}
+
+/* -------------------------------------------------------------------------
+   E) TEACHER COURSE TABS (Assignments / Quizzes) — segmented pill nav,
+      elevated panel, gradient table header, livelier rows.
+   ------------------------------------------------------------------------- */
+
+.course-detail-tab-row {
+  background-color: rgba(27, 42, 77, 0.045);
+  padding: 6px;
+  border-radius: 14px;
+  box-shadow: inset 0 1px 3px rgba(27, 42, 77, 0.07);
+}
+
+.course-detail-tab-btn {
+  border: none;
+  background-color: transparent;
+}
+
+.course-detail-tab-btn:hover {
+  background-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 2px 8px rgba(27, 42, 77, 0.08);
+}
+
+.course-detail-tab-btn-active {
+  background: linear-gradient(135deg, #1B2A4D 0%, #0F1830 100%);
+  box-shadow: 0 10px 22px rgba(27, 42, 77, 0.32);
+}
+
+.course-detail-tab-btn-active:hover {
+  background: linear-gradient(135deg, #24365F 0%, #131f3c 100%);
+}
+
+.course-detail-search-wrap {
+  background-color: #ffffff;
+  border-color: #E3E6EC;
+}
+
+.course-tab-box {
+  position: relative;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px -16px rgba(27, 42, 77, 0.22), 0 1px 3px rgba(27, 42, 77, 0.05);
+}
+
+.course-tab-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, #1B2A4D 0%, #C9A227 100%);
+}
+
+.teacher-assignment-list-head {
+  background: linear-gradient(180deg, rgba(27, 42, 77, 0.035) 0%, rgba(27, 42, 77, 0) 100%);
+  border-radius: 8px 8px 0 0;
+}
+
+.teacher-assignment-list-row {
+  position: relative;
+  border-radius: 8px;
+  transition: background 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: titanRowRise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.teacher-assignment-list-row:hover {
+  box-shadow: inset 3px 0 0 0 #C9A227;
+  transform: translateX(2px);
+}
+
+.teacher-assignment-list-row:nth-child(2) { animation-delay: 0.03s; }
+.teacher-assignment-list-row:nth-child(3) { animation-delay: 0.07s; }
+.teacher-assignment-list-row:nth-child(4) { animation-delay: 0.11s; }
+.teacher-assignment-list-row:nth-child(5) { animation-delay: 0.15s; }
+.teacher-assignment-list-row:nth-child(6) { animation-delay: 0.19s; }
+
+.course-tab-heading {
+  position: relative;
+  padding-left: 12px;
+}
+
+.course-tab-heading::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #C9A227, #1B2A4D);
+}
+
+/* -------------------------------------------------------------------------
+   F) ADMIN PANEL — small finishing touches
+   ------------------------------------------------------------------------- */
+
+.superadmin-topbar,
+.subadmin-topbar,
+.teacher-topbar,
+.student-topbar {
+  box-shadow: 0 1px 0 rgba(201, 162, 39, 0.16);
+}
+
+/* -------------------------------------------------------------------------
+   Respect reduced-motion for everything added in this pass.
+   ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-form,
+  .assignment-list-row,
+  .quiz-table-row,
+  .teacher-assignment-list-row,
+  .assignment-stat-box,
+  .assignment-stat-icon,
+  .assignment-stat-box::after,
+  .admin-type-icon,
+  .permission-badge {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .assignment-stat-box:hover,
+  .admin-type-card:hover .admin-type-icon,
+  .assignment-list-row:hover,
+  .quiz-table-row:hover,
+  .teacher-assignment-list-row:hover {
+    transform: none;
   }
 }

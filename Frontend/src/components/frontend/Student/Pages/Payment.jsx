@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowsRotate, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons'
 import StudentTopbar from '../Layout/StudentTopbar.jsx'
+import { formatDate } from '../../Media/dateUtils.js'
 import { api } from '../../../../api/client.js'
 
 const jazzCashSteps = [
@@ -85,7 +86,7 @@ function Payment() {
             <span>{v.month}</span>
             <span>Rs. {v.amount}</span>
             <span>{v.type}</span>
-            <span>{new Date(v.dueDate).toLocaleDateString()}</span>
+            <span>{formatDate(new Date(v.dueDate))}</span>
             <span>{v.invoiceNo}</span>
             <span className={statusClass(v.status)}>{v.status}</span>
           </div>

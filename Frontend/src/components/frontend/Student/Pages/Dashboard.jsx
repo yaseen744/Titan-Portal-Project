@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import StudentTopbar from '../Layout/StudentTopbar.jsx'
 import CourseSummaryCard from './CourseSummaryCard.jsx'
-import { getCurrentWeekDates, dayName } from '../../Media/dateUtils.js'
+import { getCurrentWeekDates, dayName, formatDate } from '../../Media/dateUtils.js'
 import { api } from '../../../../api/client.js'
 
 const activityTabs = [
@@ -101,7 +101,7 @@ function Dashboard() {
                 <div className="dashboard-activity-list">
                   {upcomingAssignments.slice(0, 4).map((a) => (
                     <button key={a._id} type="button" className="dashboard-activity-item" onClick={() => navigate('/student/assignment')}>
-                      <FontAwesomeIcon icon={faFileLines} /> {a.title} — due {new Date(a.dueDate).toLocaleDateString()}
+                      <FontAwesomeIcon icon={faFileLines} /> {a.title} — due {formatDate(new Date(a.dueDate))}
                     </button>
                   ))}
                 </div>
@@ -117,7 +117,7 @@ function Dashboard() {
                 <div className="dashboard-activity-list">
                   {upcomingQuizzes.slice(0, 4).map((q) => (
                     <button key={q._id} type="button" className="dashboard-activity-item" onClick={() => navigate('/student/quiz')}>
-                      <FontAwesomeIcon icon={faFileCircleQuestion} /> {q.title} — due {new Date(q.dueDate).toLocaleDateString()}
+                      <FontAwesomeIcon icon={faFileCircleQuestion} /> {q.title} — due {formatDate(new Date(q.dueDate))}
                     </button>
                   ))}
                 </div>
@@ -150,7 +150,7 @@ function Dashboard() {
             <span>{voucher.month}</span>
             <span>Rs. {voucher.amount}</span>
             <span>{voucher.type}</span>
-            <span>{new Date(voucher.dueDate).toLocaleDateString()}</span>
+            <span>{formatDate(new Date(voucher.dueDate))}</span>
             <span>{voucher.invoiceNo}</span>
             <span className={voucher.status === 'Paid' ? 'fee-status-paid' : 'voucher-status-pending'}>{voucher.status}</span>
           </div>

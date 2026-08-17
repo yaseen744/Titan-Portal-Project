@@ -11,7 +11,14 @@ const questionSchema = new mongoose.Schema(
   {
     text: { type: String, required: true },
     options: { type: [optionSchema], validate: (v) => v.length >= 2 },
+<<<<<<< HEAD
     correctOptionIndexes: { type: [Number], required: true }, // supports multiple correct options
+=======
+    // 1 or more indexes can be marked correct by the teacher, but the
+    // student still picks only a single option when taking the quiz - they
+    // are correct if their one pick is any one of these indexes.
+    correctOptionIndexes: { type: [Number], required: true },
+>>>>>>> 19d6766 (full updated code)
   },
   { _id: true }
 )

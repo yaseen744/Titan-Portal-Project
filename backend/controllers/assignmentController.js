@@ -115,8 +115,8 @@ export const deleteAssignment = asyncHandler(async (req, res) => {
   if (String(assignment.teacher) !== String(req.user._id)) {
     return res.status(403).json({ message: 'You can only delete your own assignments.' })
   }
-  assignment.isDeleted = true
-  await assignment.save()
+  await AssignmentSubmission.deleteMany({ assignment: assignment._id })
+  await Assignment.findByIdAndDelete(assignment._id)
   res.json({ message: 'Assignment deleted.' })
 })
 

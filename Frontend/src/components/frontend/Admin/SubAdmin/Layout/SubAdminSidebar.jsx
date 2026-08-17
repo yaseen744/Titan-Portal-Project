@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faGaugeHigh, faUserGraduate, faCalendarCheck, faLayerGroup, faChalkboardUser,
   faArrowsRotate, faBars, faChevronDown, faUserCircle, faRightFromBracket,
-  faClipboardCheck, faCommentDots,
+  faClipboardCheck, faCommentDots, faUserShield,
 } from '@fortawesome/free-solid-svg-icons'
 import titanLogo from '../../../Media/images/titan-logo.png'
 import Avatar from '../../../Media/Avatar.jsx'
@@ -37,7 +37,12 @@ function SubAdminSidebar({ onLogoutClick }) {
         <button type="button" className="subadmin-sidebar-fold-btn" onClick={() => setCollapsed(!collapsed)} aria-label="Toggle sidebar">
           <FontAwesomeIcon icon={faBars} />
         </button>
-        <img src={titanLogo} alt="Titan" className="subadmin-sidebar-logo" />
+        <div className="subadmin-sidebar-logo-wrap">
+          <img src={titanLogo} alt="Titan" className="subadmin-sidebar-logo" />
+          <span className="subadmin-sidebar-badge" title="Sub Admin">
+            <FontAwesomeIcon icon={faUserShield} />
+          </span>
+        </div>
       </div>
 
       <nav className="subadmin-sidebar-nav">

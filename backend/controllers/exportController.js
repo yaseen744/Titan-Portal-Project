@@ -7,7 +7,16 @@ import { asyncHandler } from '../middleware/errorHandler.js'
 
 export const exportStudentsExcel = asyncHandler(async (req, res) => {
   const { course } = req.query
-  const filter = req.role === 'subadmin' ? { campus: req.user.campus } : {}
+  // Honour the same campus scope the page was showing when Export was
+  // clicked: Sub Admin is always locked to their own campus, Super Admin
+  // gets whatever ?campus= was selected (or every campus if "All Campuses"
+  // was selected, i.e. no ?campus= at all) - same rule as studentsListPdf.
+  const filter = {}
+  if (req.role === 'subadmin') {
+    filter.campus = req.user.campus
+  } else if (req.query.campus) {
+    filter.campus = req.query.campus
+  }
   if (course && course !== 'all') filter.course = course
 
   const students = await Student.find(filter).populate('course', 'name').populate({ path: 'slot', select: 'batchLabel scheduleDays' })
