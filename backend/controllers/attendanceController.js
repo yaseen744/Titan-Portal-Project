@@ -125,6 +125,9 @@ export const markAttendance = asyncHandler(async (req, res) => {
   if (req.role === 'subadmin' && String(student.campus) !== String(req.user.campus)) {
     return res.status(403).json({ message: 'This student belongs to a different campus.' })
   }
+  if (student.status === 'dropout') {
+    return res.status(400).json({ message: `${student.name} has dropped out - attendance can't be marked for this student.` })
+  }
 
   const day = toUtcMidnight(date)
 
@@ -155,6 +158,10 @@ export const markMultipleAttendance = asyncHandler(async (req, res) => {
     }
     if (req.role === 'subadmin' && String(student.campus) !== String(req.user.campus)) {
       results.push({ roll, ok: false, message: 'Belongs to a different campus.' })
+      continue
+    }
+    if (student.status === 'dropout') {
+      results.push({ roll, ok: false, message: 'Student has dropped out - attendance not marked.' })
       continue
     }
     await Attendance.findOneAndUpdate(

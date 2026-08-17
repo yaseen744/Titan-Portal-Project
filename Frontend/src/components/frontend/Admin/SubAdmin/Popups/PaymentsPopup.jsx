@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark, faMoneyBillWave, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../../../../api/client.js'
+import { formatDate } from '../../../Media/dateUtils.js'
 
 function statusClass(status) {
   return status === 'Paid' ? 'fee-status-paid' : 'voucher-status-pending'
@@ -75,7 +76,7 @@ function PaymentsPopup({ student, onClose }) {
               <span>{v.invoiceNo}</span>
               <span>{v.type}</span>
               <span>{v.month}</span>
-              <span>{new Date(v.dueDate).toLocaleDateString()}</span>
+              <span>{formatDate(new Date(v.dueDate))}</span>
               <span>Rs. {v.amount}</span>
               <span className={statusClass(v.status)}>{v.status}</span>
               <span>

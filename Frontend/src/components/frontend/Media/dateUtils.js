@@ -21,6 +21,18 @@ export function dayName(date) {
   return DAY_NAMES[date.getDay()]
 }
 
+// Formats a raw "HH:MM" (24h) time string - as stored for assignment/quiz
+// due times - into a clean, unambiguous "5:00 PM" style string. Returns
+// an empty string when no time was set, so callers can render nothing.
+export function formatTime(timeStr) {
+  if (!timeStr) return ''
+  const [h, m] = timeStr.split(':').map(Number)
+  if (Number.isNaN(h) || Number.isNaN(m)) return ''
+  const period = h >= 12 ? 'PM' : 'AM'
+  const hour12 = h % 12 === 0 ? 12 : h % 12
+  return `${hour12}:${String(m).padStart(2, '0')} ${period}`
+}
+
 export function monthName(monthIndex) {
   return MONTH_NAMES[monthIndex]
 }

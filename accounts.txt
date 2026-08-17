@@ -1,0 +1,31 @@
+           [superadminaccount]:
+(EMAIL : muhammadnaeemsoomro123@gmail.com , PASSWORD: muhammadnaeem$123)
+
+
+           [students account]:
+
+(EMAIL : mohammadtalhakhokhar@gmail.com, CNIC:4550504517957, PASSWORD: talha$123)  
+
+(EMAIL : mustafa@gmail.com, CNIC:4550504517952, PASSWORD: mustafa$123) 
+
+(EMAIL : falaq@gmail.com, CNIC:4550504517951, PASSWORD: falaq$123)    
+     
+
+           [teachersaccount]:
+
+(EMAIL : pirzadamuhammadyaseen6@gmail.com , PASSWORD: yaseen$123) 
+
+(EMAIL : alia@gmail.com , PASSWORD: alia$123) 
+
+
+           [subadminsaccount]:
+
+
+(EMAIL : waqar52524@gmail.com , PASSWORD: waqar$123)  
+
+(EMAIL : legend@gmail.com , PASSWORD: legend$123)  
+
+(EMAIL : nimra@gmail.com , PASSWORD: nimra$123)  
+
+(EMAIL : mujtaba@gmail.com , PASSWORD: mujtaba$123)  
+

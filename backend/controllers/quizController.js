@@ -249,8 +249,8 @@ export const deleteQuiz = asyncHandler(async (req, res) => {
   if (String(quiz.teacher) !== String(req.user._id)) {
     return res.status(403).json({ message: 'You can only delete your own quizzes.' })
   }
-  quiz.isDeleted = true
-  await quiz.save()
+  await QuizAttempt.deleteMany({ quiz: quiz._id })
+  await Quiz.findByIdAndDelete(quiz._id)
   res.json({ message: 'Quiz deleted.' })
 })
 

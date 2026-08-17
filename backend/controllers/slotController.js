@@ -188,8 +188,7 @@ export const deleteSlot = asyncHandler(async (req, res) => {
     return res.status(403).json({ message: 'This slot belongs to a different campus.' })
   }
 
-  slot.isDeleted = true
-  await slot.save()
+  await Slot.findByIdAndDelete(slot._id)
 
   await Student.updateMany(
     { slot: slot._id, status: { $ne: 'dropout' } },

@@ -216,7 +216,10 @@ function Students() {
         <DownloadProgressPopup
           title="Preparing your export..."
           successTitle="Students Exported Successfully!"
-          run={() => api.download('/export/students', 'students-export.xlsx')}
+          run={() => api.download(
+            campusFilter ? `/export/students?campus=${campusFilter}` : '/export/students',
+            'students-export.xlsx'
+          )}
           onClose={() => setExportPopup(false)}
         />
       )}

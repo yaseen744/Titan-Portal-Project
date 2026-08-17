@@ -4,6 +4,7 @@ import { faEye, faTrashCan, faPlus, faChevronLeft, faChevronRight, faPenToSquare
 import CreateQuizPopup from '../Popups/CreateQuizPopup.jsx'
 import QuizResultsPopup from '../Popups/QuizResultsPopup.jsx'
 import RowMenu from '../../shared/RowMenu.jsx'
+import { formatDate, formatTime } from '../../Media/dateUtils.js'
 import { api } from '../../../../api/client.js'
 import { useAlert } from '../../../../context/AlertContext.jsx'
 
@@ -67,7 +68,7 @@ function CourseQuizzesTab({ slot }) {
           <span className="assignment-row-name">{q.title}</span>
           <span>{q.totalQuestions}</span>
           <span>{q.timerMinutes} min</span>
-          <span>{new Date(q.dueDate).toLocaleDateString()} {q.dueTime}</span>
+          <span>{formatDate(new Date(q.dueDate))}{q.dueTime ? ` at ${formatTime(q.dueTime)}` : ''}</span>
           <span className="teacher-quiz-action-row">
             <FontAwesomeIcon icon={faEye} className="assignment-action-icon" onClick={() => setViewing(q)} title="View Results" />
           </span>

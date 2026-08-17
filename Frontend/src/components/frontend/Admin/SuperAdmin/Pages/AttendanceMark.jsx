@@ -86,6 +86,11 @@ function AttendanceMark() {
                 <FontAwesomeIcon icon={faTriangleExclamation} /> This student hasn't paid yet — marking attendance is still allowed.
               </p>
             )}
+            {found.status === 'dropout' && (
+              <p className="attendance-mark-payment-warning">
+                <FontAwesomeIcon icon={faTriangleExclamation} /> This student has dropped out — attendance can't be marked.
+              </p>
+            )}
           </div>
 
           {justMarked ? (
@@ -93,7 +98,13 @@ function AttendanceMark() {
               <FontAwesomeIcon icon={faCircleCheck} /> Attendance Marked
             </span>
           ) : (
-            <button type="button" className="auth-btn-primary attendance-mark-btn" onClick={handleMark}>
+            <button
+              type="button"
+              className="auth-btn-primary attendance-mark-btn"
+              onClick={handleMark}
+              disabled={found.status === 'dropout'}
+              style={found.status === 'dropout' ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+            >
               <FontAwesomeIcon icon={faCircleCheck} /> Mark Present
             </button>
           )}

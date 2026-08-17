@@ -4,6 +4,7 @@ import { faPlus, faEye, faTrashCan, faChevronLeft, faChevronRight, faLock, faLoc
 import NewAssignmentPopup from '../Popups/NewAssignmentPopup.jsx'
 import ViewSubmissionsPopup from '../Popups/ViewSubmissionsPopup.jsx'
 import RowMenu from '../../shared/RowMenu.jsx'
+import { formatDate, formatTime } from '../../Media/dateUtils.js'
 import { api } from '../../../../api/client.js'
 import { useAlert } from '../../../../context/AlertContext.jsx'
 
@@ -76,7 +77,7 @@ function CourseAssignmentsTab({ slot }) {
           <span className="assignment-row-name">{a.title}</span>
           <span className="assignment-row-course">{a.description}</span>
           <span>{a.type}</span>
-          <span>{new Date(a.dueDate).toLocaleDateString()} {a.dueTime}</span>
+          <span>{formatDate(new Date(a.dueDate))}{a.dueTime ? ` at ${formatTime(a.dueTime)}` : ''}</span>
           <span>
             <FontAwesomeIcon icon={faEye} className="assignment-action-icon" onClick={() => setViewing(a)} title="View Submissions" />
           </span>

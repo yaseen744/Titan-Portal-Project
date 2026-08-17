@@ -6,31 +6,23 @@ node_modules/
 .env.*
 !.env.example
 
+# Build output
+dist/
+build/
+
+# Vite
+.vite/
+
 # Logs
-logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Runtime data
-pids/
-*.pid
-*.seed
-*.pid.lock
-
 # Coverage
 coverage/
 .nyc_output/
-
-# Build
-dist/
-build/
-
-# Temporary files
-tmp/
-temp/
 
 # OS files
 .DS_Store
@@ -42,5 +34,6 @@ Thumbs.db
 *.swp
 *.swo
 
-# Optional: local uploads
-uploads/
+# Temporary files
+tmp/
+temp/
