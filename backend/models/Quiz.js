@@ -10,30 +10,72 @@ const optionSchema = new mongoose.Schema(
 const questionSchema = new mongoose.Schema(
   {
     text: { type: String, required: true },
-    options: { type: [optionSchema], validate: (v) => v.length >= 2 },
-<<<<<<< HEAD
-    correctOptionIndexes: { type: [Number], required: true }, // supports multiple correct options
-=======
-    // 1 or more indexes can be marked correct by the teacher, but the
-    // student still picks only a single option when taking the quiz - they
-    // are correct if their one pick is any one of these indexes.
-    correctOptionIndexes: { type: [Number], required: true },
->>>>>>> 19d6766 (full updated code)
+
+    options: {
+      type: [optionSchema],
+      validate: (v) => v.length >= 2,
+    },
+
+    // One or more indexes can be marked correct by the teacher.
+    // The student still picks only a single option when taking the quiz.
+    // They are correct if their selected option matches any correct index.
+    correctOptionIndexes: {
+      type: [Number],
+      required: true,
+    },
   },
   { _id: true }
 )
 
 const quizSchema = new mongoose.Schema(
   {
-    teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher', required: true },
-    slot: { type: mongoose.Schema.Types.ObjectId, ref: 'Slot', required: true },
-    title: { type: String, required: true, trim: true },
-    totalMarks: { type: Number, required: true },
-    timerMinutes: { type: Number, required: true },
-    dueDate: { type: Date, required: true },
-    dueTime: { type: String, default: '' },
-    questions: { type: [questionSchema], default: [] },
-    isDeleted: { type: Boolean, default: false },
+    teacher: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Teacher',
+      required: true,
+    },
+
+    slot: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Slot',
+      required: true,
+    },
+
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    totalMarks: {
+      type: Number,
+      required: true,
+    },
+
+    timerMinutes: {
+      type: Number,
+      required: true,
+    },
+
+    dueDate: {
+      type: Date,
+      required: true,
+    },
+
+    dueTime: {
+      type: String,
+      default: '',
+    },
+
+    questions: {
+      type: [questionSchema],
+      default: [],
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 )
